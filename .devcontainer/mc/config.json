@@ -1,0 +1,12 @@
+{
+    "version": "10",
+    "aliases": {
+        "garage": {
+            "url": "http://garage:3900",
+            "accessKey": "GK1234567890ABCDEFGH",
+            "secretKey": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+            "api": "S3v4",
+            "path": "auto"
+        }
+    }
+}

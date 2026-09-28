@@ -1,0 +1,35 @@
+# config.yaml
+# Force the issuer URL to remain uniform across all networks
+issuer: http://dex.localhost:5556
+
+storage:
+  type: memory
+
+web:
+  # Listen internally inside the container on port 5556
+  http: 0.0.0.0:5556
+
+# Enables a simple, local username/password login screen
+enablePasswordDB: true
+
+staticPasswords:
+  - email: "admin@example.com"
+    password: "password"
+    username: "admin"
+    userID: "08a515a8-1200-400d-a34e-37966f3630f5"
+    hash: "$2a$12$7wNikYGmkFdMMCCfhKSZ1.gPKeOY1fnqY2XVZSH4ZT8nGPigwsmJS"
+    groups: [admin]
+
+  - email: "user@example.com"
+    password: "password"
+    username: "user"
+    userID: "69ca6ea6-ac37-4543-a3b7-5923eada94bf"
+    hash: "$2a$12$7wNikYGmkFdMMCCfhKSZ1.gPKeOY1fnqY2XVZSH4ZT8nGPigwsmJS"
+
+# Configure your client credentials here
+staticClients:
+  - id: albums
+    secret: albums-secret
+    name: "Albums"
+    redirectURIs:
+      - 'http://localhost:5173/api/auth/callback/dex'

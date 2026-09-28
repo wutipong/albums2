@@ -26,7 +26,7 @@
     },
     "ghcr.io/jsburckhardt/devcontainer-features/uv:1": {},
     "ghcr.io/azutake/devcontainer-features/go-packages-install:0": {
-      "PACKAGES": "github.com/sqlc-dev/sqlc/cmd/sqlc@latest,github.com/amacneil/dbmate@latest,google.golang.org/protobuf/cmd/protoc-gen-go@latest,google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest,github.com/minio/mc@latest,github.com/cshum/vipsgen/cmd/vipsgen@latest"
+      "PACKAGES": "google.golang.org/protobuf/cmd/protoc-gen-go@latest,google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest,github.com/minio/mc@latest,github.com/cshum/vipsgen/cmd/vipsgen@latest"
     },
     "ghcr.io/devcontainers-extra/features/apt-packages:1": {
       "packages": "caddy,libvips-dev,libvpx12,libopus0,ffmpeg,libvips-tools"
@@ -46,7 +46,8 @@
     "garage:3901",
     "garage:3902",
     "imgproxy:8080",
-    "mongo-express:8081"
+    "mongo-express:8081",
+    "redis-insight:5540"
   ],
   // Configure tool-specific properties.
   "customizations": {

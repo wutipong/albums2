@@ -1,0 +1,26 @@
+replication_factor = 1
+consistency_mode = "consistent"
+
+metadata_dir = "/var/lib/garage/meta"
+data_dir = "/var/lib/garage/data"
+block_size = 1048576 # 1MB
+rpc_secret = "f4782bfed9e213798fa534e79927d1874c574db0cfe660e374667cc7e59bd9c7"
+rpc_bind_addr = "[::]:3901"
+rpc_public_addr = "localhost:3901"
+
+[s3_api]
+api_bind_addr = "[::]:3900"
+s3_region = "garage"
+root_domain = ".s3.garage"
+
+[s3_web]
+bind_addr = "[::]:3902"
+root_domain = ".web.garage"
+index = "index.html"
+
+[admin]
+api_bind_addr = "0.0.0.0:3903"
+metrics_token = "G+6A9dh07Cl4O5rEAVtAVfWV9MWuy5IN7eSFm0mohSE="
+metrics_require_token = true
+admin_token = "Mzhsk1UAHdEY5cYOR8Ki0km+oPxM5Vi/Zz/1dqM2n2Q="
+trace_sink = "http://localhost:4317"

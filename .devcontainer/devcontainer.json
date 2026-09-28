@@ -39,15 +39,13 @@
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   // This can be used to network with other containers or with the host.
   "forwardPorts": [
-    8080,
-    5432,
-    5173,
     3000,
-    3900,
-    3901,
-    3902,
+    5173,
     "dex:5556",
     "garage:3900",
+    "garage:3901",
+    "garage:3902",
+    "imgproxy:8080",
     "mongo-express:8081"
   ],
   // Configure tool-specific properties.

@@ -17,20 +17,17 @@ services:
 
   redis:
     image: redis:8
-    ports:
-      - 6739L6739
     volumes:
       - redis_data:/data
 
   mongodb:
     image: mongo:8
     restart: unless-stopped
-    ports:
-      - "27017:27017"
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${DB_ROOT_USER}
       - MONGO_INITDB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
       - MONGO_INITDB_DATABASE=${DB_DATABASE}
+      - GLIBC_TUNABLES=glibc.pthread.rseq=1
     volumes:
       - mongo_data:/data/db
 
@@ -38,8 +35,6 @@ services:
     image: mongo-express:latest
     container_name: mongo_express_container
     restart: unless-stopped
-    ports:
-      - "8081:8081"
     environment:
       - ME_CONFIG_MONGODB_ADMINUSERNAME=${DB_ROOT_USER}
       - ME_CONFIG_MONGODB_ADMINPASSWORD=${DB_ROOT_PASSWORD}
@@ -57,13 +52,9 @@ services:
       GARAGE_DEFAULT_SECRET_KEY: ${AWS_SECRET_ACCESS_KEY}
       GARAGE_DEFAULT_BUCKET: ${S3_BUCKET}
     volumes:
-      - ../garage/garage.toml:/etc/garage.toml
+      - ./garage.toml:/etc/garage.toml
       - garage-meta:/var/lib/garage/meta
       - garage-data:/var/lib/garage/data
-    ports:
-      - "3900:3900" # S3 API
-      - "3901:3901" # RPC
-      - "3902:3902" # Web
     command:
       - /garage
       - server
@@ -75,17 +66,13 @@ services:
     container_name: garage-webui
     restart: unless-stopped
     volumes:
-      - ../garage/garage.toml:/etc/garage.toml:ro
-    ports:
-      - 3909:3909
+      - ./garage.toml:/etc/garage.toml:ro
     environment:
       API_BASE_URL: "http://garage:3903"
       S3_ENDPOINT_URL: "http://garage:3900"
 
   imgproxy:
     image: darthsim/imgproxy:v3
-    ports:
-      - "8080:8080"
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
@@ -102,15 +89,10 @@ services:
     command: dex serve /etc/dex/cfg/config.yaml
     volumes:
       - ./dex-config.yaml:/etc/dex/cfg/config.yaml:ro
-    ports:
-      - "5556:5556" # Maps the browser-facing localhost:5556 port
-    networks:
-      default:
-        aliases:
-          - dex.localhost 
 
 volumes:
   redis_data:
+  mongo_data:
   garage-meta:
   garage-data:
   hf-cache:

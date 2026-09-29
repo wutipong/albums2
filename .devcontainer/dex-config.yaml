@@ -28,8 +28,8 @@ staticPasswords:
 
 # Configure your client credentials here
 staticClients:
-  - id: albums
+  - id: albums2
     secret: albums-secret
-    name: "Albums"
+    name: "Albums2"
     redirectURIs:
       - 'http://localhost:5173/api/auth/callback/dex'

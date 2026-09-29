@@ -25,7 +25,7 @@
     "ghcr.io/devcontainers-extra/features/protoc:1": {}
   },
   // Handle your custom Go packages sequentially AFTER runtimes are ready
-  "postCreateCommand": "go install google.golang.org/protobuf/cmd/protoc-gen-go@latest & go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest & go install github.com/minio/mc@latest,github.com/cshum/vipsgen/cmd/vipsgen@latest",
+  "postCreateCommand": "go install google.golang.org/protobuf/cmd/protoc-gen-go@latest & go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest & go install github.com/minio/mc@latest & go install github.com/cshum/vipsgen/cmd/vipsgen@latest",
   "postStartCommand": "caddy start --config .devcontainer/Caddyfile",
 
   "mounts": [

@@ -5,33 +5,29 @@
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
   "workspaceFolder": "/workspaces/",
+
   // Features to add to the dev container. More info: https://containers.dev/features.
   "features": {
-    "ghcr.io/devcontainers/features/common-utils:": {},
+    // Official, heavy runtime features are safe and easy to leave here
+    "ghcr.io/devcontainers/features/common-utils:2": {},
     "ghcr.io/devcontainers/features/git:1": {},
-    "ghcr.io/devcontainers/features/go:": {
-      "golangciLintVersion": "2.11.4",
-      "version": "latest"
+    "ghcr.io/devcontainers/features/go:1": {
+      "version": "latest",
+      "golangciLintVersion": "latest"
     },
-    "ghcr.io/devcontainers-extra/features/bun:1": {
-      "version": "latest"
-    },
-    "ghcr.io/robbert229/devcontainer-features/postgresql-client:1": {
-      "version": 18
-    },
-    "ghcr.io/devcontainers-extra/features/act:1": {},
-    "ghcr.io/devcontainers-extra/features/protoc:1": {},
     "ghcr.io/devcontainers/features/python:1": {
       "version": "3.11"
     },
+    // Clean developer tools
+    "ghcr.io/devcontainers-extra/features/bun:1": { "version": "latest" },
     "ghcr.io/jsburckhardt/devcontainer-features/uv:1": {},
-    "ghcr.io/azutake/devcontainer-features/go-packages-install:0": {
-      "PACKAGES": "google.golang.org/protobuf/cmd/protoc-gen-go@latest,google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest,github.com/minio/mc@latest,github.com/cshum/vipsgen/cmd/vipsgen@latest"
-    },
-    "ghcr.io/devcontainers-extra/features/apt-packages:1": {
-      "packages": "caddy,libvips-dev,libvpx12,libopus0,ffmpeg,libvips-tools"
-    }
+    "ghcr.io/devcontainers-extra/features/act:1": {},
+    "ghcr.io/devcontainers-extra/features/protoc:1": {}
   },
+  // Handle your custom Go packages sequentially AFTER runtimes are ready
+  "postCreateCommand": "go install google.golang.org/protobuf/cmd/protoc-gen-go@latest & go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest & go install github.com/minio/mc@latest,github.com/cshum/vipsgen/cmd/vipsgen@latest",
+  "postStartCommand": "caddy start --config .devcontainer/Caddyfile",
+
   "mounts": [
     "source=./mc,target=/home/vscode/.mc,type=bind,consistency=cached",
     "source=./bin,target=/home/vscode/bin,type=bind,consistency=cached"
@@ -61,12 +57,5 @@
         "python.terminal.activateEnvironment": false
       }
     }
-  },
-  // Use 'postCreateCommand' to run commands after the container is created.
-  // "postCreateCommand": ".devcontainer/post-create.sh",
-
-  // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-  // "remoteUser": "root"
-
-  "postStartCommand": "caddy start --config .devcontainer/Caddyfile"
+  }
 }

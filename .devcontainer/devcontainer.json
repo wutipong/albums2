@@ -51,7 +51,8 @@
       "extensions": [
         "svelte.svelte-vscode",
         "esbenp.prettier-vscode",
-        "DrBlury.protobuf-vsc"
+        "DrBlury.protobuf-vsc",
+        "tamasfe.even-better-toml"
       ],
       "settings": {
         "python.terminal.activateEnvironment": false

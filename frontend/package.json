@@ -50,6 +50,7 @@
 	},
 	"dependencies": {
 		"@better-auth/oauth-provider": "^1.7.6",
+		"mongoose": "^9.10.3",
 		"pino": "^10.3.1",
 		"pino-pretty": "^13.1.3"
 	}

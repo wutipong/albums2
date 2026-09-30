@@ -1,18 +1,20 @@
-import database from '$lib/server/database';
-import { toNamespacedPath } from 'node:path/posix';
 import type { PageServerLoad } from './$types';
 import { fail } from '@sveltejs/kit';
+import { Collection } from '$lib/server/database';
+import log from '$lib/log'
 
 export const load: PageServerLoad = async ({ params }) => {
-	const albums = await database.collection('collections').find({ status: 'active' }).toArray();
+	const rawCollections = await Collection.find().lean();
+	const collections = JSON.parse(JSON.stringify(rawCollections));
+
+	log.debug(collections, "available collections");
 
 	return {
-		albums: albums.map((album) => ({ ...album, _id: album._id.toString() }))
+		collections,
 	};
 };
 
 export const actions = {
-	// This is a named action called 'create'
 	create: async ({ request }) => {
 		const data = await request.formData();
 		const name = data.get('name');
@@ -21,10 +23,10 @@ export const actions = {
 			return fail(400, { error: 'invalid name' });
 		}
 
-		await database.collection('collections').insertOne({
-			name: name,
-			status: 'active'
-		});
+        const newCol = new Collection({
+            name: name
+        })
+        await newCol.save()
 
 		return { success: true };
 	}

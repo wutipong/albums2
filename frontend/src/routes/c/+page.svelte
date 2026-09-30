@@ -25,10 +25,10 @@
 {/if}
 
 <ul class="list rounded-box bg-base-100 shadow-md">
-	{#each data.albums as album}
+	{#each data.collections as c}
 		<li class="list-row">
 			<div>
-				<div>{album.name}</div>
+				<div>{c.name}</div>
 			</div>
 		</li>
 	{/each}

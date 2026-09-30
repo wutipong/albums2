@@ -24,7 +24,8 @@ export const actions = {
 		}
 
         const newCol = new Collection({
-            name: name
+            name: name,
+            status: 'active',
         })
         await newCol.save()
 

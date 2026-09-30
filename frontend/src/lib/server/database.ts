@@ -6,7 +6,8 @@ export const client = new MongoClient(env.DB_CONNECTION);
 export const db = client.db();
 
 const collectionSchema = new mongoose.Schema({
-	name: { type: [String], index: true, unique: true }
+	name: { type: [String], index: true, unique: true },
+	status: String
 });
 
 const albumSchema = new mongoose.Schema({

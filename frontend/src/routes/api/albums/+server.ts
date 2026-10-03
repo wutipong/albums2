@@ -1,9 +1,12 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { json, error } from '@sveltejs/kit';
 import { Album } from '$lib/server/database';
+import log from '$lib/log';
 
 export const POST: RequestHandler = async ({ request }) => {
 	const body = await request.json();
+	log.debug(body, 'POST /api/albums');
+
 	const { name } = body;
 
 	if (!name || typeof name !== 'string') {
@@ -16,7 +19,8 @@ export const POST: RequestHandler = async ({ request }) => {
 };
 
 export const GET: RequestHandler = async () => {
+	log.debug('GET /api/albums');
 	const albums = await Album.find({ deletedAt: null }).sort({ name: 1 }).lean();
-    
+
 	return json({ albums });
 };

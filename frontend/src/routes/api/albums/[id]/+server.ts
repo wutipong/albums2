@@ -1,9 +1,11 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { error, json } from '@sveltejs/kit';
 import { Album, Media } from '$lib/server/database';
+import log from '$lib/log';
 // import { deleteAlbum } from '$lib/server/grpc/worker';
 
 export const GET: RequestHandler = async ({ params }) => {
+    log.debug(params, "GET album params");
 	const { id } = params;
 
 	if (!id) {

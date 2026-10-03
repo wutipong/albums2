@@ -1,5 +1,10 @@
 package types
 
+type Collection struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
 type Album struct {
 	ID     string  `json:"id"`
 	Name   string  `json:"name"`

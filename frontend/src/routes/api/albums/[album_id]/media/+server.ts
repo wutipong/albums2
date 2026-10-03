@@ -1,14 +1,18 @@
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from '../../../media/$types';
 import { error, json } from '@sveltejs/kit';
 import { Album, Media } from '$lib/server/database';
 import { s3 } from '$lib/server/s3';
 import * as mime from 'mime-types';
 import { randomUUID } from 'node:crypto';
 import path from 'node:path';
+import log from '$lib/log';
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, params }) => {
 	const req = await request.json();
-	const albumId = req.album_id;
+
+	log.debug(req, `POST /api/albums/${params.album_id}/media`);
+
+	const albumId = params.album_id;
 	const name = req.filename;
 
 	const contentType = mime.contentType(path.basename(name));
@@ -69,4 +73,16 @@ export const POST: RequestHandler = async ({ request }) => {
 	});
 
 	return json({ id: asset.id, url, success: true });
+};
+
+export const GET: RequestHandler = async ({ request, params }) => {
+	log.debug(params, `GET ${request.url} params`);
+	const albumId = params.album_id;
+	if (await Album.exists({ albumId: albumId, deletedAt: null })) {
+		return error(404, { message: 'album not found' });
+	}
+
+	const media = await Media.find({ albumId: albumId, deletedAt: null }).lean();
+
+	return json({ media });
 };

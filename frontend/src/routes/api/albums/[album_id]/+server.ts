@@ -5,30 +5,28 @@ import log from '$lib/log';
 // import { deleteAlbum } from '$lib/server/grpc/worker';
 
 export const GET: RequestHandler = async ({ params }) => {
-    log.debug(params, "GET album params");
-	const { id } = params;
+	log.debug(params, 'GET album params');
+	const { album_id } = params;
 
-	if (!id) {
+	if (!album_id) {
 		return error(400, { message: 'album id is required.' });
 	}
 
-	const album = await Album.findById(id).where('deletedAt', null).lean();
+	const album = await Album.findById(album_id).where('deletedAt', null).lean();
 	if (!album) {
 		return error(404, { message: 'album not found' });
 	}
-
-	const media = await Media.find({ albumId: id, deletedAt: null }).lean();
-	return json({ ...album, media });
+	return json({ album });
 };
 
 export const DELETE: RequestHandler = async ({ params }) => {
-	const { id } = params;
+	const { album_id } = params;
 
-	if (!id) {
-		return error( 400, { message: 'album id is required.' });
+	if (!album_id) {
+		return error(400, { message: 'album id is required.' });
 	}
 
-	// await deleteAlbum(id);
+	// await deleteAlbum(album_id);
 
 	return json({ success: true });
 };

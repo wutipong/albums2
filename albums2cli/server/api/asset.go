@@ -80,7 +80,7 @@ func PostAsset(
 
 	var postAssetRequest PostAssetRequestResponse
 	var errorResponse ErrorResponse
-	r := c.Post("/api/asset/upload/request").
+	r := c.Post("/api/assets/").
 		SetBodyJsonMarshal(PostAssetRequestRequest{
 			AlbumID:  albumID,
 			Filename: assetFileName,
@@ -129,10 +129,9 @@ func PostAsset(
 
 	slog.Debug("upload commit", slog.String("id", postAssetRequest.ID), slog.String("url", postAssetRequest.URL))
 
-	r = c.Post("/api/asset/upload/commit").
+	r = c.Patch(fmt.Sprintf("/api/assets/%s", postAssetRequest.ID)).
 		SetSuccessResult(&postAssetCommit).
 		SetBodyJsonMarshal(PostAssetCommitRequest{
-			ID:      postAssetRequest.ID,
 			Success: success,
 		}).Do(ctx)
 

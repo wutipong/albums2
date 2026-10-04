@@ -40,6 +40,7 @@
 		"mdsvex": "^0.12.7",
 		"mongodb": "^7.7.0",
 		"prettier": "^3.8.3",
+		"prettier-plugin-jsdoc": "^1.8.1",
 		"prettier-plugin-svelte": "^4.1.0",
 		"prettier-plugin-tailwindcss": "^0.8.0",
 		"svelte": "^5.56.1",

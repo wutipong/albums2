@@ -24,7 +24,7 @@ export default defineConfig({
 			// Additional YAML files to include
 			yamlFiles: ['src/lib/extra-specs.yaml'],
 			// Path prefix for all routes
-			prependPath: '/api',
+			prependPath: '',
 			// Glob patterns to include
 			include: ['src/routes/**/{+server,+page.server}.{js,ts}'],
 			// Glob patterns to exclude

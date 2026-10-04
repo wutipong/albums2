@@ -59,6 +59,6 @@ const mediaSchema = new mongoose.Schema(
 	}
 );
 
-export const Collection = mongoose.model('Collection', collectionSchema);
-export const Album = mongoose.model('Album', albumSchema);
-export const Media = mongoose.model('Media', mediaSchema);
+export const Collection = mongoose.models.Collection || mongoose.model('Collection', collectionSchema);
+export const Album = mongoose.models.Album || mongoose.model('Album', albumSchema);
+export const Media = mongoose.models.Media || mongoose.model('Media', mediaSchema);

@@ -59,6 +59,16 @@ const mediaSchema = new mongoose.Schema(
 	}
 );
 
-export const Collection = mongoose.models.Collection || mongoose.model('Collection', collectionSchema);
+if (import.meta.hot) {
+	import.meta.hot.accept((newModule) => {
+		// Delete the model from mongoose so the next execution compiles it fresh
+		delete mongoose.models.Collection;
+		delete mongoose.models.Album;
+		delete mongoose.models.Media;
+	});
+}
+
+export const Collection =
+	mongoose.models.Collection || mongoose.model('Collection', collectionSchema);
 export const Album = mongoose.models.Album || mongoose.model('Album', albumSchema);
 export const Media = mongoose.models.Media || mongoose.model('Media', mediaSchema);

@@ -1,0 +1,15 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Albums2 API",
+    "version": "1.0.0",
+    "description": "Albums2 API documentation"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5173",
+      "description": "Development"
+    }
+  ],
+  "paths": {}
+}

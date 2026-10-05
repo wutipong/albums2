@@ -10,7 +10,7 @@ import (
 	"github.com/wutipong/albums/albums2cli/server/api"
 )
 
-func listCollections(ctx context.Context, profileName string, dryRun bool) (err error) {
+func createCollection(ctx context.Context, profileName string, dryRun bool, name string) (err error) {
 	config, err := profile.LoadProfile(ctx, profileName)
 	if err != nil {
 		return err
@@ -31,18 +31,16 @@ func listCollections(ctx context.Context, profileName string, dryRun bool) (err 
 		APIKey: config.APIKey,
 	}
 
-	collectionList, err := api.GetCollectionList(ctx, server)
+	collection, err := api.CreateCollection(ctx, server, name)
 	if err != nil {
-		slog.Error("Failed to get collection list", "error", err)
+		slog.Error("Failed to create collection", "error", err)
 		return err
 	}
 
-	for _, collection := range collectionList.Collections {
-		slog.Info("collections",
-			slog.String("id", collection.ID),
-			slog.String("name", collection.Name),
-		)
-	}
+	slog.Info("collection created",
+		slog.String("id", collection.ID),
+		slog.String("name", collection.Name),
+	)
 
 	return nil
 }

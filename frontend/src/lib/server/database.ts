@@ -5,6 +5,27 @@ import mongoose from 'mongoose';
 export const client = new MongoClient(env.DB_CONNECTION);
 export const db = client.db();
 
+// Define a global plugin to map _id to id
+mongoose.plugin((schema) => {
+	schema.set('toJSON', {
+		transform: function (doc, ret) {
+			ret.id = ret._id;
+			delete ret._id;
+			Reflect.deleteProperty(ret, '__v');
+			return ret;
+		}
+	});
+
+	// Do the same for toObject if you use .toObject() manually
+	schema.set('toObject', {
+		transform: function (doc, ret) {
+			ret.id = ret._id;
+			delete ret._id;
+			return ret;
+		}
+	});
+});
+
 const collectionSchema = new mongoose.Schema(
 	{
 		name: { type: String, index: true, unique: true },

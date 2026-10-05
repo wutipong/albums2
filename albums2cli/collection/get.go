@@ -33,8 +33,7 @@ func getCollectionById(ctx context.Context, profileName string, dryRun bool, col
 
 	collection, err := api.GetCollection(ctx, server, collectionId)
 	if err != nil {
-		slog.Error("Failed to get collection", "error", err)
-		return err
+		return fmt.Errorf("unable to get collection: %w", err)
 	}
 
 	slog.Info("collection",

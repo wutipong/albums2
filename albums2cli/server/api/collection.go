@@ -16,18 +16,21 @@ func GetCollectionList(ctx context.Context, server ServerConfig,
 	c := NewClient(server)
 	c.Get("api/collections").
 		SetSuccessResult(&resp).
-		SetErrorResult(err).
+		SetErrorResult(&err).
 		Do(ctx)
 	return
 }
 
 func GetCollection(ctx context.Context, server ServerConfig, collectionID string,
 ) (resp types.Collection, err error) {
+	errResponse := ErrorResponse{}
 	c := NewClient(server)
 	c.Get("api/collections/" + collectionID).
 		SetSuccessResult(&resp).
-		SetErrorResult(err).
+		SetErrorResult(&errResponse).
 		Do(ctx)
+
+	err = errResponse
 	return
 }
 

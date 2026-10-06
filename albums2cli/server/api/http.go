@@ -43,9 +43,11 @@ func (s *SlogAdapter) Debugf(format string, v ...any) {
 
 func NewClient(config ServerConfig) *req.Client {
 	return req.C().
-		SetCommonHeader("x-api-key", config.APIKey).
-		SetCommonErrorResult(&ErrorResponse{}).
 		SetBaseURL(config.URL.String()).
+		SetCommonContentType("application/json").
+		SetCommonErrorResult(&ErrorResponse{}).
+		SetCommonHeader("Accept", "application/json").
+		SetCommonHeader("x-api-key", config.APIKey).
 		SetLogger(&SlogAdapter{}).
 		EnableDebugLog().
 		OnAfterResponse(func(c *req.Client, resp *req.Response) error {

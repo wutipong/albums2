@@ -5,6 +5,7 @@ import { svelteKitHandler } from 'better-auth/svelte-kit';
 import mongoose from 'mongoose';
 import { env } from '$env/dynamic/private';
 import { sequence } from '@sveltejs/kit/hooks';
+import { logger } from 'better-auth';
 
 export const init: ServerInit = async () => {
 	await mongoose.connect(env.DB_CONNECTION);
@@ -34,12 +35,13 @@ const handleError: Handle = async ({ event, resolve }) => {
 					const contentType = response.headers.get('content-type');
 					if (contentType?.includes('application/json')) {
 						const body = await response.json();
-						message = body.message || message;
+						message = body.error || message;
 					} else {
 						message = (await response.text()) || message;
 					}
-				} catch {
+				} catch (err){
 					// Fallback if the body can't be read or parsed
+					logger.error('Error occurred while parsing API error response:', err);
 				}
 
 				return json(

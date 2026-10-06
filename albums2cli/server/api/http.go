@@ -15,8 +15,8 @@ type ServerConfig struct {
 }
 
 type ErrorResponse struct {
-	Success string `json:"success"`
-	Message string `json:"error"`
+	Status  int    `json:"status"`
+	Message string `json:"message"`
 }
 
 func (err ErrorResponse) Error() string {
@@ -63,13 +63,4 @@ func NewClient(config ServerConfig) *req.Client {
 			}
 			return nil
 		})
-}
-
-func getError(r *req.Response) error {
-	if r.Err != nil {
-		return r.Err
-	} else if r.ErrorResult() != nil {
-		return r.ErrorResult().(error)
-	}
-	return nil
 }

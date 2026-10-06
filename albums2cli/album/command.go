@@ -30,6 +30,7 @@ func Command(profile *string) *cli.Command {
 						Value:       "",
 						Usage:       "Collection ID to list albums from.",
 						Destination: &collectionId,
+						Required:    true,
 					},
 				},
 				Action: func(ctx context.Context, cmd *cli.Command) error {

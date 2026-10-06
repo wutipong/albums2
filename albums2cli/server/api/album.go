@@ -56,7 +56,7 @@ func CreateAlbum(
 		SetBodyJsonMarshal(req).
 		SetSuccessResult(&resp).
 		SetContext(ctx).
-		Post(path.Join("api", "collection", collectionID, "albums"))
+		Post(path.Join("api", "collections", collectionID, "albums"))
 
 	return
 }

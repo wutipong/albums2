@@ -23,7 +23,7 @@ func Command(profileStr *string) *cli.Command {
 
 	return &cli.Command{
 		Name:  "import",
-		Usage: "perform importing assets.",
+		Usage: "perform importing medias.",
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
 				Name:        "force",
@@ -34,16 +34,17 @@ func Command(profileStr *string) *cli.Command {
 			&cli.BoolFlag{
 				Name:        "dry-run",
 				Value:       false,
-				Usage:       "Processing assets without working with the Albums server.",
+				Usage:       "Processing medias without working with the Albums server.",
 				Destination: &dryRun,
 				Category:    "Processing",
 			},
 			&cli.StringFlag{
 				Name:        "collection",
 				Value:       "",
-				Usage:       "Collection ID to import assets into.",
+				Usage:       "Collection ID to import media into.",
 				Destination: &collectionID,
 				Category:    "Processing",
+				Required:    true,
 			},
 		},
 		Action: func(ctx context.Context, cmd *cli.Command) error {
@@ -161,7 +162,7 @@ func Process(
 
 		if err != nil {
 			slog.Error(
-				"failed upload assets.",
+				"failed upload media.",
 				slog.String("error", err.Error()),
 				slog.String("album", album.Name),
 			)

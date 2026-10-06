@@ -80,7 +80,7 @@ func PostMedia(
 	}).
 		SetSuccessResult(&postMediaRequest).
 		SetContext(ctx).
-		Post(path.Join("api", "albums", albumID, "Medias"))
+		Post(path.Join("api", "albums", albumID, "media"))
 
 	if err != nil {
 		err = fmt.Errorf("request to upload failed: %w", err)

@@ -44,7 +44,32 @@ func (s *SlogAdapter) Debugf(format string, v ...any) {
 func NewClient(config ServerConfig) *req.Client {
 	return req.C().
 		SetCommonHeader("x-api-key", config.APIKey).
+		SetCommonErrorResult(&ErrorResponse{}).
 		SetBaseURL(config.URL.String()).
 		SetLogger(&SlogAdapter{}).
-		EnableDebugLog()
+		EnableDebugLog().
+		OnAfterResponse(func(c *req.Client, resp *req.Response) error {
+			// If a network or structural error occurred, let it propagate
+			if resp.Err != nil {
+				return nil
+			}
+
+			// If the server returned an error payload mapped via SetCommonErrorResult
+			if resp.ErrorResult() != nil {
+				if apiErr, ok := resp.ErrorResult().(error); ok {
+					// Overwrite resp.Err so that the executing request returns it directly
+					resp.Err = apiErr
+				}
+			}
+			return nil
+		})
+}
+
+func getError(r *req.Response) error {
+	if r.Err != nil {
+		return r.Err
+	} else if r.ErrorResult() != nil {
+		return r.ErrorResult().(error)
+	}
+	return nil
 }

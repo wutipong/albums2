@@ -11,7 +11,7 @@ export const GET: RequestHandler = async ({ request, params }) => {
 		return json({ message: 'Missing name query parameter' }, { status: 400 });
 	}
 
-	const collection = await Collection.findOne({ name }).lean();
+	const collection = await Collection.findOne({ name });
 	if (!collection) {
 		return json({ existed: false });
 	}

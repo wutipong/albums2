@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"net/url"
 
 	"github.com/wutipong/albums/albums2cli/server/types"
 )
@@ -14,23 +13,22 @@ type CollectionListResponse struct {
 func GetCollectionList(ctx context.Context, server ServerConfig,
 ) (resp CollectionListResponse, err error) {
 	c := NewClient(server)
-	c.Get("api/collections").
+	_, err = c.R().
 		SetSuccessResult(&resp).
-		SetErrorResult(&err).
-		Do(ctx)
+		SetContext(ctx).
+		Get("api/collections")
 	return
 }
 
 func GetCollection(ctx context.Context, server ServerConfig, collectionID string,
 ) (resp types.Collection, err error) {
-	errResponse := ErrorResponse{}
-	c := NewClient(server)
-	c.Get("api/collections/" + collectionID).
-		SetSuccessResult(&resp).
-		SetErrorResult(&errResponse).
-		Do(ctx)
 
-	err = errResponse
+	c := NewClient(server)
+	_, err = c.R().
+		SetSuccessResult(&resp).
+		SetContext(ctx).
+		Get("api/collections/" + collectionID)
+
 	return
 }
 
@@ -42,13 +40,10 @@ func CreateCollection(
 	req := types.Collection{Name: name}
 
 	c := NewClient(server)
-	r := c.Post("api/collections").
-		SetBodyJsonMarshal(req).
+	_, err = c.R().SetBodyJsonMarshal(req).
 		SetSuccessResult(&resp).
-		SetErrorResult(err).
-		Do(ctx)
-
-	err = r.Err
+		SetContext(ctx).
+		Post("api/collections")
 
 	return
 }
@@ -58,17 +53,18 @@ type CollectionByNameResponse struct {
 	Collection types.Collection `json:"collection"`
 }
 
-func GetCollectionByName(ctx context.Context, server ServerConfig, collectionName string) (resp CollectionByNameResponse, err error) {
+func GetCollectionByName(
+	ctx context.Context,
+	server ServerConfig,
+	collectionName string,
+) (resp CollectionByNameResponse, err error) {
 	c := NewClient(server)
 
-	u := url.URL{
-		Path: "api/collections/by-name",
-	}
-	u.Query().Set("name", collectionName)
-
-	c.Get(u.String()).
+	_, err = c.R().
 		SetSuccessResult(&resp).
-		SetErrorResult(err).
-		Do(ctx)
+		SetContext(ctx).
+		SetQueryParam("name", collectionName).
+		Get("api/collections/by-name")
+
 	return
 }

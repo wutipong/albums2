@@ -8,7 +8,8 @@ services:
     volumes:
       - ..:/workspaces:cached
       - hf-cache:/home/vscode/.cache/huggingface:cached
-
+    extra_hosts:
+      - "garage.localhost:127.0.0.1"
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
 
@@ -108,7 +109,6 @@ services:
 
   garage-webui:
     image: khairul169/garage-webui:latest
-    container_name: garage-webui
     restart: unless-stopped
     volumes:
       - ./garage.toml:/etc/garage.toml:ro

@@ -17,6 +17,7 @@ export const POST: RequestHandler = async ({ request, params }) => {
 
 	const contentType = mime.contentType(path.basename(name));
 
+	log.info({ albumId, name, contentType }, `POST /api/albums/${params.album_id}/media`);
 	if (!contentType) {
 		return error(400, { message: 'unable to recognize filetype' });
 	}

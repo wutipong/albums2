@@ -67,16 +67,16 @@ func PostMedia(
 		return
 	}
 
-	MediaFileName := filepath.Join(containerPath, filePath)
+	mediaFileName := filepath.Join(containerPath, filePath)
 
 	slog.Debug("upload request",
 		slog.String("album_id", albumID),
-		slog.String("filename", MediaFileName),
+		slog.String("filename", mediaFileName),
 	)
 
 	var postMediaRequest PostMediaRequestResponse
 	_, err = c.R().SetBodyJsonMarshal(PostMediaRequestRequest{
-		Filename: MediaFileName,
+		Filename: mediaFileName,
 	}).
 		SetSuccessResult(&postMediaRequest).
 		SetContext(ctx).
@@ -118,7 +118,7 @@ func PostMedia(
 			Success: success,
 		}).
 		SetContext(ctx).
-		Patch(path.Join("api", "Medias", postMediaRequest.ID))
+		Patch(path.Join("api", "media", postMediaRequest.ID))
 
 	if err != nil {
 		err = fmt.Errorf("unable to commit Media upload %s: %w", postMediaRequest.ID, err)

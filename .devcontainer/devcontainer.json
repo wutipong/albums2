@@ -41,6 +41,7 @@
     "garage:3900",
     "garage:3901",
     "garage:3902",
+    "garage-webui:3909",
     "imgproxy:8080",
     "mongo-express:8081",
     "redis-insight:5540"

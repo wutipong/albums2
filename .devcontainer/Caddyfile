@@ -1,3 +1,7 @@
 :5556 {
         reverse_proxy dex:5556
 }
+
+:3900 {
+        reverse_proxy garage:3900
+}

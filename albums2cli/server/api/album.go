@@ -4,7 +4,7 @@ import (
 	"context"
 	"path"
 
-	"github.com/wutipong/albums/albums2cli/server/types"
+	"github.com/wutipong/albums2/gopkg/types"
 )
 
 type AlbumListResponse struct {

@@ -6,12 +6,11 @@ type Collection struct {
 }
 
 type Album struct {
-	ID     string  `json:"id"`
-	Name   string  `json:"name"`
-	Assets []Asset `json:"assets"`
+	ID   string `json:"id"`
+	Name string `json:"name"`
 }
 
-type Asset struct {
+type Media struct {
 	ID       string `json:"id"`
 	Filename string `json:"filename"`
 }

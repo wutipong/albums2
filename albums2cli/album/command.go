@@ -9,6 +9,7 @@ import (
 func Command(profile *string) *cli.Command {
 	dryRun := false
 	id := ""
+	collectionId := ""
 
 	return &cli.Command{
 		Name:  "album",
@@ -24,9 +25,15 @@ func Command(profile *string) *cli.Command {
 						Usage:       "Don't make actual API calls to the server. Useful for testing.",
 						Destination: &dryRun,
 					},
+					&cli.StringFlag{
+						Name:        "collection",
+						Value:       "",
+						Usage:       "Collection ID to list albums from.",
+						Destination: &collectionId,
+					},
 				},
 				Action: func(ctx context.Context, cmd *cli.Command) error {
-					return listAlbum(ctx, *profile, dryRun)
+					return listAlbum(ctx, *profile, collectionId, dryRun)
 				},
 			}, {
 				Name:  "show",
@@ -48,28 +55,6 @@ func Command(profile *string) *cli.Command {
 				},
 				Action: func(ctx context.Context, cmd *cli.Command) error {
 					return showAlbum(ctx, *profile, dryRun, id)
-				},
-			}, {
-				Name:    "delete",
-				Aliases: []string{"new", "n"},
-				Usage:   "Delete an album",
-				Flags: []cli.Flag{
-					&cli.BoolFlag{
-						Name:        "dry-run",
-						Value:       false,
-						Usage:       "Don't make actual API calls to the server. Useful for testing.",
-						Destination: &dryRun,
-					},
-				},
-				Arguments: []cli.Argument{
-					&cli.StringArg{
-						Name:        "id",
-						UsageText:   "Album Id",
-						Destination: &id,
-					},
-				},
-				Action: func(ctx context.Context, cmd *cli.Command) error {
-					return deleteAlbum(ctx, *profile, dryRun, id)
 				},
 			},
 		},

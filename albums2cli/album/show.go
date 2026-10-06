@@ -31,7 +31,7 @@ func showAlbum(ctx context.Context, profileName string, dryRun bool, albumID str
 		APIKey: config.APIKey,
 	}
 
-	albumDetail, err := api.GetAlbumDetail(ctx, server, albumID)
+	albumDetail, err := api.GetAlbum(ctx, server, albumID)
 	if err != nil {
 		return err
 	}
@@ -39,7 +39,6 @@ func showAlbum(ctx context.Context, profileName string, dryRun bool, albumID str
 	slog.Info("album",
 		slog.String("id", albumDetail.ID),
 		slog.String("name", albumDetail.Name),
-		slog.Any("assets", albumDetail.Assets),
 	)
 
 	return nil

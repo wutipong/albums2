@@ -10,7 +10,7 @@ import (
 	"github.com/wutipong/albums/albums2cli/server/api"
 )
 
-func listAlbum(ctx context.Context, profileName string, dryRun bool) (err error) {
+func listAlbum(ctx context.Context, profileName string, collectionID string, dryRun bool) (err error) {
 	config, err := profile.LoadProfile(ctx, profileName)
 	if err != nil {
 		return err
@@ -31,7 +31,7 @@ func listAlbum(ctx context.Context, profileName string, dryRun bool) (err error)
 		APIKey: config.APIKey,
 	}
 
-	albumList, err := api.GetAlbumList(ctx, server)
+	albumList, err := api.GetAlbumList(ctx, server, collectionID)
 	if err != nil {
 		return err
 	}

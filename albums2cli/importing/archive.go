@@ -161,22 +161,22 @@ func WalkArchive(
 			}
 
 			if IsMediaFile(f.NameInArchive) {
-				asset, err := uploadArchiveAsset(ctx, server, albumID, archivePath, filename, f)
-				if errors.Is(err, api.ErrDuplicateAsset) {
+				media, err := uploadArchiveMedia(ctx, server, albumID, archivePath, filename, f)
+				if errors.Is(err, api.ErrDuplicateMedia) {
 					slog.Warn(
-						"asset already exists. skipping file.",
+						"media already exists. skipping file.",
 						slog.String("path", archivePath),
 					)
 					return nil
 				}
 				if err != nil {
 					return fmt.Errorf(
-						"failed to upload asset for file %s in archive %s: %w",
+						"failed to upload media for file %s in archive %s: %w",
 						filename, archivePath, err,
 					)
 				}
 
-				slog.Info("uploaded asset", slog.Any("asset", asset))
+				slog.Info("uploaded media", slog.Any("media", media))
 			}
 
 			return nil
@@ -189,21 +189,21 @@ func WalkArchive(
 	return nil
 }
 
-func uploadArchiveAsset(
+func uploadArchiveMedia(
 	ctx context.Context,
 	server api.ServerConfig,
 	albumID string,
 	archivePath string,
 	filename string,
 	f archives.FileInfo,
-) (asset types.Asset, err error) {
+) (media types.Media, err error) {
 	if ctx.Err() != nil {
 		err = fmt.Errorf("context error: %w", ctx.Err())
 		return
 	}
 
 	slog.Info(
-		"creating asset",
+		"creating media",
 		slog.String("archive", archivePath),
 		slog.String("entry", filename),
 	)
@@ -222,7 +222,7 @@ func uploadArchiveAsset(
 		return
 	}
 
-	resp, err := api.PostAsset(
+	resp, err := api.PostMedia(
 		ctx,
 		server,
 		albumID,
@@ -232,9 +232,9 @@ func uploadArchiveAsset(
 		stat.Size(),
 	)
 	if err != nil {
-		err = fmt.Errorf("failed to upload asset %s/%s: %w", archivePath, filename, err)
+		err = fmt.Errorf("failed to upload media %s/%s: %w", archivePath, filename, err)
 		return
 	}
-	asset = resp.Asset
+	media = resp.Media
 	return
 }

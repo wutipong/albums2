@@ -86,7 +86,7 @@ func processMediaFile(
 		return fmt.Errorf("failed to stat file %s: %w", path, err)
 	}
 
-	asset, err := api.PostAsset(
+	media, err := api.PostMedia(
 		ctx,
 		server,
 		album.ID,
@@ -96,17 +96,17 @@ func processMediaFile(
 		info.Size(),
 	)
 	if err != nil {
-		if errors.Is(err, api.ErrDuplicateAsset) {
+		if errors.Is(err, api.ErrDuplicateMedia) {
 			slog.Warn(
-				"asset already exists. skipping file.",
+				"media already exists. skipping file.",
 				slog.String("path", path),
 			)
 			return nil
 		}
-		return fmt.Errorf("failed to upload asset for file %s: %w", path, err)
+		return fmt.Errorf("failed to upload media for file %s: %w", path, err)
 	}
 
-	slog.Info("uploaded asset", slog.Any("asset", asset))
+	slog.Info("uploaded media", slog.Any("media", media))
 
 	return nil
 }

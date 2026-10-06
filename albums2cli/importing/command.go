@@ -19,6 +19,7 @@ import (
 func Command(profileStr *string) *cli.Command {
 	force := false
 	dryRun := false
+	collectionID := ""
 
 	return &cli.Command{
 		Name:  "import",
@@ -35,6 +36,13 @@ func Command(profileStr *string) *cli.Command {
 				Value:       false,
 				Usage:       "Processing assets without working with the Albums server.",
 				Destination: &dryRun,
+				Category:    "Processing",
+			},
+			&cli.StringFlag{
+				Name:        "collection",
+				Value:       "",
+				Usage:       "Collection ID to import assets into.",
+				Destination: &collectionID,
 				Category:    "Processing",
 			},
 		},
@@ -65,6 +73,7 @@ func Command(profileStr *string) *cli.Command {
 			return Process(
 				ctx,
 				server,
+				collectionID,
 				force,
 			)
 		},
@@ -74,12 +83,13 @@ func Command(profileStr *string) *cli.Command {
 func Process(
 	ctx context.Context,
 	server api.ServerConfig,
+	collectionID string,
 	force bool,
 ) error {
 	var albums []types.Album
 	var err error
 
-	resp, err := api.GetAlbumList(ctx, server)
+	resp, err := api.GetAlbumList(ctx, server, collectionID)
 	if err != nil {
 		err = fmt.Errorf("unable to retrieved existing albums: %w", err)
 		return err
@@ -125,7 +135,7 @@ func Process(
 				slog.String("entry", entry.Name()),
 			)
 
-			album, err = api.CreateAlbum(ctx, server, path)
+			album, err = api.CreateAlbum(ctx, server, collectionID, path)
 			if err != nil {
 				return fmt.Errorf("failed to create album for directory %s: %w", path, err)
 			}

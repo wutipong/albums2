@@ -16,9 +16,10 @@ import (
 	"github.com/kouhin/envflag"
 	"github.com/redis/go-redis/v9"
 	"github.com/wutipong/albums2/worker/processor"
-	"github.com/wutipong/albums2/worker/processor/asset"
+	"github.com/wutipong/albums2/worker/processor/media"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
+	"go.mongodb.org/mongo-driver/v2/x/mongo/driver/connstring"
 )
 
 var (
@@ -63,9 +64,15 @@ func main() {
 
 	slog.SetLogLoggerLevel(level)
 
-	if dbUri == nil || *dbUri == "" {
+	if dbUri == nil {
 		slog.Error("database connection string is not set.")
 		os.Exit(1)
+	}
+
+	cs, err := connstring.Parse(*dbUri)
+	if err != nil {
+		slog.Error("Error parsing MongoDB connection string", "error", err)
+		return
 	}
 
 	client, err := mongo.Connect(options.Client().
@@ -117,7 +124,10 @@ func main() {
 
 	slog.Info("Worker", "id", *workerId)
 
-	processor.RegisterProcessor(&asset.Processor{})
+	processor.RegisterProcessor(&media.Processor{
+		MongoClient: client,
+		Database:    cs.Database,
+	})
 
 	slog.Info("Draing worker list")
 	err = DrainExistings(ctx, redisClient, processingList)
@@ -202,7 +212,7 @@ func Process(ctx context.Context, redisClient *redis.Client, processingList stri
 		err = fmt.Errorf("unable to parse task request: %w", err)
 		return
 	}
-	err = processor.Process(req)
+	err = processor.Process(ctx, req)
 	if err != nil {
 		err = fmt.Errorf("task processed with error: %w", err)
 		return

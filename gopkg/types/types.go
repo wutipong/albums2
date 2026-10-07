@@ -1,5 +1,9 @@
 package types
 
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
+
 type Collection struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
@@ -11,8 +15,11 @@ type Album struct {
 }
 
 type Media struct {
-	ID       string `json:"id"`
-	Filename string `json:"filename"`
+	ID            primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	Name          string             `json:"name" bson:"name"`
+	Original      string             `json:"original" bson:"original"`
+	Type          string             `json:"type" bson:"type"`
+	ProcessStatus string             `json:"processStatus" bson:"processStatus"`
 }
 
 type User struct {

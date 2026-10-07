@@ -10,8 +10,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/wutipong/albums2/gopkg/types"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type PostMediaResposnse struct {
@@ -51,7 +51,7 @@ func PostMedia(
 		)
 		result = PostMediaResposnse{
 			Media: types.Media{
-				ID: uuid.NewString(),
+				ID: primitive.NewObjectID(),
 			},
 			Success: true,
 		}

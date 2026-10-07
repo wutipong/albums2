@@ -1,6 +1,7 @@
 package processor
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 )
@@ -16,7 +17,7 @@ type TaskRequest struct {
 
 type TaskProcessor interface {
 	GetType() string
-	Process(TaskRequest) error
+	Process(context.Context, TaskRequest) error
 }
 
 func RegisterProcessor(p TaskProcessor) error {
@@ -29,9 +30,9 @@ func RegisterProcessor(p TaskProcessor) error {
 	return nil
 }
 
-func Process(r TaskRequest) error {
+func Process(ctx context.Context, r TaskRequest) error {
 	if p, ok := processorMap[r.Type]; ok {
-		return p.Process(r)
+		return p.Process(ctx, r)
 	} else {
 		return fmt.Errorf("invalid processor for type: %s", r.Type)
 	}

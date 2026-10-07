@@ -1,4 +1,4 @@
-package media
+package filetypes
 
 import (
 	"slices"

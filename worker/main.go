@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"encoding/json/v2"
+	"errors"
 	"flag"
 	"fmt"
 	"log/slog"
@@ -13,6 +15,8 @@ import (
 	"github.com/Marlliton/slogpretty"
 	"github.com/kouhin/envflag"
 	"github.com/redis/go-redis/v9"
+	"github.com/wutipong/albums2/worker/processor"
+	"github.com/wutipong/albums2/worker/processor/asset"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
@@ -20,11 +24,11 @@ import (
 var (
 	logLevel = flag.String("log-level", "info", "Set log level (debug, info, warn, error)")
 	dev      = flag.Bool("dev", false, "Enable development mode")
-
 	dbUri    = flag.String("db-connection", "mongodb://localhost:27017", "MongoDB connection URI")
 	redisUrl = flag.String("redis-url", "redis://localhost:6379", "Redis server URL")
-
 	workerId = flag.Int("worker-id", 0, "Worker ID, this must be unique if there are multiple workers")
+
+	ErrDrainingInterrupted = errors.New("draining interrupted")
 )
 
 func main() {
@@ -112,31 +116,96 @@ func main() {
 	processingList := fmt.Sprintf("processing_%d", *workerId)
 
 	slog.Info("Worker", "id", *workerId)
-ProcessLoop:
+
+	processor.RegisterProcessor(&asset.Processor{})
+
+	slog.Info("Draing worker list")
+	err = DrainExistings(ctx, redisClient, processingList)
+	if err != nil {
+		slog.Error("draining existing items fails", "error", err)
+		return
+	}
+
+	slog.Info("Start taking new jobs")
+
+	err = ProcessTasks(ctx, redisClient, processingList)
+	if err != nil {
+		slog.Error("processing taks fails", "error", err)
+	}
+	slog.Info("Process Loop terminated")
+}
+
+func ProcessTasks(ctx context.Context, redisClient *redis.Client, processingList string) error {
 	for {
 		select {
 		case <-ctx.Done():
 			slog.Info("Shutting down gracefully...")
-			break ProcessLoop
+			return nil
 
 		default:
 			{
-				cmd := redisClient.BLMove(ctx, "tasks", processingList, "LEFT", "RIGHT", 5*time.Second)
-				str, err := cmd.Result()
-
+				str, err := redisClient.BLMove(
+					ctx, "tasks", processingList, "LEFT", "RIGHT", 5*time.Second,
+				).Result()
 				if err == redis.Nil {
 					continue
 				}
 				if err != nil {
-					slog.Error("Redis error", "error", err)
-					break ProcessLoop
+					return fmt.Errorf("processing taks fails: %w", err)
 				}
 
-				slog.Warn("redis reply", "str", str)
+				err = Process(ctx, redisClient, processingList, str)
+				if err != nil {
+					slog.Error("Task process error", "error", err)
+					redisClient.LMove(ctx, processingList, "errors", "LEFT", "RIGHT")
+					continue
+				}
+				redisClient.LMove(ctx, processingList, "done", "LEFT", "RIGHT")
 			}
 		}
 	}
+}
 
-	slog.Info("Process Loop terminated")
+func DrainExistings(ctx context.Context, redisClient *redis.Client, processingList string) error {
+	for {
+		select {
+		case <-ctx.Done():
+			slog.Info("Shutting down gracefully")
+			return ErrDrainingInterrupted
+		default:
+			{
+				str, err := redisClient.LPop(ctx, processingList).Result()
+				if err == redis.Nil {
+					return nil
+				}
 
+				if err != nil {
+					return fmt.Errorf("draining fails: %w", err)
+				}
+
+				err = Process(ctx, redisClient, processingList, str)
+				if err != nil {
+					slog.Error("Task process error", "error", err)
+					redisClient.LPush(ctx, "errors", str)
+					continue
+				}
+				redisClient.LPush(ctx, "done", str)
+			}
+		}
+	}
+}
+
+func Process(ctx context.Context, redisClient *redis.Client, processingList string, str string) (err error) {
+	req := processor.TaskRequest{}
+	err = json.Unmarshal([]byte(str), &req)
+	if err != nil {
+		err = fmt.Errorf("unable to parse task request: %w", err)
+		return
+	}
+	err = processor.Process(req)
+	if err != nil {
+		err = fmt.Errorf("task processed with error: %w", err)
+		return
+	}
+	return
 }

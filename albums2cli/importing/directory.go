@@ -9,8 +9,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/wutipong/albums/albums2cli/server/api"
-	"github.com/wutipong/albums/albums2cli/server/types"
+	"github.com/wutipong/albums2/albums2cli/server/api"
+	"github.com/wutipong/albums2/gopkg/types"
 )
 
 func ProcessDirectory(

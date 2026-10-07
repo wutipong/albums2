@@ -9,12 +9,12 @@ import (
 
 	"github.com/lmittmann/tint"
 	"github.com/urfave/cli/v3"
-	"github.com/wutipong/albums/albums2cli/album"
-	"github.com/wutipong/albums/albums2cli/collection"
-	"github.com/wutipong/albums/albums2cli/importing"
-	"github.com/wutipong/albums/albums2cli/log"
-	"github.com/wutipong/albums/albums2cli/process"
-	"github.com/wutipong/albums/albums2cli/profile"
+	"github.com/wutipong/albums2/albums2cli/album"
+	"github.com/wutipong/albums2/albums2cli/collection"
+	"github.com/wutipong/albums2/albums2cli/importing"
+	"github.com/wutipong/albums2/albums2cli/log"
+	"github.com/wutipong/albums2/albums2cli/process"
+	"github.com/wutipong/albums2/albums2cli/profile"
 )
 
 func main() {

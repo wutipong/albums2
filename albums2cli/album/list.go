@@ -6,8 +6,8 @@ import (
 	"log/slog"
 	"net/url"
 
-	"github.com/wutipong/albums/albums2cli/profile"
-	"github.com/wutipong/albums/albums2cli/server/api"
+	"github.com/wutipong/albums2/albums2cli/profile"
+	"github.com/wutipong/albums2/albums2cli/server/api"
 )
 
 func listAlbum(ctx context.Context, profileName string, collectionID string, dryRun bool) (err error) {

@@ -12,8 +12,8 @@ import (
 	"strings"
 
 	"github.com/mholt/archives"
-	"github.com/wutipong/albums/albums2cli/server/api"
-	"github.com/wutipong/albums/albums2cli/server/types"
+	"github.com/wutipong/albums2/albums2cli/server/api"
+	"github.com/wutipong/albums2/gopkg/types"
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/transform"
 )

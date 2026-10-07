@@ -6,7 +6,7 @@ import (
 	"log/slog"
 	"net/url"
 
-	"github.com/wutipong/albums/albums2cli/server/api"
+	"github.com/wutipong/albums2/albums2cli/server/api"
 )
 
 func profileDetail(ctx context.Context, profileName string, dryRun bool) (err error) {

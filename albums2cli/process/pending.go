@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/wutipong/albums/albums2cli/server/api"
+	"github.com/wutipong/albums2/albums2cli/server/api"
 )
 
 func processPending(ctx context.Context, server api.ServerConfig, dryRun bool) error {

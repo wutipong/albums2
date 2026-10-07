@@ -7,8 +7,8 @@ import (
 	"net/url"
 
 	"github.com/urfave/cli/v3"
-	"github.com/wutipong/albums/albums2cli/profile"
-	"github.com/wutipong/albums/albums2cli/server/api"
+	"github.com/wutipong/albums2/albums2cli/profile"
+	"github.com/wutipong/albums2/albums2cli/server/api"
 )
 
 func Command(profileStr *string) *cli.Command {

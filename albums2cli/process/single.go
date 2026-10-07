@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"path"
 
-	"github.com/wutipong/albums/albums2cli/server/api"
+	"github.com/wutipong/albums2/albums2cli/server/api"
 )
 
 func processSingle(ctx context.Context, server api.ServerConfig, dryRun bool, id string) error {

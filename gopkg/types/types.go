@@ -28,6 +28,7 @@ type Media struct {
 	Preview         string             `json:"preview" bson:"preview"`
 	Type            string             `json:"type" bson:"type"`
 	ProcessStatus   string             `json:"processStatus" bson:"processStatus"`
+	ImageFrames     int32              `json:"imageFrames" bson:"imageFrames"`
 }
 
 type User struct {

@@ -3,10 +3,12 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/Marlliton/slogpretty"
 	"github.com/kouhin/envflag"
@@ -21,6 +23,8 @@ var (
 
 	dbUri    = flag.String("db-connection", "mongodb://localhost:27017", "MongoDB connection URI")
 	redisUrl = flag.String("redis-url", "redis://localhost:6379", "Redis server URL")
+
+	workerId = flag.Int("worker-id", 0, "Worker ID, this must be unique if there are multiple workers")
 )
 
 func main() {
@@ -104,6 +108,35 @@ func main() {
 	}()
 
 	slog.Info("Connected to Redis", slog.String("url", *redisUrl))
-	// This is a placeholder for the main function.
-	// The actual implementation will depend on the specific requirements of the application.
+
+	processingList := fmt.Sprintf("processing_%d", *workerId)
+
+	slog.Info("Worker", "id", *workerId)
+ProcessLoop:
+	for {
+		select {
+		case <-ctx.Done():
+			slog.Info("Shutting down gracefully...")
+			break ProcessLoop
+
+		default:
+			{
+				cmd := redisClient.BLMove(ctx, "tasks", processingList, "LEFT", "RIGHT", 5*time.Second)
+				str, err := cmd.Result()
+
+				if err == redis.Nil {
+					continue
+				}
+				if err != nil {
+					slog.Error("Redis error", "error", err)
+					break ProcessLoop
+				}
+
+				slog.Warn("redis reply", "str", str)
+			}
+		}
+	}
+
+	slog.Info("Process Loop terminated")
+
 }

@@ -7,13 +7,17 @@ import (
 	"flag"
 	"fmt"
 	"log/slog"
+	"net/url"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
 	"github.com/Marlliton/slogpretty"
 	"github.com/kouhin/envflag"
+	"github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/redis/go-redis/v9"
 	"github.com/wutipong/albums2/worker/processor"
 	"github.com/wutipong/albums2/worker/processor/media"
@@ -23,11 +27,14 @@ import (
 )
 
 var (
-	logLevel = flag.String("log-level", "info", "Set log level (debug, info, warn, error)")
-	dev      = flag.Bool("dev", false, "Enable development mode")
-	dbUri    = flag.String("db-connection", "mongodb://localhost:27017", "MongoDB connection URI")
-	redisUrl = flag.String("redis-url", "redis://localhost:6379", "Redis server URL")
-	workerId = flag.Int("worker-id", 0, "Worker ID, this must be unique if there are multiple workers")
+	logLevel    = flag.String("log-level", "info", "Set log level (debug, info, warn, error)")
+	dev         = flag.Bool("dev", false, "Enable development mode")
+	dbUri       = flag.String("db-connection", "mongodb://localhost:27017", "MongoDB connection URI")
+	redisUrl    = flag.String("redis-url", "redis://localhost:6379", "Redis server URL")
+	workerId    = flag.Int("worker-id", 0, "Worker ID, this must be unique if there are multiple workers")
+	accessKeyId = flag.String("aws-access-key-id", "", "AWS/S3 Access Key ID")
+	secret      = flag.String("aws-secret-access-key", "", "AWS/S3 Secret Key")
+	awsEndpoint = flag.String("aws-endpoint-url", "", "AWS/S3 Endpoint URL")
 
 	ErrDrainingInterrupted = errors.New("draining interrupted")
 )
@@ -63,6 +70,21 @@ func main() {
 	}
 
 	slog.SetLogLoggerLevel(level)
+
+	endpoint, secure, err := GetMinioEndpoint(*awsEndpoint)
+	if err != nil {
+		slog.Error("unable to parse endpoint", "error", err)
+		return
+	}
+
+	minioClient, err := minio.New(endpoint, &minio.Options{
+		Creds:        credentials.NewStaticV4(*accessKeyId, *secret, ""),
+		Secure:       secure,
+		BucketLookup: minio.BucketLookupPath,
+	})
+	if err != nil {
+		slog.Error("unable to create minio client", "error", err)
+	}
 
 	if dbUri == nil {
 		slog.Error("database connection string is not set.")
@@ -127,6 +149,7 @@ func main() {
 	processor.RegisterProcessor(&media.Processor{
 		MongoClient: client,
 		Database:    cs.Database,
+		MinioClient: minioClient,
 	})
 
 	slog.Info("Draing worker list")
@@ -217,5 +240,26 @@ func Process(ctx context.Context, redisClient *redis.Client, processingList stri
 		err = fmt.Errorf("task processed with error: %w", err)
 		return
 	}
+	return
+}
+
+func GetMinioEndpoint(input string) (endpoint string, secure bool, err error) {
+	endpointUrl, err := url.Parse(input)
+	if err != nil {
+		err = fmt.Errorf("unable to parse input url")
+		return
+	}
+
+	scheme := endpointUrl.Scheme
+
+	if scheme == "https" {
+		secure = true
+	} else {
+		secure = false
+	}
+	endpoint = input
+	endpoint = strings.TrimPrefix(endpoint, scheme)
+	endpoint = strings.TrimPrefix(endpoint, "://")
+
 	return
 }

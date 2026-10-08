@@ -78,13 +78,15 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 		FindOne(ctx, bson.D{{"_id", mediaId}})
 
 	if r.Err() != nil {
-		return fmt.Errorf("unable to get album information: %w", r.Err())
+		return fmt.Errorf("unable to get media information: %w", r.Err())
 	}
 	media := types.Media{}
-	err = r.Decode(&album)
+	err = r.Decode(&media)
 	if err != nil {
 		return fmt.Errorf("unable to parse album information: %w", err)
 	}
+
+	slog.Info("cover media", "media", media)
 
 	switch media.Type {
 	case "image":
@@ -155,7 +157,9 @@ func (p *Processor) ProcessImage(
 		return fmt.Errorf("unable to write preview image: %w", err)
 	}
 
-	album.Cover = createAssetKey("webp")
+	if album.Cover == "" {
+		album.Cover = createAssetKey("webp")
+	}
 	_, err = p.MinioClient.PutObject(
 		ctx, os.Getenv("S3_BUCKET"),
 		album.Cover,
@@ -168,14 +172,6 @@ func (p *Processor) ProcessImage(
 
 	if err != nil {
 		return fmt.Errorf("unable to put object to S3: %w", err)
-	}
-
-	_, err = p.MongoClient.Database(p.Database).
-		Collection("albums").
-		ReplaceOne(ctx, bson.D{{Key: "_id", Value: album.ID}}, album)
-
-	if err != nil {
-		return fmt.Errorf("unable to update media information: %w", err)
 	}
 
 	return nil
@@ -264,7 +260,9 @@ func (p *Processor) ProcessVideo(
 		return fmt.Errorf("unable to write preview image: %w", err)
 	}
 
-	album.Cover = createAssetKey("webp")
+	if album.Cover != "" {
+		album.Cover = createAssetKey("webp")
+	}
 	_, err = p.MinioClient.PutObject(
 		ctx, os.Getenv("S3_BUCKET"),
 		album.Cover,
@@ -277,14 +275,6 @@ func (p *Processor) ProcessVideo(
 
 	if err != nil {
 		return fmt.Errorf("unable to put object to S3: %w", err)
-	}
-
-	_, err = p.MongoClient.Database(p.Database).
-		Collection("albums").
-		ReplaceOne(ctx, bson.D{{Key: "_id", Value: album.ID}}, album)
-
-	if err != nil {
-		return fmt.Errorf("unable to update media information: %w", err)
 	}
 
 	return nil

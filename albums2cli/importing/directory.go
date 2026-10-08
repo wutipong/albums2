@@ -89,7 +89,7 @@ func processMediaFile(
 	media, err := api.PostMedia(
 		ctx,
 		server,
-		album.ID,
+		album.ID.String(),
 		path,
 		file.Name(),
 		file,

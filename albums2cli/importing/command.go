@@ -126,7 +126,7 @@ func Process(
 			slog.Warn(
 				"album already exists. use existing album.",
 				slog.String("name", path),
-				slog.String("id", matchingAlbums[0].ID),
+				slog.String("id", matchingAlbums[0].ID.String()),
 			)
 
 			album = matchingAlbums[0]

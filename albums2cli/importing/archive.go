@@ -36,7 +36,7 @@ func ProcessArchive(
 	}
 	defer archiveFile.Close()
 
-	err = WalkArchive(ctx, server, album.ID, albumPath, archiveFile)
+	err = WalkArchive(ctx, server, album.ID.String(), albumPath, archiveFile)
 	if err != nil {
 		return fmt.Errorf("failed to process archive %s: %w", albumPath, err)
 	}

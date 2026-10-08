@@ -20,6 +20,7 @@ import (
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/redis/go-redis/v9"
 	"github.com/wutipong/albums2/worker/processor"
+	"github.com/wutipong/albums2/worker/processor/cover"
 	"github.com/wutipong/albums2/worker/processor/media"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
@@ -147,6 +148,12 @@ func main() {
 	slog.Info("Worker", "id", *workerId)
 
 	processor.RegisterProcessor(&media.Processor{
+		MongoClient: client,
+		Database:    cs.Database,
+		MinioClient: minioClient,
+	})
+
+	processor.RegisterProcessor(&cover.Processor{
 		MongoClient: client,
 		Database:    cs.Database,
 		MinioClient: minioClient,

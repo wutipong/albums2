@@ -6,5 +6,5 @@ type UtilOptions struct {
 }
 
 func Init(options UtilOptions) {
-	bucket = options.S3Bucket
+
 }

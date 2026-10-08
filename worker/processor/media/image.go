@@ -11,7 +11,7 @@ import (
 	"github.com/wutipong/albums2/gopkg/filetypes"
 	"github.com/wutipong/albums2/gopkg/types"
 	"github.com/wutipong/albums2/gopkg/vips"
-	"github.com/wutipong/albums2/worker/util"
+	"github.com/wutipong/albums2/worker/util/s3"
 )
 
 const MAX_VIEW_PIXEL = 50_000_000
@@ -27,7 +27,7 @@ func ProcessImageMedia(ctx context.Context, minioClient *minio.Client, media *ty
 	}
 
 	slog.Info("getting object from S3.", slog.String("id", media.Original))
-	object, err := util.GetObject(
+	object, err := s3.GetObject(
 		ctx,
 		media.Original,
 		minio.GetObjectOptions{},
@@ -54,7 +54,7 @@ func ProcessImageMedia(ctx context.Context, minioClient *minio.Client, media *ty
 	}
 	defer original.Close()
 
-	view, err := populateView(ctx, minioClient, media, original)
+	view, err := populateView(ctx, media, original)
 	if err != nil {
 		return fmt.Errorf("unable to populate view image: %e", err)
 	}
@@ -65,12 +65,12 @@ func ProcessImageMedia(ctx context.Context, minioClient *minio.Client, media *ty
 		defer view.Close()
 	}
 
-	err = populatePreview(ctx, minioClient, media, view)
+	err = populatePreview(ctx, media, view)
 	if err != nil {
 		return fmt.Errorf("unable to populate preview image: %e", err)
 	}
 
-	err = populateThumbnail(ctx, minioClient, media, view)
+	err = populateThumbnail(ctx, media, view)
 	if err != nil {
 		return fmt.Errorf("unable to populate thumbnail: %e", err)
 	}
@@ -80,7 +80,6 @@ func ProcessImageMedia(ctx context.Context, minioClient *minio.Client, media *ty
 
 func populateView(
 	ctx context.Context,
-	minioClient *minio.Client,
 	media *types.Media,
 	original *vips.Image,
 ) (view *vips.Image, err error) {
@@ -138,10 +137,10 @@ func populateView(
 	}
 
 	if media.View == "" || media.View == media.Original {
-		media.View = util.CreateAssetKey("webp")
+		media.View = s3.CreateAssetKey("webp")
 	}
 
-	_, err = util.PutObject(
+	_, err = s3.PutObject(
 		ctx,
 		media.View,
 		bytes.NewReader(buf),
@@ -161,7 +160,6 @@ func populateView(
 
 func populatePreview(
 	ctx context.Context,
-	minioClient *minio.Client,
 	media *types.Media,
 	view *vips.Image,
 ) error {
@@ -200,10 +198,10 @@ func populatePreview(
 	}
 
 	if media.Preview == "" || media.Preview == media.View {
-		media.Preview = util.CreateAssetKey("webp")
+		media.Preview = s3.CreateAssetKey("webp")
 	}
 
-	_, err = util.PutObject(
+	_, err = s3.PutObject(
 		ctx,
 		media.Preview,
 		bytes.NewReader(buf),
@@ -255,7 +253,6 @@ func createPreviewForAnimationImage(original *vips.Image) (*vips.Image, error) {
 
 func populateThumbnail(
 	ctx context.Context,
-	minioClient *minio.Client,
 	media *types.Media,
 	view *vips.Image,
 ) error {
@@ -292,10 +289,10 @@ func populateThumbnail(
 	}
 
 	if media.Thumbnail == "" || media.Thumbnail == media.Original {
-		media.Thumbnail = util.CreateAssetKey("webp")
+		media.Thumbnail = s3.CreateAssetKey("webp")
 	}
 
-	_, err = util.PutObject(
+	_, err = s3.PutObject(
 		ctx,
 		media.Thumbnail,
 		bytes.NewReader(buf),

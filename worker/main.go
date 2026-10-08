@@ -7,22 +7,19 @@ import (
 	"flag"
 	"fmt"
 	"log/slog"
-	"net/url"
 	"os"
 	"os/signal"
-	"strings"
 	"syscall"
 	"time"
 
 	"github.com/Marlliton/slogpretty"
 	"github.com/kouhin/envflag"
-	"github.com/minio/minio-go/v7"
-	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/redis/go-redis/v9"
 	"github.com/wutipong/albums2/worker/processor"
 	"github.com/wutipong/albums2/worker/processor/cover"
 	"github.com/wutipong/albums2/worker/processor/media"
 	"github.com/wutipong/albums2/worker/util"
+	"github.com/wutipong/albums2/worker/util/s3"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 	"go.mongodb.org/mongo-driver/v2/x/mongo/driver/connstring"
@@ -73,21 +70,6 @@ func main() {
 	}
 
 	slog.SetLogLoggerLevel(level)
-
-	endpoint, secure, err := GetMinioEndpoint(*awsEndpoint)
-	if err != nil {
-		slog.Error("unable to parse endpoint", "error", err)
-		return
-	}
-
-	minioClient, err := minio.New(endpoint, &minio.Options{
-		Creds:        credentials.NewStaticV4(*accessKeyId, *secret, ""),
-		Secure:       secure,
-		BucketLookup: minio.BucketLookupPath,
-	})
-	if err != nil {
-		slog.Error("unable to create minio client", "error", err)
-	}
 
 	if dbUri == nil {
 		slog.Error("database connection string is not set.")
@@ -152,13 +134,11 @@ func main() {
 	processor.RegisterProcessor(&media.Processor{
 		MongoClient: client,
 		Database:    cs.Database,
-		MinioClient: minioClient,
 	})
 
 	processor.RegisterProcessor(&cover.Processor{
 		MongoClient: client,
 		Database:    cs.Database,
-		MinioClient: minioClient,
 	})
 
 	util.Init(util.UtilOptions{
@@ -166,6 +146,12 @@ func main() {
 
 		MongoDatabase: cs.Database,
 	})
+
+	err = s3.Init(*awsEndpoint, *accessKeyId, *secret)
+	if err != nil {
+		slog.Error("S3 client initialization fails", "error", err)
+		return
+	}
 
 	slog.Info("Draing worker list")
 	err = DrainExistings(ctx, redisClient, processingList)
@@ -255,26 +241,5 @@ func Process(ctx context.Context, redisClient *redis.Client, processingList stri
 		err = fmt.Errorf("task processed with error: %w", err)
 		return
 	}
-	return
-}
-
-func GetMinioEndpoint(input string) (endpoint string, secure bool, err error) {
-	endpointUrl, err := url.Parse(input)
-	if err != nil {
-		err = fmt.Errorf("unable to parse input url")
-		return
-	}
-
-	scheme := endpointUrl.Scheme
-
-	if scheme == "https" {
-		secure = true
-	} else {
-		secure = false
-	}
-	endpoint = input
-	endpoint = strings.TrimPrefix(endpoint, scheme)
-	endpoint = strings.TrimPrefix(endpoint, "://")
-
 	return
 }

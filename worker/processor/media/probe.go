@@ -56,7 +56,7 @@ func (info Probe) Audio() (s Stream, err error) {
 	return
 }
 
-func isVideoBrowserSafe(info Probe) bool {
+func IsVideoBrowserSafe(info Probe) bool {
 	switch info.Format.FormatName {
 	case "mov,mp4,m4a,3gp,3g2,mj2":
 		return isMP4BrowserSafe(info)

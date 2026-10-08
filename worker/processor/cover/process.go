@@ -16,7 +16,7 @@ import (
 	"github.com/wutipong/albums2/gopkg/types"
 	"github.com/wutipong/albums2/gopkg/vips"
 	"github.com/wutipong/albums2/worker/processor"
-	"github.com/wutipong/albums2/worker/util"
+	"github.com/wutipong/albums2/worker/util/s3"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
@@ -118,7 +118,7 @@ func (p *Processor) ProcessImage(
 		return fmt.Errorf("context cancelled: %w", err)
 	}
 
-	object, err := util.GetObject(
+	object, err := s3.GetObject(
 		ctx,
 		media.View,
 		minio.GetObjectOptions{},
@@ -157,10 +157,10 @@ func (p *Processor) ProcessImage(
 	}
 
 	if album.Cover == "" {
-		album.Cover = util.CreateAssetKey("webp")
+		album.Cover = s3.CreateAssetKey("webp")
 	}
 
-	_, err = util.PutObject(
+	_, err = s3.PutObject(
 		ctx,
 		album.Cover,
 		bytes.NewReader(buf),
@@ -195,7 +195,7 @@ func (p *Processor) ProcessVideo(
 	}
 	defer os.Remove(originalFile.Name())
 
-	object, err := util.GetObject(
+	object, err := s3.GetObject(
 		ctx,
 		media.View,
 		minio.GetObjectOptions{},
@@ -260,9 +260,9 @@ func (p *Processor) ProcessVideo(
 	}
 
 	if album.Cover != "" {
-		album.Cover = util.CreateAssetKey("webp")
+		album.Cover = s3.CreateAssetKey("webp")
 	}
-	_, err = util.PutObject(
+	_, err = s3.PutObject(
 		ctx,
 		album.Cover,
 		bytes.NewReader(buf),

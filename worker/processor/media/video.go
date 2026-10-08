@@ -15,7 +15,7 @@ import (
 	ffmpeg "github.com/u2takey/ffmpeg-go"
 	"github.com/wutipong/albums2/gopkg/types"
 	"github.com/wutipong/albums2/gopkg/vips"
-	"github.com/wutipong/albums2/worker/util"
+	"github.com/wutipong/albums2/worker/util/s3"
 )
 
 const VIDEO_WIDTH = 1280
@@ -30,7 +30,7 @@ func ProcessVideoMedia(ctx context.Context, minioClient *minio.Client, media *ty
 		return fmt.Errorf("context cancelled: %w", err)
 	}
 
-	s3Obj, err := util.GetObject(
+	s3Obj, err := s3.GetObject(
 		ctx,
 		media.Original,
 		minio.GetObjectOptions{},
@@ -60,17 +60,17 @@ func ProcessVideoMedia(ctx context.Context, minioClient *minio.Client, media *ty
 	var info Probe
 	json.Unmarshal([]byte(probe), &info)
 
-	err = processVideoThumbnail(ctx, minioClient, media, originalFile, info)
+	err = processVideoThumbnail(ctx, media, originalFile, info)
 	if err != nil {
 		return fmt.Errorf("unable to process video asset thumbnail: %w", err)
 	}
 
-	err = processVideoPreview(ctx, minioClient, media, originalFile, info)
+	err = processVideoPreview(ctx, media, originalFile, info)
 	if err != nil {
 		return fmt.Errorf("unable to process video asset preview: %w", err)
 	}
 
-	err = processVideoView(ctx, minioClient, media, originalFile, info)
+	err = processVideoView(ctx, media, originalFile)
 	if err != nil {
 		return fmt.Errorf("unable to process video asset view: %w", err)
 	}
@@ -79,8 +79,8 @@ func ProcessVideoMedia(ctx context.Context, minioClient *minio.Client, media *ty
 }
 
 func processVideoView(
-	ctx context.Context, minioClient *minio.Client, media *types.Media,
-	originalFile *os.File, _ Probe,
+	ctx context.Context, media *types.Media,
+	originalFile *os.File,
 ) error {
 	slog.Info("process video asset view media", slog.Any("id", media.ID))
 	err := ctx.Err()
@@ -89,7 +89,7 @@ func processVideoView(
 	}
 
 	if media.View == "" || media.View == media.Original {
-		media.View = util.CreateAssetKey("mp4")
+		media.View = s3.CreateAssetKey("mp4")
 	}
 	outputFile, err := os.CreateTemp("", "*view.mp4")
 	if err != nil {
@@ -132,7 +132,7 @@ func processVideoView(
 
 	outputFile.Seek(0, io.SeekStart)
 
-	_, err = util.PutObject(
+	_, err = s3.PutObject(
 		ctx,
 		media.View,
 		outputFile,
@@ -146,7 +146,7 @@ func processVideoView(
 }
 
 func processVideoThumbnail(
-	ctx context.Context, minioClient *minio.Client, media *types.Media, originalFile *os.File, info Probe,
+	ctx context.Context, media *types.Media, originalFile *os.File, info Probe,
 ) error {
 	slog.Info("process video asset thumbnail", slog.Any("id", media.ID))
 	err := ctx.Err()
@@ -193,10 +193,10 @@ func processVideoThumbnail(
 	media.ThumbnailWidth = int32((THUMBNAIL_HEIGHT * image.Width()) / image.Height())
 
 	if media.Thumbnail == "" || media.Thumbnail == media.Original {
-		media.Thumbnail = util.CreateAssetKey("webp")
+		media.Thumbnail = s3.CreateAssetKey("webp")
 	}
 
-	_, err = util.PutObject(
+	_, err = s3.PutObject(
 		ctx,
 		media.Thumbnail,
 		outputFile,
@@ -210,7 +210,7 @@ func processVideoThumbnail(
 }
 
 func processVideoPreview(
-	ctx context.Context, minioClient *minio.Client, media *types.Media,
+	ctx context.Context, media *types.Media,
 	originalFile *os.File, info Probe,
 ) error {
 	slog.Info("process video preview", slog.Any("id", media.ID))
@@ -247,9 +247,9 @@ func processVideoPreview(
 	}
 
 	if media.Preview == "" || media.Preview == media.Original {
-		media.Preview = util.CreateAssetKey("webp")
+		media.Preview = s3.CreateAssetKey("webp")
 	}
-	_, err = util.PutObject(
+	_, err = s3.PutObject(
 		ctx,
 		media.Preview,
 		outputFile,

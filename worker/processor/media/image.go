@@ -139,7 +139,7 @@ func populateView(
 	}
 
 	if media.View == "" || media.View == media.Original {
-		media.View = createAssetKey("webp")
+		media.View = util.CreateAssetKey("webp")
 	}
 
 	_, err = util.PutObject(
@@ -201,7 +201,7 @@ func populatePreview(
 	}
 
 	if media.Preview == "" || media.Preview == media.View {
-		media.Preview = createAssetKey("webp")
+		media.Preview = util.CreateAssetKey("webp")
 	}
 
 	_, err = util.PutObject(
@@ -293,7 +293,7 @@ func populateThumbnail(
 	}
 
 	if media.Thumbnail == "" || media.Thumbnail == media.Original {
-		media.Thumbnail = createAssetKey("webp")
+		media.Thumbnail = util.CreateAssetKey("webp")
 	}
 
 	_, err = util.PutObject(

@@ -90,7 +90,7 @@ func processVideoView(
 	}
 
 	if media.View == "" || media.View == media.Original {
-		media.View = createAssetKey("mp4")
+		media.View = util.CreateAssetKey("mp4")
 	}
 	outputFile, err := os.CreateTemp("", "*view.mp4")
 	if err != nil {
@@ -194,7 +194,7 @@ func processVideoThumbnail(
 	media.ThumbnailWidth = int32((THUMBNAIL_HEIGHT * image.Width()) / image.Height())
 
 	if media.Thumbnail == "" || media.Thumbnail == media.Original {
-		media.Thumbnail = createAssetKey("webp")
+		media.Thumbnail = util.CreateAssetKey("webp")
 	}
 
 	_, err = util.PutObject(
@@ -248,7 +248,7 @@ func processVideoPreview(
 	}
 
 	if media.Preview == "" || media.Preview == media.Original {
-		media.Preview = createAssetKey("webp")
+		media.Preview = util.CreateAssetKey("webp")
 	}
 	_, err = util.PutObject(
 		ctx,

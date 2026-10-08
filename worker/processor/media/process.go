@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
-	"uuid"
 
 	"github.com/minio/minio-go/v7"
 	"github.com/wutipong/albums2/gopkg/types"
@@ -111,9 +110,4 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 	slog.Info("process asset complete", "id", objID.String())
 
 	return nil
-}
-
-func createAssetKey(extension string) string {
-	u := uuid.NewV7()
-	return fmt.Sprintf("public/%s.%s", u.String(), extension)
 }

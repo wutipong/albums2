@@ -10,7 +10,6 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
-	"uuid"
 
 	"github.com/minio/minio-go/v7"
 	ffmpeg "github.com/u2takey/ffmpeg-go"
@@ -159,7 +158,7 @@ func (p *Processor) ProcessImage(
 	}
 
 	if album.Cover == "" {
-		album.Cover = createAssetKey("webp")
+		album.Cover = util.CreateAssetKey("webp")
 	}
 
 	_, err = util.PutObject(
@@ -263,7 +262,7 @@ func (p *Processor) ProcessVideo(
 	}
 
 	if album.Cover != "" {
-		album.Cover = createAssetKey("webp")
+		album.Cover = util.CreateAssetKey("webp")
 	}
 	_, err = util.PutObject(
 		ctx,
@@ -280,9 +279,4 @@ func (p *Processor) ProcessVideo(
 	}
 
 	return nil
-}
-
-func createAssetKey(extension string) string {
-	u := uuid.NewV7()
-	return fmt.Sprintf("public/%s.%s", u.String(), extension)
 }

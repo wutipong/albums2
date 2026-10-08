@@ -40,6 +40,13 @@ func PostMedia(
 		)
 	}()
 
+	slog.Info("post media",
+		"server", server,
+		"albumID", albumID,
+		"containerPath", containerPath,
+		"filePath", filePath,
+	)
+
 	if ctx.Err() != nil {
 		err = fmt.Errorf("context error: %w", ctx.Err())
 		return

@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/wutipong/albums2/gopkg/types"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 type PostMediaResposnse struct {
@@ -51,7 +51,7 @@ func PostMedia(
 		)
 		result = PostMediaResposnse{
 			Media: types.Media{
-				ID: primitive.NewObjectID(),
+				ID: bson.NewObjectID(),
 			},
 			Success: true,
 		}

@@ -17,7 +17,7 @@ import (
 const MAX_VIEW_PIXEL = 50_000_000
 const VIEW_HEIGHT = 2000
 
-func ProcessImageMedia(ctx context.Context, minioClient *minio.Client, media *types.Media) error {
+func ProcessImageMedia(ctx context.Context, media *types.Media) error {
 	slog.Info("processing image media", slog.String("id", media.ID.String()))
 
 	err := ctx.Err()

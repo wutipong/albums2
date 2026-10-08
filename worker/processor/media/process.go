@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
-	"os"
 
 	"github.com/minio/minio-go/v7"
 	"github.com/wutipong/albums2/gopkg/types"
 	"github.com/wutipong/albums2/worker/processor"
+	"github.com/wutipong/albums2/worker/util/s3"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
@@ -26,7 +26,6 @@ type Payload struct {
 type Processor struct {
 	MongoClient *mongo.Client
 	Database    string
-	MinioClient *minio.Client
 }
 
 func (p *Processor) GetType() string {
@@ -73,9 +72,9 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 	var processErr error
 	switch media.Type {
 	case "video":
-		processErr = ProcessVideoMedia(ctx, p.MinioClient, &media)
+		processErr = ProcessVideoMedia(ctx, &media)
 	case "image":
-		processErr = ProcessImageMedia(ctx, p.MinioClient, &media)
+		processErr = ProcessImageMedia(ctx, &media)
 	}
 
 	if processErr == nil {
@@ -100,8 +99,7 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 		media.Original != media.Preview &&
 		media.Original != media.Thumbnail {
 
-		err = p.MinioClient.RemoveObject(ctx,
-			os.Getenv("S3_BUCKET"),
+		err = s3.RemoveObject(ctx,
 			media.Original,
 			minio.RemoveObjectOptions{},
 		)

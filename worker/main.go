@@ -147,7 +147,7 @@ func main() {
 		MongoDatabase: cs.Database,
 	})
 
-	err = s3.Init(*awsEndpoint, *accessKeyId, *secret)
+	err = s3.Init(*awsEndpoint, *accessKeyId, *secret, *s3Bucket)
 	if err != nil {
 		slog.Error("S3 client initialization fails", "error", err)
 		return

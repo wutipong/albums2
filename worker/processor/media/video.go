@@ -21,7 +21,7 @@ import (
 const VIDEO_WIDTH = 1280
 const VIDEO_HEIGHT = 720
 
-func ProcessVideoMedia(ctx context.Context, minioClient *minio.Client, media *types.Media) error {
+func ProcessVideoMedia(ctx context.Context, media *types.Media) error {
 	slog.Info("process video asset", slog.Any("id", media.ID))
 
 	err := ctx.Err()
@@ -223,18 +223,15 @@ func processVideoPreview(
 		return fmt.Errorf("unable to parse duration: %w", err)
 	}
 
-	// save preview at 1/3 duration, 5 seconds-long in 5 fps.
-	err = ffmpeg.
-		Input(originalFile.Name(), ffmpeg.KwArgs{
-			"ss": fmt.Sprintf("%f", duration/3),
-		}).
-		Output(outputFile.Name(), ffmpeg.KwArgs{
-			"c:v":     "libwebp",
-			"t":       "5",
-			"loop":    "0",
-			"quality": fmt.Sprintf("%d", THUMBNAIL_QUALITY),
-			"vf":      fmt.Sprintf("fps=5,scale=-2:%d", THUMBNAIL_HEIGHT),
-		}).OverWriteOutput().ErrorToStdOut().Run()
+	err = video.ExtractAnimateScreenshotToFile(
+		originalFile.Name(),
+		outputFile.Name(),
+		duration/3,
+		0,
+		0,
+		THUMBNAIL_QUALITY,
+		THUMBNAIL_HEIGHT,
+	)
 
 	if err != nil {
 		return fmt.Errorf("unable to create thumbnail asset for video asset: %w", err)

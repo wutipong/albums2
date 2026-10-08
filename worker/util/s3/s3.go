@@ -18,7 +18,7 @@ var (
 	client *minio.Client = nil
 )
 
-func Init(endpoint string, accessKeyId string, secret string) error {
+func Init(endpoint string, accessKeyId string, secret string, bucketName string) error {
 	endpoint, secure, err := GetMinioEndpoint(endpoint)
 	if err != nil {
 		slog.Error("unable to parse endpoint", "error", err)
@@ -33,6 +33,8 @@ func Init(endpoint string, accessKeyId string, secret string) error {
 	if err != nil {
 		return fmt.Errorf("unable to create minio client: %w", err)
 	}
+
+	bucket = bucketName
 
 	return nil
 }
@@ -70,7 +72,7 @@ func PutObject(
 	length int64,
 	options minio.PutObjectOptions,
 ) (info minio.UploadInfo, err error) {
-	slog.Info("put object to S3", "key", key)
+	slog.Info("put object to S3", "key", key, "reader", reader, "client", client)
 	return client.PutObject(
 		ctx, bucket,
 		key,
@@ -88,6 +90,15 @@ func GetObject(ctx context.Context,
 
 	return client.GetObject(
 		ctx,
+		bucket,
+		key,
+		options,
+	)
+}
+
+func RemoveObject(ctx context.Context, key string, options minio.RemoveObjectOptions) error {
+	slog.Info("remove object from S3", "key", key)
+	return client.RemoveObject(ctx,
 		bucket,
 		key,
 		options,

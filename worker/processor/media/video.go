@@ -15,6 +15,7 @@ import (
 	ffmpeg "github.com/u2takey/ffmpeg-go"
 	"github.com/wutipong/albums2/gopkg/types"
 	"github.com/wutipong/albums2/gopkg/vips"
+	"github.com/wutipong/albums2/worker/util"
 )
 
 const VIDEO_WIDTH = 1280
@@ -132,9 +133,9 @@ func processVideoView(
 
 	outputFile.Seek(0, io.SeekStart)
 
-	_, err = minioClient.PutObject(
+	_, err = util.PutObject(
 		ctx,
-		os.Getenv("S3_BUCKET"),
+		minioClient,
 		media.View,
 		outputFile,
 		-1,
@@ -197,8 +198,8 @@ func processVideoThumbnail(
 		media.Thumbnail = createAssetKey("webp")
 	}
 
-	_, err = minioClient.PutObject(
-		ctx, os.Getenv("S3_BUCKET"),
+	_, err = util.PutObject(
+		ctx, minioClient,
 		media.Thumbnail,
 		outputFile,
 		-1,
@@ -250,8 +251,8 @@ func processVideoPreview(
 	if media.Preview == "" || media.Preview == media.Original {
 		media.Preview = createAssetKey("webp")
 	}
-	_, err = minioClient.PutObject(
-		ctx, os.Getenv("S3_BUCKET"),
+	_, err = util.PutObject(
+		ctx, minioClient,
 		media.Preview,
 		outputFile,
 		-1,

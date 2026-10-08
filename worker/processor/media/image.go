@@ -12,6 +12,7 @@ import (
 	"github.com/wutipong/albums2/gopkg/filetypes"
 	"github.com/wutipong/albums2/gopkg/types"
 	"github.com/wutipong/albums2/gopkg/vips"
+	"github.com/wutipong/albums2/worker/util"
 )
 
 const MAX_VIEW_PIXEL = 50_000_000
@@ -141,8 +142,8 @@ func populateView(
 		media.View = createAssetKey("webp")
 	}
 
-	_, err = minioClient.PutObject(
-		ctx, os.Getenv("S3_BUCKET"),
+	_, err = util.PutObject(
+		ctx, minioClient,
 		media.View,
 		bytes.NewReader(buf),
 		int64(len(buf)),
@@ -203,8 +204,8 @@ func populatePreview(
 		media.Preview = createAssetKey("webp")
 	}
 
-	_, err = minioClient.PutObject(
-		ctx, os.Getenv("S3_BUCKET"),
+	_, err = util.PutObject(
+		ctx, minioClient,
 		media.Preview,
 		bytes.NewReader(buf),
 		int64(len(buf)),
@@ -295,8 +296,8 @@ func populateThumbnail(
 		media.Thumbnail = createAssetKey("webp")
 	}
 
-	_, err = minioClient.PutObject(
-		ctx, os.Getenv("S3_BUCKET"),
+	_, err = util.PutObject(
+		ctx, minioClient,
 		media.Thumbnail,
 		bytes.NewReader(buf),
 		int64(len(buf)),

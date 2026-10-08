@@ -17,6 +17,7 @@ import (
 	"github.com/wutipong/albums2/gopkg/types"
 	"github.com/wutipong/albums2/gopkg/vips"
 	"github.com/wutipong/albums2/worker/processor"
+	"github.com/wutipong/albums2/worker/util"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
@@ -160,8 +161,20 @@ func (p *Processor) ProcessImage(
 	if album.Cover == "" {
 		album.Cover = createAssetKey("webp")
 	}
-	_, err = p.MinioClient.PutObject(
-		ctx, os.Getenv("S3_BUCKET"),
+
+	_, err = util.PutObject(
+		ctx, p.MinioClient,
+		album.Cover,
+		bytes.NewReader(buf),
+		int64(len(buf)),
+		minio.PutObjectOptions{
+			ContentType: "image/webp",
+		},
+	)
+
+	_, err = util.PutObject(
+		ctx,
+		p.MinioClient,
 		album.Cover,
 		bytes.NewReader(buf),
 		int64(len(buf)),
@@ -263,8 +276,8 @@ func (p *Processor) ProcessVideo(
 	if album.Cover != "" {
 		album.Cover = createAssetKey("webp")
 	}
-	_, err = p.MinioClient.PutObject(
-		ctx, os.Getenv("S3_BUCKET"),
+	_, err = util.PutObject(
+		ctx, p.MinioClient,
 		album.Cover,
 		bytes.NewReader(buf),
 		int64(len(buf)),

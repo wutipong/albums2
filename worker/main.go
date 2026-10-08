@@ -22,6 +22,7 @@ import (
 	"github.com/wutipong/albums2/worker/processor"
 	"github.com/wutipong/albums2/worker/processor/cover"
 	"github.com/wutipong/albums2/worker/processor/media"
+	"github.com/wutipong/albums2/worker/util"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 	"go.mongodb.org/mongo-driver/v2/x/mongo/driver/connstring"
@@ -36,6 +37,7 @@ var (
 	accessKeyId = flag.String("aws-access-key-id", "", "AWS/S3 Access Key ID")
 	secret      = flag.String("aws-secret-access-key", "", "AWS/S3 Secret Key")
 	awsEndpoint = flag.String("aws-endpoint-url", "", "AWS/S3 Endpoint URL")
+	s3Bucket    = flag.String("s3-bucket", "", "S3 Bucket Name")
 
 	ErrDrainingInterrupted = errors.New("draining interrupted")
 )
@@ -157,6 +159,12 @@ func main() {
 		MongoClient: client,
 		Database:    cs.Database,
 		MinioClient: minioClient,
+	})
+
+	util.Init(util.UtilOptions{
+		S3Bucket: *s3Bucket,
+
+		MongoDatabase: cs.Database,
 	})
 
 	slog.Info("Draing worker list")

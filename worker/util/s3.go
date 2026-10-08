@@ -11,7 +11,8 @@ import (
 )
 
 var (
-	bucket = ""
+	bucket                    = ""
+	minioClient *minio.Client = nil
 )
 
 func CreateAssetKey(extension string) string {
@@ -21,14 +22,13 @@ func CreateAssetKey(extension string) string {
 
 func PutObject(
 	ctx context.Context,
-	client *minio.Client,
 	key string,
 	reader io.Reader,
 	length int64,
 	options minio.PutObjectOptions,
 ) (info minio.UploadInfo, err error) {
 	slog.Info("put object to S3", "key", key)
-	return client.PutObject(
+	return minioClient.PutObject(
 		ctx, bucket,
 		key,
 		reader,

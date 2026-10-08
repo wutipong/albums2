@@ -143,7 +143,7 @@ func populateView(
 	}
 
 	_, err = util.PutObject(
-		ctx, minioClient,
+		ctx,
 		media.View,
 		bytes.NewReader(buf),
 		int64(len(buf)),
@@ -205,7 +205,7 @@ func populatePreview(
 	}
 
 	_, err = util.PutObject(
-		ctx, minioClient,
+		ctx,
 		media.Preview,
 		bytes.NewReader(buf),
 		int64(len(buf)),
@@ -297,7 +297,7 @@ func populateThumbnail(
 	}
 
 	_, err = util.PutObject(
-		ctx, minioClient,
+		ctx,
 		media.Thumbnail,
 		bytes.NewReader(buf),
 		int64(len(buf)),

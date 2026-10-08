@@ -38,7 +38,7 @@ func listAlbum(ctx context.Context, profileName string, collectionID string, dry
 
 	for _, album := range albumList.Albums {
 		slog.Info("album",
-			slog.String("id", album.ID),
+			slog.String("id", album.ID.String()),
 			slog.String("name", album.Name),
 		)
 	}

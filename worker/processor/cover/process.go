@@ -163,18 +163,7 @@ func (p *Processor) ProcessImage(
 	}
 
 	_, err = util.PutObject(
-		ctx, p.MinioClient,
-		album.Cover,
-		bytes.NewReader(buf),
-		int64(len(buf)),
-		minio.PutObjectOptions{
-			ContentType: "image/webp",
-		},
-	)
-
-	_, err = util.PutObject(
 		ctx,
-		p.MinioClient,
 		album.Cover,
 		bytes.NewReader(buf),
 		int64(len(buf)),
@@ -277,7 +266,7 @@ func (p *Processor) ProcessVideo(
 		album.Cover = createAssetKey("webp")
 	}
 	_, err = util.PutObject(
-		ctx, p.MinioClient,
+		ctx,
 		album.Cover,
 		bytes.NewReader(buf),
 		int64(len(buf)),

@@ -135,7 +135,6 @@ func processVideoView(
 
 	_, err = util.PutObject(
 		ctx,
-		minioClient,
 		media.View,
 		outputFile,
 		-1,
@@ -199,7 +198,7 @@ func processVideoThumbnail(
 	}
 
 	_, err = util.PutObject(
-		ctx, minioClient,
+		ctx,
 		media.Thumbnail,
 		outputFile,
 		-1,
@@ -252,7 +251,7 @@ func processVideoPreview(
 		media.Preview = createAssetKey("webp")
 	}
 	_, err = util.PutObject(
-		ctx, minioClient,
+		ctx,
 		media.Preview,
 		outputFile,
 		-1,

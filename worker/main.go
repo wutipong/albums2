@@ -104,7 +104,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	slog.Info("Connected to MongoDB", "uri", *dbUri)
+	slog.Info("Connected to MongoDB", "hosts", cs.Hosts, "database", cs.Database)
 	defer func() {
 		if err = client.Disconnect(ctx); err != nil {
 			slog.Error("Error disconnecting from MongoDB", "error", err)

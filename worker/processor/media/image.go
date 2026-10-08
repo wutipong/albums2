@@ -17,7 +17,7 @@ import (
 const MAX_VIEW_PIXEL = 50_000_000
 const VIEW_HEIGHT = 2000
 
-func processImageAsset(ctx context.Context, minioClient *minio.Client, media *types.Media) error {
+func ProcessImageMedia(ctx context.Context, minioClient *minio.Client, media *types.Media) error {
 	slog.Info("processing image media", slog.String("id", media.ID.String()))
 
 	err := ctx.Err()
@@ -53,8 +53,6 @@ func processImageAsset(ctx context.Context, minioClient *minio.Client, media *ty
 		return fmt.Errorf("unable to read original image: %w", err)
 	}
 	defer original.Close()
-
-	slog.Info("original", slog.Any("image", original), slog.Bool("available", original != nil), slog.Int("width", original.Width()))
 
 	view, err := populateView(ctx, minioClient, media, original)
 	if err != nil {

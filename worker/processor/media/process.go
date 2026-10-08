@@ -5,12 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"os"
 
 	"github.com/google/uuid"
 	"github.com/minio/minio-go/v7"
 	"github.com/wutipong/albums2/gopkg/types"
 	"github.com/wutipong/albums2/worker/processor"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
@@ -21,7 +21,7 @@ const (
 )
 
 type Payload struct {
-	MediaID string `json:"asset_id"`
+	ID string `json:"id"`
 }
 
 type Processor struct {
@@ -41,14 +41,14 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 		return fmt.Errorf("unable to unmarshal the payload: %w", err)
 	}
 
-	slog.Info("processing asset", "id", payload.MediaID)
-
-	objID, err := primitive.ObjectIDFromHex(payload.MediaID)
+	objID, err := bson.ObjectIDFromHex(payload.ID)
 
 	if err != nil {
 		return fmt.Errorf("invalid media id: %w", err)
 	}
 
+	slog.Info("processing asset", "id", objID.String())
+	slog.Info("mongodb", "database", p.Database)
 	result := p.MongoClient.Database(p.Database).
 		Collection("media").
 		FindOne(ctx, bson.D{{Key: "_id", Value: objID}})
@@ -75,9 +75,11 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 	switch media.Type {
 	case "video":
 		processErr = ProcessVideoMedia(ctx, p.MinioClient, &media)
+	case "image":
+		processErr = ProcessImageMedia(ctx, p.MinioClient, &media)
 	}
 
-	if err == nil {
+	if processErr == nil {
 		media.ProcessStatus = "processed"
 	} else {
 		media.ProcessStatus = "failed"
@@ -85,7 +87,7 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 
 	_, err = p.MongoClient.Database(p.Database).
 		Collection("media").
-		UpdateByID(ctx, objID, media)
+		ReplaceOne(ctx, bson.D{{Key: "_id", Value: objID}}, media)
 
 	if err != nil {
 		return fmt.Errorf("unable to update media information: %w", err)
@@ -94,6 +96,19 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 	if processErr != nil {
 		return fmt.Errorf("process media fails: %w", processErr)
 	}
+
+	if media.Original != media.View &&
+		media.Original != media.Preview &&
+		media.Original != media.Thumbnail {
+
+		err = p.MinioClient.RemoveObject(ctx,
+			os.Getenv("S3_BUCKET"),
+			media.Original,
+			minio.RemoveObjectOptions{},
+		)
+	}
+
+	slog.Info("process asset complete", "id", objID.String())
 
 	return nil
 }

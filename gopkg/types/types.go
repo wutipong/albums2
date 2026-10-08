@@ -1,7 +1,7 @@
 package types
 
 import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 type Collection struct {
@@ -15,20 +15,20 @@ type Album struct {
 }
 
 type Media struct {
-	ID              primitive.ObjectID `json:"id" bson:"_id,omitempty"`
-	Name            string             `json:"name" bson:"name"`
-	Original        string             `json:"original" bson:"original"`
-	View            string             `json:"view" bson:"view"`
-	ViewWidth       int32              `json:"viewWidth" bson:"viewWidth"`
-	ViewHeight      int32              `json:"viewHeight" bson:"viewHeight"`
-	VideoDuration   int32              `json:"videoDuration" bson:"videoDuration"`
-	Thumbnail       string             `json:"thumbnail" bson:"thumbnail"`
-	ThumbnailWidth  int32              `json:"thumbnailWidth" bson:"thumbnailWidth"`
-	ThumbnailHeight int32              `json:"thumbnailHeight" bson:"thumbnailHeight"`
-	Preview         string             `json:"preview" bson:"preview"`
-	Type            string             `json:"type" bson:"type"`
-	ProcessStatus   string             `json:"processStatus" bson:"processStatus"`
-	ImageFrames     int32              `json:"imageFrames" bson:"imageFrames"`
+	ID              bson.ObjectID `json:"id" bson:"_id,omitempty"`
+	Name            string        `json:"name" bson:"name"`
+	Original        string        `json:"original" bson:"original"`
+	View            string        `json:"view" bson:"view"`
+	ViewWidth       int32         `json:"viewWidth" bson:"viewWidth"`
+	ViewHeight      int32         `json:"viewHeight" bson:"viewHeight"`
+	VideoDuration   int32         `json:"videoDuration" bson:"videoDuration"`
+	Thumbnail       string        `json:"thumbnail" bson:"thumbnail"`
+	ThumbnailWidth  int32         `json:"thumbnailWidth" bson:"thumbnailWidth"`
+	ThumbnailHeight int32         `json:"thumbnailHeight" bson:"thumbnailHeight"`
+	Preview         string        `json:"preview" bson:"preview"`
+	Type            string        `json:"type" bson:"type"`
+	ProcessStatus   string        `json:"processStatus" bson:"processStatus"`
+	ImageFrames     int32         `json:"imageFrames" bson:"imageFrames"`
 }
 
 type User struct {

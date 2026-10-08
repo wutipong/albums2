@@ -30,9 +30,8 @@ func ProcessVideoMedia(ctx context.Context, minioClient *minio.Client, media *ty
 		return fmt.Errorf("context cancelled: %w", err)
 	}
 
-	s3Obj, err := minioClient.GetObject(
+	s3Obj, err := util.GetObject(
 		ctx,
-		os.Getenv("S3_BUCKET"),
 		media.Original,
 		minio.GetObjectOptions{},
 	)

@@ -36,3 +36,17 @@ func PutObject(
 		options,
 	)
 }
+
+func GetObject(ctx context.Context,
+	key string,
+	options minio.GetObjectOptions,
+) (object *minio.Object, err error) {
+	slog.Info("get object from S3", "key", key)
+
+	return minioClient.GetObject(
+		ctx,
+		bucket,
+		key,
+		options,
+	)
+}

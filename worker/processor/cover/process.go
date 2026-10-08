@@ -118,9 +118,8 @@ func (p *Processor) ProcessImage(
 		return fmt.Errorf("context cancelled: %w", err)
 	}
 
-	object, err := p.MinioClient.GetObject(
+	object, err := util.GetObject(
 		ctx,
-		os.Getenv("S3_BUCKET"),
 		media.View,
 		minio.GetObjectOptions{},
 	)
@@ -196,9 +195,8 @@ func (p *Processor) ProcessVideo(
 	}
 	defer os.Remove(originalFile.Name())
 
-	object, err := p.MinioClient.GetObject(
+	object, err := util.GetObject(
 		ctx,
-		os.Getenv("S3_BUCKET"),
 		media.View,
 		minio.GetObjectOptions{},
 	)

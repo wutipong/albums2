@@ -5,7 +5,6 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"os"
 	"path/filepath"
 
 	"github.com/minio/minio-go/v7"
@@ -28,8 +27,8 @@ func ProcessImageMedia(ctx context.Context, minioClient *minio.Client, media *ty
 	}
 
 	slog.Info("getting object from S3.", slog.String("id", media.Original))
-	object, err := minioClient.GetObject(
-		ctx, os.Getenv("S3_BUCKET"),
+	object, err := util.GetObject(
+		ctx,
 		media.Original,
 		minio.GetObjectOptions{},
 	)

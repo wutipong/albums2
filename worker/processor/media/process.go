@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/minio/minio-go/v7"
 	"github.com/wutipong/albums2/gopkg/types"
 	"github.com/wutipong/albums2/worker/processor"
@@ -114,6 +114,6 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 }
 
 func createAssetKey(extension string) string {
-	u, _ := uuid.NewV7()
+	u := uuid.NewV7()
 	return fmt.Sprintf("public/%s.%s", u.String(), extension)
 }

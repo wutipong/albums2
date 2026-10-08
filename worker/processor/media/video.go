@@ -2,7 +2,6 @@ package media
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"log/slog"
@@ -16,6 +15,7 @@ import (
 	"github.com/wutipong/albums2/gopkg/types"
 	"github.com/wutipong/albums2/gopkg/vips"
 	"github.com/wutipong/albums2/worker/util/s3"
+	"github.com/wutipong/albums2/worker/util/video"
 )
 
 const VIDEO_WIDTH = 1280
@@ -52,20 +52,17 @@ func ProcessVideoMedia(ctx context.Context, minioClient *minio.Client, media *ty
 
 	io.Copy(originalFile, s3Obj)
 
-	probe, err := ffmpeg.Probe(originalFile.Name())
+	probe, err := video.ReadProbe(originalFile.Name())
 	if err != nil {
 		return fmt.Errorf("unable to probe original video: %w", err)
 	}
 
-	var info Probe
-	json.Unmarshal([]byte(probe), &info)
-
-	err = processVideoThumbnail(ctx, media, originalFile, info)
+	err = processVideoThumbnail(ctx, media, originalFile, probe)
 	if err != nil {
 		return fmt.Errorf("unable to process video asset thumbnail: %w", err)
 	}
 
-	err = processVideoPreview(ctx, media, originalFile, info)
+	err = processVideoPreview(ctx, media, originalFile, probe)
 	if err != nil {
 		return fmt.Errorf("unable to process video asset preview: %w", err)
 	}
@@ -115,15 +112,12 @@ func processVideoView(
 		return fmt.Errorf("unable to create view asset for video asset: %w", err)
 	}
 
-	probe, err := ffmpeg.Probe(outputFile.Name())
+	probe, err := video.ReadProbe(outputFile.Name())
 	if err != nil {
 		return fmt.Errorf("unable to probe original video: %w", err)
 	}
 
-	var viewInfo Probe
-	json.Unmarshal([]byte(probe), &viewInfo)
-
-	viewVideoStream, err := viewInfo.Video()
+	viewVideoStream, err := probe.Video()
 	if err != nil {
 		return fmt.Errorf("unable to get video stream from video asset: %w", err)
 	}
@@ -146,7 +140,7 @@ func processVideoView(
 }
 
 func processVideoThumbnail(
-	ctx context.Context, media *types.Media, originalFile *os.File, info Probe,
+	ctx context.Context, media *types.Media, originalFile *os.File, info video.Probe,
 ) error {
 	slog.Info("process video asset thumbnail", slog.Any("id", media.ID))
 	err := ctx.Err()
@@ -211,7 +205,7 @@ func processVideoThumbnail(
 
 func processVideoPreview(
 	ctx context.Context, media *types.Media,
-	originalFile *os.File, info Probe,
+	originalFile *os.File, info video.Probe,
 ) error {
 	slog.Info("process video preview", slog.Any("id", media.ID))
 	err := ctx.Err()

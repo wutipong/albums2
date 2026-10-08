@@ -17,6 +17,7 @@ import (
 	"github.com/wutipong/albums2/gopkg/vips"
 	"github.com/wutipong/albums2/worker/processor"
 	"github.com/wutipong/albums2/worker/util/s3"
+	"github.com/wutipong/albums2/worker/util/video"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
@@ -207,13 +208,10 @@ func (p *Processor) ProcessVideo(
 
 	io.Copy(originalFile, object)
 
-	probe, err := ffmpeg.Probe(originalFile.Name())
+	probe, err := video.ReadProbe(originalFile.Name())
 	if err != nil {
-		return fmt.Errorf("unable to probe original video: %w", err)
+		return fmt.Errorf("unable to read proble: %w", err)
 	}
-
-	var info Probe
-	json.Unmarshal([]byte(probe), &info)
 
 	outputFile, err := os.CreateTemp("", "*view.webp")
 	if err != nil {
@@ -221,7 +219,7 @@ func (p *Processor) ProcessVideo(
 	}
 	defer os.Remove(outputFile.Name())
 
-	duration, err := strconv.ParseFloat(info.Format.Duration, 10)
+	duration, err := strconv.ParseFloat(probe.Format.Duration, 10)
 	if err != nil {
 		return fmt.Errorf("unable to parse duration: %w", err)
 	}

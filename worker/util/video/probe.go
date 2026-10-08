@@ -1,9 +1,12 @@
-package media
+package video
 
 import (
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"slices"
+
+	ffmpeg "github.com/u2takey/ffmpeg-go"
 )
 
 type Stream struct {
@@ -24,6 +27,22 @@ type Format struct {
 type Probe struct {
 	Streams []Stream `json:"streams"`
 	Format  Format   `json:"format"`
+}
+
+func ReadProbe(path string) (info Probe, err error) {
+	probe, err := ffmpeg.Probe(path)
+	if err != nil {
+		err = fmt.Errorf("unable to probe original video: %w", err)
+		return
+	}
+
+	err = json.Unmarshal([]byte(probe), &info)
+	if err != nil {
+		err = fmt.Errorf("unable to parse probe information: %w", err)
+		return
+	}
+
+	return
 }
 
 func (info Probe) Video() (s Stream, err error) {

@@ -49,7 +49,7 @@ func listAlbum(ctx context.Context, profileName string, collection string, dryRu
 
 	for _, album := range albumList.Albums {
 		slog.Info("album",
-			slog.String("id", album.ID.String()),
+			slog.String("id", album.ID.Hex()),
 			slog.String("name", album.Name),
 		)
 	}

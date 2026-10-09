@@ -23,10 +23,9 @@ import (
 )
 
 const (
-	ALBUM_COVER_FILE = "cover.webp"
-	COVER_WIDTH      = 400
-	COVER_HEIGHT     = 600
-	COVER_QUALITY    = 75
+	COVER_WIDTH   = 400
+	COVER_HEIGHT  = 600
+	COVER_QUALITY = 75
 )
 
 type Processor struct {
@@ -37,7 +36,6 @@ func (p *Processor) GetType() string {
 }
 
 type Payload struct {
-	Album string `json:"album"`
 	Media string `json:"media"`
 }
 
@@ -48,30 +46,12 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 		return fmt.Errorf("unable to unmarshal the payload: %w", err)
 	}
 
-	albumId, err := bson.ObjectIDFromHex(payload.Album)
-	if err != nil {
-		return fmt.Errorf("unable to parse album id: %w", err)
-	}
-
-	album := types.Album{}
-	r := db.MongoDB().
-		Collection("albums").
-		FindOne(ctx, bson.D{{"_id", albumId}})
-
-	if r.Err() != nil {
-		return fmt.Errorf("unable to get album information: %w", r.Err())
-	}
-	err = r.Decode(&album)
-	if err != nil {
-		return fmt.Errorf("unable to parse album information: %w", err)
-	}
-
 	mediaId, err := bson.ObjectIDFromHex(payload.Media)
 	if err != nil {
 		return fmt.Errorf("unable to parse asset id: %w", err)
 	}
 
-	r = db.MongoDB().
+	r := db.MongoDB().
 		Collection("media").
 		FindOne(ctx, bson.D{{"_id", mediaId}})
 
@@ -85,6 +65,23 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 	}
 
 	slog.Info("cover media", "media", media)
+
+	albumId := media.ID
+
+	album := types.Album{}
+	r = db.MongoDB().
+		Collection("albums").
+		FindOne(ctx, bson.D{{"_id", albumId}})
+
+	if r.Err() != nil {
+		return fmt.Errorf("unable to get album information: %w", r.Err())
+	}
+	err = r.Decode(&album)
+	if err != nil {
+		return fmt.Errorf("unable to parse album information: %w", err)
+	}
+
+	slog.Info("target album", "album", album)
 
 	switch media.Type {
 	case "image":

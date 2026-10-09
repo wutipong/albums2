@@ -9,7 +9,7 @@ import (
 func Command(profile *string) *cli.Command {
 	dryRun := false
 	id := ""
-	collectionId := ""
+	collection := ""
 
 	return &cli.Command{
 		Name:  "album",
@@ -28,13 +28,13 @@ func Command(profile *string) *cli.Command {
 					&cli.StringFlag{
 						Name:        "collection",
 						Value:       "",
-						Usage:       "Collection ID to list albums from.",
-						Destination: &collectionId,
+						Usage:       "Collection to list albums from.",
+						Destination: &collection,
 						Required:    true,
 					},
 				},
 				Action: func(ctx context.Context, cmd *cli.Command) error {
-					return listAlbum(ctx, *profile, collectionId, dryRun)
+					return listAlbum(ctx, *profile, collection, dryRun)
 				},
 			}, {
 				Name:  "show",

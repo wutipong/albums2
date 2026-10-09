@@ -10,7 +10,7 @@ import (
 	"github.com/wutipong/albums2/albums2cli/server/api"
 )
 
-func listAlbum(ctx context.Context, profileName string, collectionID string, dryRun bool) (err error) {
+func listAlbum(ctx context.Context, profileName string, collection string, dryRun bool) (err error) {
 	config, err := profile.LoadProfile(ctx, profileName)
 	if err != nil {
 		return err
@@ -30,6 +30,17 @@ func listAlbum(ctx context.Context, profileName string, collectionID string, dry
 		DryRun: dryRun,
 		APIKey: config.APIKey,
 	}
+
+	r, err := api.GetCollectionByName(ctx, server, collection)
+	if err != nil {
+		return fmt.Errorf("unable to find collection: %w", err)
+	}
+
+	if !r.Existed {
+		return fmt.Errorf("collection does not exist.")
+	}
+
+	collectionID := r.Collection.ID
 
 	albumList, err := api.GetAlbumList(ctx, server, collectionID)
 	if err != nil {

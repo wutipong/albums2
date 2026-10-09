@@ -16,10 +16,10 @@ import (
 	"github.com/wutipong/albums2/gopkg/types"
 	"github.com/wutipong/albums2/gopkg/vips"
 	"github.com/wutipong/albums2/worker/processor"
+	"github.com/wutipong/albums2/worker/util/db"
 	"github.com/wutipong/albums2/worker/util/s3"
 	"github.com/wutipong/albums2/worker/util/video"
 	"go.mongodb.org/mongo-driver/v2/bson"
-	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 const (
@@ -30,9 +30,6 @@ const (
 )
 
 type Processor struct {
-	MongoClient *mongo.Client
-	Database    string
-	MinioClient *minio.Client
 }
 
 func (p *Processor) GetType() string {
@@ -57,7 +54,7 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 	}
 
 	album := types.Album{}
-	r := p.MongoClient.Database(p.Database).
+	r := db.MongoDB().
 		Collection("albums").
 		FindOne(ctx, bson.D{{"_id", albumId}})
 
@@ -74,7 +71,7 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 		return fmt.Errorf("unable to parse asset id: %w", err)
 	}
 
-	r = p.MongoClient.Database(p.Database).
+	r = db.MongoDB().
 		Collection("media").
 		FindOne(ctx, bson.D{{"_id", mediaId}})
 
@@ -96,7 +93,7 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 		err = p.ProcessVideo(ctx, &media, &album)
 	}
 
-	_, err = p.MongoClient.Database(p.Database).
+	_, err = db.MongoDB().
 		Collection("albums").
 		ReplaceOne(ctx, bson.D{{Key: "_id", Value: albumId}}, album)
 

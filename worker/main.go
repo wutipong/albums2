@@ -19,6 +19,7 @@ import (
 	"github.com/wutipong/albums2/worker/processor/cover"
 	"github.com/wutipong/albums2/worker/processor/media"
 	"github.com/wutipong/albums2/worker/util"
+	"github.com/wutipong/albums2/worker/util/db"
 	"github.com/wutipong/albums2/worker/util/s3"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
@@ -131,15 +132,10 @@ func main() {
 
 	slog.Info("Worker", "id", *workerId)
 
-	processor.RegisterProcessor(&media.Processor{
-		MongoClient: client,
-		Database:    cs.Database,
-	})
+	db.Init(client, cs.Database, redisClient)
 
-	processor.RegisterProcessor(&cover.Processor{
-		MongoClient: client,
-		Database:    cs.Database,
-	})
+	processor.RegisterProcessor(&media.Processor{})
+	processor.RegisterProcessor(&cover.Processor{})
 
 	util.Init(util.UtilOptions{
 		S3Bucket: *s3Bucket,

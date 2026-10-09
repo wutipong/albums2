@@ -9,9 +9,9 @@ import (
 	"github.com/minio/minio-go/v7"
 	"github.com/wutipong/albums2/gopkg/types"
 	"github.com/wutipong/albums2/worker/processor"
+	"github.com/wutipong/albums2/worker/util/db"
 	"github.com/wutipong/albums2/worker/util/s3"
 	"go.mongodb.org/mongo-driver/v2/bson"
-	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 const (
@@ -24,8 +24,6 @@ type Payload struct {
 }
 
 type Processor struct {
-	MongoClient *mongo.Client
-	Database    string
 }
 
 func (p *Processor) GetType() string {
@@ -46,8 +44,8 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 	}
 
 	slog.Info("processing asset", "id", objID.String())
-	slog.Info("mongodb", "database", p.Database)
-	result := p.MongoClient.Database(p.Database).
+
+	result := db.MongoDB().
 		Collection("media").
 		FindOne(ctx, bson.D{{Key: "_id", Value: objID}})
 
@@ -83,7 +81,7 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 		media.ProcessStatus = "failed"
 	}
 
-	_, err = p.MongoClient.Database(p.Database).
+	_, err = db.MongoDB().
 		Collection("media").
 		ReplaceOne(ctx, bson.D{{Key: "_id", Value: objID}}, media)
 

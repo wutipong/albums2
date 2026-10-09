@@ -37,7 +37,7 @@ func showAlbum(ctx context.Context, profileName string, dryRun bool, albumID str
 	}
 
 	slog.Info("album",
-		slog.String("id", albumDetail.ID.String()),
+		slog.String("id", albumDetail.ID.Hex()),
 		slog.String("name", albumDetail.Name),
 	)
 

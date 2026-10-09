@@ -41,7 +41,7 @@ func ProcessDirectory(
 		if IsMediaFile(path) {
 			err = processMediaFile(ctx, server, path, album)
 		} else if IsArchiveFile(path) {
-			err = ProcessArchive(ctx, server, album, path)
+			err = ProcessArchive(ctx, server, album, path, path)
 		}
 
 		if err != nil {
@@ -90,7 +90,6 @@ func processMediaFile(
 		ctx,
 		server,
 		album.ID.Hex(),
-		path,
 		file.Name(),
 		file,
 		info.Size(),

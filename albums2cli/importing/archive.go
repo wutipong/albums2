@@ -23,6 +23,7 @@ func ProcessArchive(
 	server api.ServerConfig,
 	album types.Album,
 	albumPath string,
+	containerPath string,
 ) error {
 	if !IsArchiveFile(filepath.Ext(albumPath)) {
 		return fmt.Errorf("file is not an archive: %s", albumPath)
@@ -36,7 +37,7 @@ func ProcessArchive(
 	}
 	defer archiveFile.Close()
 
-	err = WalkArchive(ctx, server, album.ID.Hex(), albumPath, archiveFile)
+	err = WalkArchive(ctx, server, album.ID.Hex(), albumPath, archiveFile, containerPath)
 	if err != nil {
 		return fmt.Errorf("failed to process archive %s: %w", albumPath, err)
 	}
@@ -60,6 +61,7 @@ func WalkArchive(
 	albumID string,
 	archivePath string,
 	archive io.Reader,
+	containerPath string,
 ) error {
 	if ctx.Err() != nil {
 		return fmt.Errorf("context error: %w", ctx.Err())
@@ -151,7 +153,7 @@ func WalkArchive(
 				tempFile.Seek(0, io.SeekStart)
 
 				err = WalkArchive(
-					ctx, server, albumID, filepath.Join(archivePath, filename), tempFile,
+					ctx, server, albumID, filepath.Join(archivePath, filename), tempFile, archivePath,
 				)
 				if err != nil {
 					return fmt.Errorf("failed to process nested archive %s: %w", filename, err)
@@ -161,7 +163,7 @@ func WalkArchive(
 			}
 
 			if IsMediaFile(f.NameInArchive) {
-				media, err := uploadArchiveMedia(ctx, server, albumID, archivePath, filename, f)
+				media, err := uploadArchiveMedia(ctx, server, albumID, filename, f, containerPath)
 				if errors.Is(err, api.ErrDuplicateMedia) {
 					slog.Warn(
 						"media already exists. skipping file.",
@@ -193,9 +195,9 @@ func uploadArchiveMedia(
 	ctx context.Context,
 	server api.ServerConfig,
 	albumID string,
-	archivePath string,
-	filename string,
+	name string,
 	f archives.FileInfo,
+	containerPath string,
 ) (media types.Media, err error) {
 	if ctx.Err() != nil {
 		err = fmt.Errorf("context error: %w", ctx.Err())
@@ -204,13 +206,12 @@ func uploadArchiveMedia(
 
 	slog.Info(
 		"creating media",
-		slog.String("archive", archivePath),
-		slog.String("entry", filename),
+		slog.String("name", name),
 	)
 
 	file, err := f.Open()
 	if err != nil {
-		err = fmt.Errorf("failed to open archive entry %s/%s: %w", archivePath, filename, err)
+		err = fmt.Errorf("failed to open archive entry %s: %w", f.Name(), err)
 		return
 	}
 
@@ -226,13 +227,12 @@ func uploadArchiveMedia(
 		ctx,
 		server,
 		albumID,
-		archivePath,
-		filename,
+		filepath.Join(containerPath, name),
 		file,
 		stat.Size(),
 	)
 	if err != nil {
-		err = fmt.Errorf("failed to upload media %s/%s: %w", archivePath, filename, err)
+		err = fmt.Errorf("failed to upload media %s: %w", filepath.Join(containerPath, name), err)
 		return
 	}
 	media = resp.Media

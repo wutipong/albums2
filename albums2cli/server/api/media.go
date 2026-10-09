@@ -7,7 +7,6 @@ import (
 	"io"
 	"log/slog"
 	"path"
-	"path/filepath"
 	"time"
 
 	"github.com/wutipong/albums2/gopkg/types"
@@ -27,8 +26,7 @@ func PostMedia(
 	ctx context.Context,
 	server ServerConfig,
 	albumID string,
-	containerPath string,
-	filePath string,
+	name string,
 	reader io.Reader,
 	size int64,
 ) (result PostMediaResposnse, err error) {
@@ -36,15 +34,14 @@ func PostMedia(
 	defer func() {
 		slog.Info("PostMedia completed",
 			slog.Duration("duration", time.Since(start)),
-			slog.String("path", filePath),
+			slog.String("name", name),
 		)
 	}()
 
 	slog.Info("post media",
 		"server", server,
 		"albumID", albumID,
-		"containerPath", containerPath,
-		"filePath", filePath,
+		"name", name,
 	)
 
 	if ctx.Err() != nil {
@@ -54,7 +51,7 @@ func PostMedia(
 	if server.DryRun {
 		slog.Debug(
 			"Dry run: skipping Media upload",
-			slog.String("path", filePath),
+			slog.String("name", name),
 		)
 		result = PostMediaResposnse{
 			Media: types.Media{
@@ -74,16 +71,14 @@ func PostMedia(
 		return
 	}
 
-	mediaFileName := filepath.Join(containerPath, filePath)
-
 	slog.Debug("upload request",
 		slog.String("album_id", albumID),
-		slog.String("filename", mediaFileName),
+		slog.String("name", name),
 	)
 
 	var postMediaRequest PostMediaRequestResponse
 	_, err = c.R().SetBodyJsonMarshal(PostMediaRequestRequest{
-		Filename: mediaFileName,
+		Filename: name,
 	}).
 		SetSuccessResult(&postMediaRequest).
 		SetContext(ctx).

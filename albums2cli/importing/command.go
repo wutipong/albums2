@@ -167,7 +167,7 @@ func Process(
 				)
 				continue
 			}
-			err = ProcessArchive(ctx, server, album, path)
+			err = ProcessArchive(ctx, server, album, path, "")
 		}
 
 		if err != nil {

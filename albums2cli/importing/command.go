@@ -19,7 +19,7 @@ import (
 func Command(profileStr *string) *cli.Command {
 	force := false
 	dryRun := false
-	collectionID := ""
+	collection := ""
 
 	return &cli.Command{
 		Name:  "import",
@@ -41,8 +41,8 @@ func Command(profileStr *string) *cli.Command {
 			&cli.StringFlag{
 				Name:        "collection",
 				Value:       "",
-				Usage:       "Collection ID to import media into.",
-				Destination: &collectionID,
+				Usage:       "Collection to import media into.",
+				Destination: &collection,
 				Category:    "Processing",
 				Required:    true,
 			},
@@ -74,7 +74,7 @@ func Command(profileStr *string) *cli.Command {
 			return Process(
 				ctx,
 				server,
-				collectionID,
+				collection,
 				force,
 			)
 		},
@@ -84,11 +84,21 @@ func Command(profileStr *string) *cli.Command {
 func Process(
 	ctx context.Context,
 	server api.ServerConfig,
-	collectionID string,
+	collection string,
 	force bool,
 ) error {
 	var albums []types.Album
 	var err error
+
+	r, err := api.GetCollectionByName(ctx, server, collection)
+	if err != nil {
+		return fmt.Errorf("unable to get collection information: %w", err)
+	}
+	if !r.Existed {
+		return fmt.Errorf("collection does not exist")
+	}
+
+	collectionID := r.Collection.ID
 
 	resp, err := api.GetAlbumList(ctx, server, collectionID)
 	if err != nil {

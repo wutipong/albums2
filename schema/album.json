@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/wutipong/albums2/schema/album.json",
+  "title": "Album",
+  "description": "A album information",
+  "type": "object",
+  "properties": {
+    "name": {
+      "description": "Name of the album",
+      "type": "string"
+    },
+    "cover": {
+      "description": "the object key of the cover image",
+      "type": "string"
+    },
+    "collectionID": {
+      "$ref": "common.json#/$defs/ObjectID"
+    }
+  },
+  "required": [ "name", "cover", "collectionID" ]
+}
+

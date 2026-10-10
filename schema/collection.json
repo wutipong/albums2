@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/wutipong/albums2/schema/collection.json",
+  "title": "Collection",
+  "description": "A collection information",
+  "type": "object",
+  "properties": {
+    "collectionId": {
+      "description": "The unique identifier for a collection",
+      "type": "integer"
+    },
+    "collectionName": {
+      "description": "Name of the collection",
+      "type": "string"
+    },
+    "price": {
+      "description": "The price of the collection",
+      "type": "number",
+      "exclusiveMinimum": 0
+    }
+  },
+  "required": [ "collectionId", "collectionName", "price" ]
+}
+

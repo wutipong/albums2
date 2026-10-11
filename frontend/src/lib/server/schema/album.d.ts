@@ -8,7 +8,7 @@
 /**
  * A album information
  */
-export interface Album {
+export interface AlbumDTO {
   /**
    * Name of the album
    */

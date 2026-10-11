@@ -8,7 +8,7 @@
 /**
  * A collection information
  */
-export interface Collection {
+export interface CollectionDTO {
   /**
    * The unique identifier for a collection
    */

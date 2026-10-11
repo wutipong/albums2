@@ -9,7 +9,7 @@
       "description": "The unique identifier for a collection",
       "type": "integer"
     },
-    "collectionName": {
+    "name": {
       "description": "Name of the collection",
       "type": "string"
     },

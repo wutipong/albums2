@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"time"
 
 	"github.com/minio/minio-go/v7"
 	"github.com/wutipong/albums2/gopkg/types"
@@ -83,7 +84,22 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 
 	_, err = db.MongoDB().
 		Collection("media").
-		ReplaceOne(ctx, bson.D{{Key: "_id", Value: objID}}, media)
+		UpdateByID(ctx, media.ID, bson.M{
+			"$set": bson.M{
+				"view":            media.View,
+				"viewWidth":       media.ViewWidth,
+				"viewHeight":      media.ViewHeight,
+				"preview":         media.Preview,
+				"thumbnail":       media.Thumbnail,
+				"thumbnailWidth":  media.ThumbnailWidth,
+				"thumbnailHeight": media.ThumbnailHeight,
+				"imageFrames":     media.ImageFrames,
+				"videoDuration":   media.VideoDuration,
+				"processStatus":   media.ProcessStatus,
+
+				"updatedAt": time.Now(),
+			},
+		})
 
 	if err != nil {
 		return fmt.Errorf("unable to update media information: %w", err)

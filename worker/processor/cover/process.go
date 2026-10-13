@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"time"
 
 	"github.com/minio/minio-go/v7"
 	ffmpeg "github.com/u2takey/ffmpeg-go"
@@ -92,7 +93,12 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 
 	_, err = db.MongoDB().
 		Collection("albums").
-		ReplaceOne(ctx, bson.D{{Key: "_id", Value: albumId}}, album)
+		UpdateByID(ctx, album.ID, bson.M{
+			"$set": bson.M{
+				"cover":     album.Cover,
+				"updatedAt": time.Now(),
+			},
+		})
 
 	if err != nil {
 		return fmt.Errorf("unable to update media information: %w", err)

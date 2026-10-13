@@ -7,7 +7,7 @@ export async function notifyProcessMedia(id: String) {
 		const taskRequest = {
 			type: 'media',
 			payload: {
-				media: id
+				id: id
 			}
 		};
 

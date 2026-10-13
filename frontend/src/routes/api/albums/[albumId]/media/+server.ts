@@ -1,29 +1,26 @@
-import type { RequestHandler } from '../../../media/$types';
+import type { RequestHandler } from './$types';
 import { error, json } from '@sveltejs/kit';
 import { Album, Media } from '$lib/server/database';
 import { s3 } from '$lib/server/s3';
 import * as mime from 'mime-types';
-import { randomUUID } from 'node:crypto';
+import { randomUUIDv7 } from 'node:crypto';
 import path from 'node:path';
 import log from '$lib/log';
 
 export const POST: RequestHandler = async ({ request, params }) => {
 	const req = await request.json();
-
-	log.debug(req, `POST /api/albums/${params.album_id}/media`);
-
-	const albumId = params.album_id;
 	const name = req.filename;
-
 	const contentType = mime.contentType(path.basename(name));
 
-	log.info({ albumId, name, contentType }, `POST /api/albums/${params.album_id}/media`);
+	const { albumId } = params;
+
+	log.info({ albumId, name, contentType }, `POST ${request.url}`);
 	if (!contentType) {
 		return error(400, { message: 'unable to recognize filetype' });
 	}
 
 	const extension = mime.extension(mime.lookup(name) || '');
-	const key = `public/${randomUUID()}.${extension}`;
+	const key = `origin/${randomUUIDv7()}.${extension}`;
 
 	const type = contentType.substring(0, contentType.indexOf('/'));
 
@@ -77,8 +74,8 @@ export const POST: RequestHandler = async ({ request, params }) => {
 };
 
 export const GET: RequestHandler = async ({ request, params }) => {
-	log.debug(params, `GET ${request.url} params`);
-	const albumId = params.album_id;
+	log.debug(params, `GET ${request.url}`);
+	const { albumId } = params;
 	if (await Album.exists({ albumId: albumId, deletedAt: null })) {
 		return error(404, { message: 'album not found' });
 	}

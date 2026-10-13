@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { Int32, ObjectId } from 'mongodb';
+import mongoosePaginate from 'mongoose-paginate-v2';
 
 export const CollectionSchema = new mongoose.Schema(
 	{

@@ -2,6 +2,7 @@ import { env } from '$env/dynamic/private';
 import { MongoClient } from 'mongodb';
 import mongoose from 'mongoose';
 import { CollectionSchema, AlbumSchema, MediaSchema } from '$lib/server/schema/schema';
+import mongoosePaginate from 'mongoose-paginate-v2'
 
 export const client = new MongoClient(env.DB_CONNECTION);
 export const db = client.db();
@@ -14,6 +15,10 @@ if (import.meta.hot) {
 		delete mongoose.models.Media;
 	});
 }
+
+CollectionSchema.plugin(mongoosePaginate)
+AlbumSchema.plugin(mongoosePaginate)
+MediaSchema.plugin(mongoosePaginate)
 
 export const Collection =
 	mongoose.models.Collection || mongoose.model('Collection', CollectionSchema);

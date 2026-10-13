@@ -2,7 +2,7 @@ import type { RequestHandler } from './$types';
 import { error, json } from '@sveltejs/kit';
 import { Media } from '$lib/server/database';
 import * as mime from 'mime-types';
-// import { notifyProcessAsset } from '$lib/server/grpc/worker';
+import {notifyProcessMedia} from '$lib/server/notify'
 
 export const PATCH: RequestHandler = async ({ request, params }) => {
 	const req = await request.json();
@@ -35,7 +35,7 @@ export const PATCH: RequestHandler = async ({ request, params }) => {
 
 	if (success) {
 		try {
-			// await notifyProcessAsset(asset.id);
+			await notifyProcessMedia(asset.id);
 		} catch (error) {
 			return json({ success: false, error: 'Failed to notify asset processing' }, { status: 500 });
 		}

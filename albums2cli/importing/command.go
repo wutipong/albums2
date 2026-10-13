@@ -100,7 +100,7 @@ func Process(
 
 	collectionID := r.Collection.ID
 
-	resp, err := api.GetAlbumList(ctx, server, collectionID)
+	resp, err := api.GetAlbumList(ctx, server, collectionID.Hex())
 	if err != nil {
 		err = fmt.Errorf("unable to retrieved existing albums: %w", err)
 		return err
@@ -146,7 +146,7 @@ func Process(
 				slog.String("entry", entry.Name()),
 			)
 
-			album, err = api.CreateAlbum(ctx, server, collectionID, path)
+			album, err = api.CreateAlbum(ctx, server, collectionID.Hex(), path)
 			if err != nil {
 				return fmt.Errorf("failed to create album for directory %s: %w", path, err)
 			}

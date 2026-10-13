@@ -37,7 +37,7 @@ func getCollectionById(ctx context.Context, profileName string, dryRun bool, col
 	}
 
 	slog.Info("collection",
-		slog.String("id", collection.ID),
+		slog.String("id", collection.ID.Hex()),
 		slog.String("name", collection.Name),
 	)
 
@@ -73,7 +73,7 @@ func getCollectionByName(ctx context.Context, profileName string, dryRun bool, c
 
 	if resp.Existed {
 		slog.Info("collection",
-			slog.String("id", resp.Collection.ID),
+			slog.String("id", resp.Collection.ID.Hex()),
 			slog.String("name", resp.Collection.Name),
 		)
 	} else {

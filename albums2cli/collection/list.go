@@ -39,7 +39,7 @@ func listCollections(ctx context.Context, profileName string, dryRun bool) (err 
 
 	for _, collection := range collectionList.Collections {
 		slog.Info("collections",
-			slog.String("id", collection.ID),
+			slog.String("id", collection.ID.Hex()),
 			slog.String("name", collection.Name),
 		)
 	}

@@ -38,7 +38,7 @@ func createCollection(ctx context.Context, profileName string, dryRun bool, name
 	}
 
 	slog.Info("collection created",
-		slog.String("id", collection.ID),
+		slog.String("id", collection.ID.Hex()),
 		slog.String("name", collection.Name),
 	)
 

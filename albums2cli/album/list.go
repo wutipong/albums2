@@ -40,11 +40,13 @@ func listAlbum(ctx context.Context, profileName string, collection string, dryRu
 		return fmt.Errorf("collection does not exist.")
 	}
 
+	slog.Info("collection", "name", r.Collection.Name, "id", r.Collection.ID)
+
 	collectionID := r.Collection.ID
 
-	albumList, err := api.GetAlbumList(ctx, server, collectionID)
+	albumList, err := api.GetAlbumList(ctx, server, collectionID.Hex())
 	if err != nil {
-		return err
+		return fmt.Errorf("unable to get album details for %s(%s): %w", collection, collectionID, err)
 	}
 
 	for _, album := range albumList.Albums {

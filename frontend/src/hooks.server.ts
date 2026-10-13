@@ -6,9 +6,11 @@ import mongoose from 'mongoose';
 import { env } from '$env/dynamic/private';
 import { sequence } from '@sveltejs/kit/hooks';
 import log from '$lib/log';
+import redis from '$lib/server/redis'
 
 export const init: ServerInit = async () => {
 	await mongoose.connect(env.DB_CONNECTION);
+	await redis.connect()
 };
 
 const handleBetterAuth: Handle = async ({ event, resolve }) => {

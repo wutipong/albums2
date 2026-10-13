@@ -1,7 +1,7 @@
 import { env } from '$env/dynamic/private';
-import { MongoClient, ObjectId } from 'mongodb';
+import { MongoClient } from 'mongodb';
 import mongoose from 'mongoose';
-import {CollectionSchema, AlbumSchema, MediaSchema} from '$lib/server/schema/schema'
+import { CollectionSchema, AlbumSchema, MediaSchema } from '$lib/server/schema/schema';
 
 export const client = new MongoClient(env.DB_CONNECTION);
 export const db = client.db();

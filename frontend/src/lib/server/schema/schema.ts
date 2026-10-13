@@ -1,56 +1,68 @@
-import { z } from 'zod';
 import mongoose from 'mongoose';
-import { toMongooseSchema, genTimestampsSchema, withMongoose } from '@nullix/zod-mongoose'; // 👈 Fully typed natively
+import { Int32, ObjectId } from 'mongodb';
 
-const CollectionZodSchema = withMongoose(
-	z.object({
-		name: z.string(),
-		...genTimestampsSchema()
-	}),
-	{ timestamps: true }
+export const CollectionSchema = new mongoose.Schema(
+	{
+		name: { type: String, index: true, unique: true },
+		createdAt: { type: Date, default: Date.now },
+		modifiedAt: { type: Date, default: Date.now },
+		deletedAt: Date
+	},
+	{
+		timestamps: true,
+		query: {
+			timestamps: true
+		}
+	}
 );
 
-export const CollectionSchema = toMongooseSchema(CollectionZodSchema);
-CollectionSchema.index({ name: 1 }, { unique: true });
-
-const AlbumZodSchema = withMongoose(
-	z.object({
-		name: z.string(),
-		cover: z.string(),
-		collectionID: withMongoose(z.unknown(), {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: 'Collection',
-			required: true
-		}),
-		...genTimestampsSchema()
-	}),
-	{ timestamps: true }
-);
-export const AlbumSchema = toMongooseSchema(AlbumZodSchema);
-AlbumSchema.index({ name: 1 }, { unique: true });
-
-const MediaZodSchema = withMongoose(
-	z.object({
-		name: z.string(),
-        albumID: withMongoose(z.unknown(), {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: 'Album',
-			required: true
-		}),
-		original: z.string(),
-		preview: z.string(),
-		thumbnail: z.string(),
-		view: z.string(),
-		type: z.string(),
-		viewWidth: z.int32(),
-		viewHeight: z.int32(),
-		duration: z.int32(),
-		thumbnailWidth: z.int32(),
-		thumbnailHeight: z.int32(),
-		processStatus: z.string(),
-        ...genTimestampsSchema()
-	}),
-	{ timestamps: true }
+export const AlbumSchema = new mongoose.Schema(
+	{
+		name: String,
+		collectionId: ObjectId,
+		cover: String,
+		createdAt: { type: Date, default: Date.now },
+		modifiedAt: { type: Date, default: Date.now },
+		deletedAt: Date
+	},
+	{
+		timestamps: true,
+		query: {
+			timestamps: true
+		}
+	}
 );
 
-export const MediaSchema = toMongooseSchema(MediaZodSchema);
+export const MediaSchema = new mongoose.Schema(
+	{
+		name: String,
+		albumId: ObjectId,
+		original: String,
+		type: {
+			type: String,
+			enum: ['image', 'video']
+		},
+		processStatus: {
+			type: String,
+			enum: ['uploading', 'failed', 'pending']
+		},
+		view: String,
+		viewWidth: Int32,
+		viewHeight: Int32,
+		videoDuration: Int32,
+		thumbnail: String,
+		thumbnailWidth: Int32,
+		thumbnailHeight: Int32,
+		preview: String,
+		imageFrames: Int32,
+		createdAt: { type: Date, default: Date.now },
+		modifiedAt: { type: Date, default: Date.now },
+		deletedAt: Date
+	},
+	{
+		timestamps: true,
+		query: {
+			timestamps: true
+		}
+	}
+);

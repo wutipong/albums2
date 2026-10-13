@@ -5,10 +5,10 @@ import log from '$lib/log'
 const PAGE_SIZE = 30
 
 export const load: PageServerLoad = async({ params }) => {
-	const { collectionId, page } = params;
+	const { id, page } = params;
 
     const albumsResp = await Album.paginate({
-        collectionId: collectionId, 
+        collectionId: id, 
     }, {
         page: page,
         limit: PAGE_SIZE,

@@ -20,7 +20,7 @@ export const POST: RequestHandler = async ({ request, params }) => {
 	}
 
 	const extension = mime.extension(mime.lookup(name) || '');
-	const key = `origin/${randomUUIDv7()}.${extension}`;
+	const key = `public/${randomUUIDv7()}.${extension}`;
 
 	const type = contentType.substring(0, contentType.indexOf('/'));
 

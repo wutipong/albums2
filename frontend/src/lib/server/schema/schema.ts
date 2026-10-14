@@ -1,10 +1,10 @@
 import mongoose from 'mongoose';
 import { Int32, ObjectId } from 'mongodb';
-import mongoosePaginate from 'mongoose-paginate-v2';
 
 export const CollectionSchema = new mongoose.Schema(
 	{
 		name: { type: String, index: true, unique: true },
+		description: String,
 		createdAt: { type: Date, default: Date.now },
 		modifiedAt: { type: Date, default: Date.now },
 		deletedAt: Date

@@ -1,10 +1,10 @@
 import type { PageServerLoad } from './$types';
-import { fail } from '@sveltejs/kit';
+import { error, fail } from '@sveltejs/kit';
 import { Collection } from '$lib/server/database';
 import log from '$lib/log'
 
 export const load: PageServerLoad = async ({ params }) => {
-	const rawCollections = await Collection.find().lean();
+	const rawCollections = await Collection.find().sort({name: 1}).lean();
 	const collections = JSON.parse(JSON.stringify(rawCollections));
 
 	log.debug(collections, "available collections");
@@ -16,19 +16,21 @@ export const load: PageServerLoad = async ({ params }) => {
 
 export const actions = {
 	create: async ({ request }) => {
-		const data = await request.formData();
-		const name = data.get('name');
+		try {
+			const data = await request.formData();
+			const name = data.get('name');
+			const description = data.get('description')
 
-		if (name === 'test') {
-			return fail(400, { error: 'invalid name' });
+			const newCol = new Collection({
+				name: name,
+				description: description,
+			})
+			await newCol.save()
+
+			return { success: true };
+		} catch (e) {
+			console.log(e)
+			return fail(400, {code: e.code, message: e.errmsg})
 		}
-
-        const newCol = new Collection({
-            name: name,
-            status: 'active',
-        })
-        await newCol.save()
-
-		return { success: true };
 	}
 };

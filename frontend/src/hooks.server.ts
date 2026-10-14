@@ -10,7 +10,9 @@ import redis from '$lib/server/redis'
 
 export const init: ServerInit = async () => {
 	await mongoose.connect(env.DB_CONNECTION);
-	await redis.connect()
+	if (!redis.isReady) {
+		await redis.connect()
+	}
 };
 
 const handleBetterAuth: Handle = async ({ event, resolve }) => {

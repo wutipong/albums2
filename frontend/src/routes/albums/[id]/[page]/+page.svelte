@@ -1,8 +1,12 @@
 <script lang="ts">
+	import MediaThumbnail from '$lib/components/MediaThumbnail.svelte';
+
 	const { data } = $props();
+
+	$inspect(data)
 </script>
 
 {#each data.docs as doc}
-	<a class='btn btn-link' href='/media/{doc._id}'>{doc.name}</a>
+	<MediaThumbnail media={doc}/>
 {/each}
 

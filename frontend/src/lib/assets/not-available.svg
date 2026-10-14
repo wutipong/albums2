@@ -1,0 +1,11 @@
+<svg 
+  viewbox="0 0 300 300" 
+  style="width: 100%; height: 100%;" 
+  preserveAspectRatio="xMidYMid slice" 
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <rect x="0" y="0" width="100%" height="100%" fill="#f0f0f0"/>
+  <circle cx="150" cy="150" r="48" fill="none" stroke="#bbb" stroke-width="3"/>
+  <line x1="117" y1="117" x2="183" y2="183" stroke="#bbb" stroke-width="3"/>
+  <line x1="183" y1="117" x2="117" y2="183" stroke="#bbb" stroke-width="3"/>
+</svg>

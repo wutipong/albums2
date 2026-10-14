@@ -1,8 +1,12 @@
 <script lang="ts">
+	import AlbumThumbnail from "$lib/components/AlbumThumbnail.svelte";
+
 	const { data } = $props();
+
+	$inspect(data)
 </script>
 
 {#each data.docs as album}
-	<a class='btn btn-link' href='/albums/{album._id}'>{album.name}</a>
+	<AlbumThumbnail {album} />
 {/each}
 

@@ -53,6 +53,7 @@
 	},
 	"dependencies": {
 		"@better-auth/oauth-provider": "^1.7.6",
+		"@imgproxy/imgproxy-node": "^1.1.0",
 		"@mdi/js": "^7.4.47",
 		"mime-types": "^3.0.2",
 		"mongoose": "^9.10.3",

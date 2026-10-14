@@ -26,7 +26,9 @@
 	</div>
 {/if}
 
-<ul class="list rounded-box bg-base-100 shadow-md">
+<h1 class='text-2xl m-4'>Select Collections</h1>
+
+<ul class="list rounded-box bg-base-100 shadow-md max-w-96 mx-auto border-2 border-base-300">
 	{#each data.collections as c}
 		<li class="list-row">
 			<a href='/collections/{c._id}' class='btn btn-link'>

@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-
+	import Icon from '$lib/components/Icon.svelte';
+	import {mdiPlus} from '@mdi/js'
+	
 	let { data, form } = $props();
 	let modal: HTMLDialogElement;
 </script>
@@ -27,14 +29,17 @@
 <ul class="list rounded-box bg-base-100 shadow-md">
 	{#each data.collections as c}
 		<li class="list-row">
-			<div>
+			<a href='/collections/{c._id}' class='btn btn-link'>
 				<div>{c.name}</div>
-			</div>
+			</a>
 		</li>
 	{/each}
 
 	<li class="list-row">
-		<btn class="w-full" onclick={() => modal.showModal()}>Add</btn>
+		<btn class="w-full btn btn-link" onclick={() => modal.showModal()}>
+			<Icon path='{mdiPlus}'/>
+			Add
+		</btn>
 	</li>
 </ul>
 

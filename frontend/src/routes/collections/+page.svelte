@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import Icon from '$lib/components/Icon.svelte';
-	import { mdiAlertCircle, mdiGroup, mdiPlus, mdiSignCaution } from '@mdi/js';
+	import { mdiAlertCircle, mdiCircleOffOutline, mdiGroup, mdiPlus, mdiSignCaution } from '@mdi/js';
 
 	let { data, form } = $props();
 
@@ -28,34 +28,22 @@
 	</div>
 </div>
 
-{#if form?.error}
-	<div role="alert" class="alert alert-error">
-		<svg
-			xmlns="http://www.w3.org/2000/svg"
-			fill="none"
-			viewBox="0 0 24 24"
-			class="h-6 w-6 shrink-0 stroke-current"
-		>
-			<path
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				stroke-width="2"
-				d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-			></path>
-		</svg>
-		<span>{form.error}</span>
-	</div>
-{/if}
-
 <ul class="list mx-auto mt-16 max-w-96 rounded-box border-2 border-base-300 bg-base-300 shadow-md">
 	<li class="p-4 pb-2 text-xs tracking-wide opacity-60">Available collections</li>
+	{#if data.collections.length === 0}
+		<li class="list-row opacity-60">
+			<Icon path={mdiCircleOffOutline} size={1.5} />
+			<div>
+				<div>No Collection Available</div>
+				<div class="text-xs font-semibold">An administrator can add a new collection.</div>
+			</div>
+		</li>
+	{/if}
 	{#each data.collections as c}
 		<li class="list-row">
 			<Icon path={mdiGroup} size={1.5} />
-
 			<a href="/collections/{c._id}">
 				<div>{c.name}</div>
-
 				<div class="text-xs font-semibold opacity-60">{c.description}</div>
 			</a>
 		</li>

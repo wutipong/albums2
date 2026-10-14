@@ -19,12 +19,12 @@ export const load: PageServerLoad = async ({ params }) => {
 
     log.debug(resp, "albums response")
 
-    for (let i = 0; i < resp.docs; i++) {
+    for (let i = 0; i < resp.docs.length; i++) {
         let preview_url = ''
         let thumbnail_url = ''
 
         let media = resp.docs[i]
-        if (media.processStatus == 'processed') {
+        if (media.processStatus === 'processed') {
             thumbnail_url = generateImageUrl({
 				endpoint: env.IMGPROXY_URL,
 				url: `s3://${env.S3_BUCKET}/${media.thumbnail}`,
@@ -49,6 +49,8 @@ export const load: PageServerLoad = async ({ params }) => {
 				key: env.IMGPROXY_KEY
 			});
         }
+
+        console.log(preview_url, thumbnail_url)
 
         resp.docs[i] = {
             ...media,

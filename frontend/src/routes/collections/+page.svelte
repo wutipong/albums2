@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import Icon from '$lib/components/Icon.svelte';
-	import { mdiAlertCircle, mdiCircleOffOutline, mdiGroup, mdiPlus, mdiSignCaution } from '@mdi/js';
+	import { mdiAlertCircle, mdiCircleOffOutline, mdiLibraryShelves } from '@mdi/js';
 
 	let { data, form } = $props();
 
@@ -41,7 +41,7 @@
 	{/if}
 	{#each data.collections as c}
 		<li class="list-row">
-			<Icon path={mdiGroup} size={1.5} />
+			<Icon path={mdiLibraryShelves} size={1.5} />
 			<a href="/collections/{c._id}">
 				<div>{c.name}</div>
 				<div class="text-xs font-semibold opacity-60">{c.description}</div>

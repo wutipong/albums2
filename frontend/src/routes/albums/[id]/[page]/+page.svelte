@@ -40,13 +40,17 @@
 	<div>{album.name}</div>
 </div>
 
-{#if media.docs.length === 0}
-	<div class="mx-auto my-12 max-h-96 max-w-96 opacity-60">
-		<Icon path={mdiImageOff} />
-		This album contains no media.
-	</div>
-{:else}
-	{#each media.docs as doc}
-		<MediaThumbnail media={doc} />
-	{/each}
-{/if}
+<div class="mx-4 overflow-auto pt-8">	
+	{#if media.docs.length === 0}
+		<div class="mx-auto my-12 max-h-96 max-w-96 opacity-60">
+			<Icon path={mdiImageOff} />
+			This album contains no media.
+		</div>
+	{:else}
+		<div class="flex flex-wrap justify-evenly gap-1">
+			{#each media.docs as doc}
+				<MediaThumbnail media={doc} />
+			{/each}
+		</div>
+	{/if}
+</div>

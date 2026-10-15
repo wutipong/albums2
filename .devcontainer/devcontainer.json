@@ -52,13 +52,10 @@
         "esbenp.prettier-vscode",
         "DrBlury.protobuf-vsc",
         "tamasfe.even-better-toml",
-        "NecatiARSLAN.aws-s3-vscode-extension",
         "mongodb.mongodb-vscode"
       ],
       "settings": {
         "python.terminal.activateEnvironment": false,
-        "aws.endpoint": "http://localhost:9090",
-        "aws.region": "us-east-1"
       }
     }
   }

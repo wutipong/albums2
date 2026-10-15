@@ -90,31 +90,14 @@ services:
     depends_on:
       - mongo
 
-  # Garage S3 Service
-  garage:
-    image: dxflrs/garage:v2.3.0
+  s3mock:
+    image: adobe/s3mock:latest
     environment:
-      GARAGE_DEFAULT_ACCESS_KEY: ${AWS_ACCESS_KEY_ID}
-      GARAGE_DEFAULT_SECRET_KEY: ${AWS_SECRET_ACCESS_KEY}
-      GARAGE_DEFAULT_BUCKET: ${S3_BUCKET}
+      - COM_ADOBE_TESTING_S3MOCK_STORE_INITIAL_BUCKETS=${S3_BUCKET}
+      - COM_ADOBE_TESTING_S3MOCK_STORE_ROOT=/s3mockroot
+      - COM_ADOBE_TESTING_S3MOCK_STORE_RETAIN_FILES_ON_EXIT=true
     volumes:
-      - ./garage.toml:/etc/garage.toml
-      - garage-meta:/var/lib/garage/meta
-      - garage-data:/var/lib/garage/data
-    command:
-      - /garage
-      - server
-      - --single-node
-      - --default-bucket
-
-  garage-webui:
-    image: khairul169/garage-webui:latest
-    restart: unless-stopped
-    volumes:
-      - ./garage.toml:/etc/garage.toml:ro
-    environment:
-      API_BASE_URL: "http://garage:3903"
-      S3_ENDPOINT_URL: "http://garage:3900"
+      - s3mockdata:/s3mockroot
 
   imgproxy:
     image: darthsim/imgproxy:v3
@@ -124,7 +107,7 @@ services:
       IMGPROXY_KEY: ${IMGPROXY_KEY}
       IMGPROXY_MAX_SRC_RESOLUTION: ${IMGPROXY_MAX_SRC_RESOLUTION}
       IMGPROXY_S3_ENDPOINT_USE_PATH_STYLE: ${S3_FORCE_PATH_STYLE}
-      IMGPROXY_S3_ENDPOINT: ${IMGPROXY_S3_ENDPOINT}
+      IMGPROXY_S3_ENDPOINT: ${AWS_ENDPOINT_URL}
       IMGPROXY_S3_REGION: ${AWS_DEFAULT_REGION}
       IMGPROXY_SALT: ${IMGPROXY_SALT}
       IMGPROXY_USE_S3: true
@@ -138,6 +121,5 @@ services:
 volumes:
   redis_data:
   mongo_data:
-  garage-meta:
-  garage-data:
+  s3mockdata:
   hf-cache:

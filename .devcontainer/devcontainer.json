@@ -28,23 +28,21 @@
   "postCreateCommand": "go install google.golang.org/protobuf/cmd/protoc-gen-go@latest & go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest & go install github.com/minio/mc@latest & go install github.com/cshum/vipsgen/cmd/vipsgen@latest",
   "postStartCommand": "caddy start --config .devcontainer/Caddyfile",
 
-  "mounts": [
-    "source=./mc,target=/home/vscode/.mc,type=bind,consistency=cached",
-    "source=./bin,target=/home/vscode/bin,type=bind,consistency=cached"
-  ],
+  // "mounts": [
+  //   "source=./mc,target=/home/vscode/.mc,type=bind,consistency=cached",
+  //   "source=./bin,target=/home/vscode/bin,type=bind,consistency=cached"
+  // ],
+
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   // This can be used to network with other containers or with the host.
   "forwardPorts": [
     3000,
     5173,
     "dex:5556",
-    "garage:3900",
-    "garage:3901",
-    "garage:3902",
-    "garage-webui:3909",
     "imgproxy:8080",
     "mongo-express:8081",
-    "redis-insight:5540"
+    "redis-insight:5540",
+    "s3mock:9090"
   ],
   // Configure tool-specific properties.
   "customizations": {
@@ -53,10 +51,14 @@
         "svelte.svelte-vscode",
         "esbenp.prettier-vscode",
         "DrBlury.protobuf-vsc",
-        "tamasfe.even-better-toml"
+        "tamasfe.even-better-toml",
+        "NecatiARSLAN.aws-s3-vscode-extension",
+        "mongodb.mongodb-vscode"
       ],
       "settings": {
-        "python.terminal.activateEnvironment": false
+        "python.terminal.activateEnvironment": false,
+        "aws.endpoint": "http://localhost:9090",
+        "aws.region": "us-east-1"
       }
     }
   }

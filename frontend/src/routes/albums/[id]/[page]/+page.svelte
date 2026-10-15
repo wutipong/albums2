@@ -1,20 +1,47 @@
 <script lang="ts">
 	import Icon from '$lib/components/Icon.svelte';
 	import MediaThumbnail from '$lib/components/MediaThumbnail.svelte';
-	import { mdiCircleOffOutline, mdiImageOff } from '@mdi/js';
+	import { mdiInformationOutline, mdiImageOff, mdiLibraryShelves } from '@mdi/js';
 
 	const { data } = $props();
 
-	$inspect(data)
+	$inspect(data);
 </script>
 
-{#if data.docs.length === 0}
-<div class='mx-auto my-auto max-w-96 max-h-96'>
-	<Icon path={mdiImageOff} />
-	<span>This album contains no media.</span>
+<div class="navbar bg-base-100 shadow-sm">
+	<div class="flex-1">
+		<a class="btn btn-ghost text-xl">albums2</a>
+	</div>
+	<div class="flex-none">
+		<ul class="menu menu-horizontal px-1">
+			<li>
+				<a href="/collections">
+					<Icon path={mdiLibraryShelves} />
+					<span class="hidden sm:block">Collections</span>
+				</a>
+			</li>
+			<li>
+				<details>
+					<summary>Parent</summary>
+					<ul class="rounded-t-none bg-base-100 p-2">
+						<li><a>Link 1</a></li>
+						<li><a>Link 2</a></li>
+					</ul>
+				</details>
+			</li>
+		</ul>
+	</div>
 </div>
+<div class="h-12 w-full bg-base-300 p-3">
+	<Icon path={mdiInformationOutline} />
+</div>
+
+{#if data.docs.length === 0}
+	<div class="mx-auto my-12 max-h-96 max-w-96 opacity-60">
+		<Icon path={mdiImageOff} />
+		This album contains no media.
+	</div>
 {/if}
 {#each data.docs as doc}
-	<MediaThumbnail media={doc}/>
+	<MediaThumbnail media={doc} />
 {/each}
-

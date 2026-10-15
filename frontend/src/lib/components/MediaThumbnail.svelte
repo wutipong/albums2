@@ -37,8 +37,8 @@
 				{@html notAvailableSvg}
 			{:else}
 				<img
-					width={thumbnailWidth}
-					height={thumbnailHeight}
+					width={media.thumbnailWidth}
+					height={media.thumbnailHeight}
 					src={media.thumbnail_url}
 					alt={media.id}
 					class="h-full w-full"
@@ -58,8 +58,8 @@
 				{@html notAvailableSvg}
 			{:else}
 				<img
-					width={thumbnailWidth}
-					height={thumbnailHeight}
+					width={media.thumbnailWidth}
+					height={media.thumbnailHeight}
 					src={media.preview_url}
 					alt={media.id}
 					class="h-full w-full"

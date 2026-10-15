@@ -55,6 +55,7 @@
 		"@better-auth/oauth-provider": "^1.7.6",
 		"@imgproxy/imgproxy-node": "^1.1.0",
 		"@mdi/js": "^7.4.47",
+		"bson": "^7.3.3",
 		"mime-types": "^3.0.2",
 		"mongoose": "^9.10.3",
 		"mongoose-paginate-v2": "^1.9.5",

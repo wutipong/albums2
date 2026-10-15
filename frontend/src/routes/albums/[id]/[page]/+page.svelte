@@ -1,7 +1,11 @@
 <script lang="ts">
 	import Icon from '$lib/components/Icon.svelte';
 	import MediaThumbnail from '$lib/components/MediaThumbnail.svelte';
-	import { mdiInformationOutline, mdiImageOff, mdiLibraryShelves, mdiBookshelf } from '@mdi/js';
+	import {
+		mdiInformationOutline,
+		mdiImageOff,
+	} from '@mdi/js';
+	import log from '$lib/log'
 
 	const { data } = $props();
 
@@ -9,30 +13,43 @@
 	let album = $derived(data.album);
 
 	$inspect(data);
+
+	async function createRenditionJobs() {
+		log.debug('request renditions.')
+		const resp = await fetch(`/api/albums/${album._id}/rendition-jobs`, {
+			method: 'POST'
+		});
+
+		const obj = await resp.json();
+
+		return true
+	}
 </script>
 
 <div class="navbar bg-base-100 shadow-sm">
 	<div class="flex-1">
-		<a class="btn btn-ghost text-xl">albums2</a>
+		<a class="btn btn-ghost text-xl">daisyUI</a>
 	</div>
-	<div class="flex-none">
-		<ul class="menu menu-horizontal px-1">
-			<li>
-				<a href="/collections/{album.collectionId}">
-					<Icon path={mdiBookshelf} />
-					<span class="hidden sm:block">Albums</span>
-				</a>
-			</li>
-			<li>
-				<details>
-					<summary>Parent</summary>
-					<ul class="rounded-t-none bg-base-100 p-2">
-						<li><a>Link 1</a></li>
-						<li><a>Link 2</a></li>
-					</ul>
-				</details>
-			</li>
-		</ul>
+	<div class="flex gap-2">
+		<input type="text" placeholder="Search" class="input w-24 md:w-auto" />
+		<div class="dropdown dropdown-end">
+			<div tabindex="0" role="button" class="btn avatar btn-circle btn-ghost">
+				<div class="w-10 rounded-full">
+					<img
+						alt="Tailwind CSS Navbar component"
+						src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+					/>
+				</div>
+			</div>
+			<ul
+				tabindex="-1"
+				class="menu dropdown-content z-1 mt-3 w-52 menu-sm rounded-box bg-base-100 p-2 shadow"
+			>
+				<li>
+					<button onclick={createRenditionJobs}> Process media </button>
+				</li>
+			</ul>
+		</div>
 	</div>
 </div>
 <div class="flex h-12 w-full flex-row gap-1 bg-base-300 p-3">
@@ -40,7 +57,7 @@
 	<div>{album.name}</div>
 </div>
 
-<div class="mx-4 overflow-auto pt-8">	
+<div class="mx-4 overflow-auto pt-8">
 	{#if media.docs.length === 0}
 		<div class="mx-auto my-12 max-h-96 max-w-96 opacity-60">
 			<Icon path={mdiImageOff} />

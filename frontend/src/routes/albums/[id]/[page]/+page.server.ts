@@ -42,6 +42,7 @@ export const load: PageServerLoad = async ({ params }) => {
                 endpoint: env.IMGPROXY_URL,
                 url: `s3://${env.S3_BUCKET}/${media.preview}`,
                 options: {
+                    raw: media.type !== 'image',
                     resizing_type: 'auto',
                     height: 300,
                     enlarge: 1

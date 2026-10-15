@@ -249,5 +249,9 @@ func processVideoPreview(
 			ContentType: "image/webp",
 		},
 	)
+
+	if err != nil {
+		err = fmt.Errorf("unable to upload to S3: %w", err)
+	}
 	return nil
 }

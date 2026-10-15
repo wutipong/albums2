@@ -7,11 +7,9 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/minio/minio-go/v7"
 	"github.com/wutipong/albums2/gopkg/types"
 	"github.com/wutipong/albums2/worker/processor"
 	"github.com/wutipong/albums2/worker/util/db"
-	"github.com/wutipong/albums2/worker/util/s3"
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
@@ -109,15 +107,18 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 		return fmt.Errorf("process media fails: %w", processErr)
 	}
 
-	if media.Original != media.View &&
-		media.Original != media.Preview &&
-		media.Original != media.Thumbnail {
+	/// TODO: remove object after processed.
+	/*
+		if media.Original != media.View &&
+			media.Original != media.Preview &&
+			media.Original != media.Thumbnail {
 
-		err = s3.RemoveObject(ctx,
-			media.Original,
-			minio.RemoveObjectOptions{},
-		)
-	}
+			err = s3.RemoveObject(ctx,
+				media.Original,
+				minio.RemoveObjectOptions{},
+			)
+		}
+	*/
 
 	slog.Info("process asset complete", "id", objID.String())
 

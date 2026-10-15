@@ -39,15 +39,17 @@
 	<span>{collection.name}</span>
 </div>
 
-{#if albums.docs.length === 0}
-	<div class="mx-auto my-12 max-h-96 max-w-96 opacity-60">
-		<Icon path={mdiSquareOff} />
-		This collection contains no albums.
-	</div>
-{:else}
-	<div>
-		{#each albums.docs as album}
-			<AlbumThumbnail {album} />
-		{/each}
-	</div>
-{/if}
+<div class="mx-4 overflow-auto pt-4 pb-20">
+	{#if albums.docs.length === 0}
+		<div class="mx-auto my-12 max-h-96 max-w-96 opacity-60">
+			<Icon path={mdiSquareOff} />
+			This collection contains no albums.
+		</div>
+	{:else}
+		<div class="flex flex-wrap justify-evenly gap-2">
+			{#each albums.docs as album}
+				<AlbumThumbnail {album} />
+			{/each}
+		</div>
+	{/if}
+</div>

@@ -1,5 +1,6 @@
 import { type PageServerLoad } from './$types';
-import { Media } from '$lib/server/database';
+import { Album, Media } from '$lib/server/database';
+import type { ObjectId } from 'mongoose';
 import log from '$lib/log'
 import { env } from '$env/dynamic/private'
 import { generateImageUrl } from '@imgproxy/imgproxy-node';
@@ -8,6 +9,8 @@ const PAGE_SIZE = 30
 
 export const load: PageServerLoad = async ({ params }) => {
     const { id, page } = params;
+
+    const album = await Album.findById(id).lean()
 
     const resp = await Media.paginate({
         albumId: id,
@@ -59,5 +62,8 @@ export const load: PageServerLoad = async ({ params }) => {
         }
     }
 
-    return JSON.parse(JSON.stringify(resp))
+    return {
+        album: JSON.parse(JSON.stringify(album)),
+        media: JSON.parse(JSON.stringify(resp))
+    }
 };

@@ -20,8 +20,6 @@ export const load: PageServerLoad = async ({ params }) => {
         lean: true,
     })
 
-    log.debug(resp, "albums response")
-
     for (let i = 0; i < resp.docs.length; i++) {
         let preview_url = ''
         let thumbnail_url = ''
@@ -53,8 +51,6 @@ export const load: PageServerLoad = async ({ params }) => {
             });
         }
 
-        console.log(preview_url, thumbnail_url)
-
         resp.docs[i] = {
             ...media,
             preview_url,
@@ -63,7 +59,7 @@ export const load: PageServerLoad = async ({ params }) => {
     }
 
     return {
-        album: JSON.parse(JSON.stringify(album)),
-        media: JSON.parse(JSON.stringify(resp))
+        album: album,
+        media: resp
     }
 };

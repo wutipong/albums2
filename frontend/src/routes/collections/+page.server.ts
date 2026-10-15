@@ -4,8 +4,7 @@ import { Collection } from '$lib/server/database';
 import log from '$lib/log'
 
 export const load: PageServerLoad = async ({ params }) => {
-	const rawCollections = await Collection.find().sort({name: 1}).lean();
-	const collections = JSON.parse(JSON.stringify(rawCollections));
+	const collections = await Collection.find().sort({name: 1}).lean();
 
 	log.debug(collections, "available collections");
 

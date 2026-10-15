@@ -1,9 +1,11 @@
 <script lang="ts">
 	import AlbumThumbnail from '$lib/components/AlbumThumbnail.svelte';
 	import Icon from '$lib/components/Icon.svelte';
-	import { mdiInformationOutline, mdiLibraryShelves } from '@mdi/js';
+	import { mdiInformationOutline, mdiLibraryShelves, mdiSquareOff } from '@mdi/js';
 
 	const { data } = $props();
+	const collection = $derived(data.collection);
+	const albums = $derived(data.albums);
 
 	$inspect(data);
 </script>
@@ -32,10 +34,20 @@
 		</ul>
 	</div>
 </div>
-<div class="h-12 w-full bg-base-300 p-3">
+<div class="flex h-12 w-full flex-row gap-2 bg-base-300 p-3">
 	<Icon path={mdiInformationOutline} />
+	<span>{collection.name}</span>
 </div>
 
-{#each data.docs as album}
-	<AlbumThumbnail {album} />
-{/each}
+{#if albums.docs.length === 0}
+	<div class="mx-auto my-12 max-h-96 max-w-96 opacity-60">
+		<Icon path={mdiSquareOff} />
+		This collection contains no albums.
+	</div>
+{:else}
+	<div>
+		{#each albums.docs as album}
+			<AlbumThumbnail {album} />
+		{/each}
+	</div>
+{/if}

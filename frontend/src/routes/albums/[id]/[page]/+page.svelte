@@ -35,7 +35,7 @@
 		</ul>
 	</div>
 </div>
-<div class="h-12 w-full bg-base-300 p-3 flex flex-row gap-1">
+<div class="flex h-12 w-full flex-row gap-1 bg-base-300 p-3">
 	<Icon path={mdiInformationOutline} />
 	<div>{album.name}</div>
 </div>
@@ -45,7 +45,8 @@
 		<Icon path={mdiImageOff} />
 		This album contains no media.
 	</div>
+{:else}
+	{#each media.docs as doc}
+		<MediaThumbnail media={doc} />
+	{/each}
 {/if}
-{#each media.docs as doc}
-	<MediaThumbnail media={doc} />
-{/each}

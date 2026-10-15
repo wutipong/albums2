@@ -8,8 +8,9 @@ const PAGE_SIZE = 30
 
 export const load: PageServerLoad = async ({ params }) => {
     const { id, page } = params;
+    const collection = await Collection.findById(id).lean()
 
-    const resp = await Album.paginate({
+    const albums = await Album.paginate({
         collectionId: id,
     }, {
         page: page,
@@ -17,10 +18,10 @@ export const load: PageServerLoad = async ({ params }) => {
         lean: true,
     })
 
-    log.debug(resp, "albums response")
+    log.debug(albums, "albums response")
 
-    for (let i = 0; i < resp.docs.length; i++) {
-        const album = resp.docs[i];
+    for (let i = 0; i < albums.docs.length; i++) {
+        const album = albums.docs[i];
         let cover_url = ''
         if (album.cover !== undefined && album.cover !== '') {
             cover_url = generateImageUrl({
@@ -36,8 +37,11 @@ export const load: PageServerLoad = async ({ params }) => {
                 key: env.IMGPROXY_KEY
             });
         }
-        resp.docs[i] = { ...album, cover_url }
+        albums.docs[i] = { ...album, cover_url }
     }
 
-    return JSON.parse(JSON.stringify(resp))
+    return {
+        collection,
+        albums,
+    }
 };

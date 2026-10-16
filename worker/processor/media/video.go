@@ -212,7 +212,7 @@ func processVideoPreview(
 	if err != nil {
 		return fmt.Errorf("context cancelled: %w", err)
 	}
-	outputFile, err := os.CreateTemp("", "*view.webp")
+	outputFile, err := os.CreateTemp("", "*preview.webp")
 	if err != nil {
 		return fmt.Errorf("unable to create temp file to transcode: %w", err)
 	}
@@ -227,7 +227,7 @@ func processVideoPreview(
 		originalFile.Name(),
 		outputFile.Name(),
 		duration/3,
-		0,
+		5,
 		0,
 		THUMBNAIL_QUALITY,
 		THUMBNAIL_HEIGHT,

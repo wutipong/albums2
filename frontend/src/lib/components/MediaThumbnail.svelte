@@ -43,7 +43,6 @@
 					alt={media.id}
 					class="h-full w-full"
 					onload={() => (thumbnailLoading = false)}
-					loading="lazy"
 				/>
 				<div class="h-full w-full skeleton bg-base-100" class:hidden={!thumbnailLoading}></div>
 			{/if}
@@ -54,7 +53,7 @@
 			class="box-border h-full w-full overflow-hidden rounded-xl border-1 border-base-content/20"
 			style={`width: ${thumbnailWidth}px; height: ${thumbnailHeight}px;`}
 		>
-			{#if  media.preview_url === undefined || media.preview_url == ''}
+			{#if media.preview_url === undefined || media.preview_url == ''}
 				{@html notAvailableSvg}
 			{:else}
 				<img
@@ -64,7 +63,6 @@
 					alt={media.id}
 					class="h-full w-full"
 					onload={() => (previewLoading = false)}
-					loading="lazy"
 				/>
 				<div
 					class="h-full w-full skeleton animate-pulse bg-base-200"

@@ -20,7 +20,6 @@
 							class="h-[300px] w-[200px] object-cover"
 							src={album.cover_url}
 							alt={album.id}
-							loading="lazy"
 						/>
 					{/if}
 				</div>

@@ -25,7 +25,8 @@ func ExtractScreenshotToFile(
 	return nil
 }
 
-func ExtractAnimateScreenshotToFile(inPath string,
+func ExtractAnimateScreenshotToFile(
+	inPath string,
 	outPath string,
 	pos float64,
 	seconds int64,

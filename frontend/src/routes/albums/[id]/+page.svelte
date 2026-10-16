@@ -6,6 +6,7 @@
 		mdiImageOff,
 	} from '@mdi/js';
 	import log from '$lib/log'
+	import { untrack } from 'svelte';
 
 	const { data } = $props();
 
@@ -13,6 +14,23 @@
 	let album = $derived(data.album);
 
 	$inspect(data);
+
+	let mediaItems = $state(untrack(() =>data.media.docs));
+	let currentPage = $state(untrack(()=>media));
+	let isLoading = $state(false)
+
+	async function loadNextPage(){
+		if (currentPage.page == currentPage.totalPages) {
+			return
+		}
+		
+		isLoading = true;
+		const resp = await fetch(`/api/albums/${album._id}/${currentPage.page + 1}`)
+		currentPage = await resp.json()
+		mediaItems = [...mediaItems, ...currentPage.docs]
+
+		isLoading = false;
+	}
 
 	async function createRenditionJobs() {
 		log.debug('request renditions.')
@@ -58,16 +76,22 @@
 </div>
 
 <div class="mx-4 overflow-auto pt-8">
-	{#if media.docs.length === 0}
+	{#if mediaItems.length === 0}
 		<div class="mx-auto my-12 max-h-96 max-w-96 opacity-60">
 			<Icon path={mdiImageOff} />
 			This album contains no media.
 		</div>
 	{:else}
 		<div class="flex flex-wrap justify-evenly gap-1">
-			{#each media.docs as doc}
+			{#each mediaItems as doc}
 				<MediaThumbnail media={doc} />
 			{/each}
 		</div>
 	{/if}
+	<button 
+		class='btn btn-neutral w-full' 
+		class:hidden={currentPage.page == currentPage.totalPages}
+		class:disabled={isLoading} 
+		onclick={loadNextPage}
+		>Load More</button>
 </div>

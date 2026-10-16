@@ -1,6 +1,14 @@
-import { redirect } from '@sveltejs/kit';
 import { type PageServerLoad } from './$types';
+import { Album } from '$lib/server/database';
+import { loadAlbumMediaPage } from '$lib/server/album';
 
-export const load: PageServerLoad = ({ params }) => {
-	redirect(308, `/albums/${params.id}/1`);
+export const load: PageServerLoad = async ({ params }) => {
+    const { id } = params;
+    const album = await Album.findById(id).lean()
+    const media = await loadAlbumMediaPage(id, 1)
+
+    return {
+        album: album,
+        media: media
+    }
 };

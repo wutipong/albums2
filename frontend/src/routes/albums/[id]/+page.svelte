@@ -4,6 +4,7 @@
 	import {
 		mdiInformationOutline,
 		mdiImageOff,
+		mdiBookshelf,
 	} from '@mdi/js';
 	import log from '$lib/log'
 	import { untrack } from 'svelte';
@@ -50,6 +51,10 @@
 		<a class="btn btn-ghost text-xl">daisyUI</a>
 	</div>
 	<div class="flex gap-2">
+		<a class='btn btn-ghost' href='/collections/{album.collectionId}'>
+			<Icon path={mdiBookshelf}></Icon>
+			Albums
+		</a>
 		<input type="text" placeholder="Search" class="input w-24 md:w-auto" />
 		<div class="dropdown dropdown-end">
 			<div tabindex="0" role="button" class="btn avatar btn-circle btn-ghost">

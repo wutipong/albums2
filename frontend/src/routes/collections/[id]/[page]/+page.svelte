@@ -1,6 +1,7 @@
 <script lang="ts">
 	import AlbumThumbnail from '$lib/components/AlbumThumbnail.svelte';
 	import Icon from '$lib/components/Icon.svelte';
+	import Pagination from './Pagination.svelte';
 	import { mdiInformationOutline, mdiLibraryShelves, mdiSquareOff } from '@mdi/js';
 
 	const { data } = $props();
@@ -53,3 +54,5 @@
 		</div>
 	{/if}
 </div>
+
+<Pagination currentPage={albums.page} totalPage={albums.totalPages}/>

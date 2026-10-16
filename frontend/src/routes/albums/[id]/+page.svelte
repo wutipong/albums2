@@ -10,13 +10,12 @@
 
 	const { data } = $props();
 
-	let media = $derived(data.media);
 	let album = $derived(data.album);
 
 	$inspect(data);
 
 	let mediaItems = $state(untrack(() =>data.media.docs));
-	let currentPage = $state(untrack(()=>media));
+	let currentPage = $state(untrack(()=>data.media));
 	let isLoading = $state(false)
 
 	async function loadNextPage(){
@@ -27,6 +26,8 @@
 		isLoading = true;
 		const resp = await fetch(`/api/albums/${album._id}/${currentPage.page + 1}`)
 		currentPage = await resp.json()
+		log.debug(currentPage)
+
 		mediaItems = [...mediaItems, ...currentPage.docs]
 
 		isLoading = false;

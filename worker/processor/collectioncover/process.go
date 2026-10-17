@@ -1,4 +1,4 @@
-package cover
+package collectioncover
 
 import (
 	"bytes"
@@ -24,8 +24,8 @@ import (
 )
 
 const (
-	COVER_WIDTH   = 400
-	COVER_HEIGHT  = 600
+	COVER_WIDTH   = 128
+	COVER_HEIGHT  = 128
 	COVER_QUALITY = 75
 )
 
@@ -33,11 +33,11 @@ type Processor struct {
 }
 
 func (p *Processor) GetType() string {
-	return "cover"
+	return "collectioncover"
 }
 
 type Payload struct {
-	Media string `json:"media"`
+	ID string `json:"id"`
 }
 
 func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) error {
@@ -47,7 +47,7 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 		return fmt.Errorf("unable to unmarshal the payload: %w", err)
 	}
 
-	mediaId, err := bson.ObjectIDFromHex(payload.Media)
+	mediaId, err := bson.ObjectIDFromHex(payload.ID)
 	if err != nil {
 		return fmt.Errorf("unable to parse asset id: %w", err)
 	}
@@ -67,7 +67,7 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 
 	slog.Info("cover media", "media", media)
 
-	albumId := media.ID
+	albumId := media.AlbumID
 
 	album := types.Album{}
 	r = db.MongoDB().
@@ -84,18 +84,33 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 
 	slog.Info("target album", "album", album)
 
+	collection := types.Collection{}
+	r = db.MongoDB().
+		Collection("collections").
+		FindOne(ctx, bson.D{{"_id", album.CollectionID}})
+	if r.Err() != nil {
+		return fmt.Errorf("unable to get collection information: %w", r.Err())
+	}
+
+	err = r.Decode(&collection)
+	if err != nil {
+		return fmt.Errorf("unable to parse collection information: %w", err)
+	}
+
+	slog.Info("target collection", "collection", collection)
+
 	switch media.Type {
 	case "image":
-		err = p.ProcessImage(ctx, &media, &album)
+		err = p.ProcessImage(ctx, &media, &collection)
 	case "video":
-		err = p.ProcessVideo(ctx, &media, &album)
+		err = p.ProcessVideo(ctx, &media, &collection)
 	}
 
 	_, err = db.MongoDB().
-		Collection("albums").
-		UpdateByID(ctx, album.ID, bson.M{
+		Collection("collections").
+		UpdateByID(ctx, collection.ID, bson.M{
 			"$set": bson.M{
-				"cover":     album.Cover,
+				"cover":     collection.Cover,
 				"updatedAt": time.Now(),
 			},
 		})
@@ -110,9 +125,9 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 func (p *Processor) ProcessImage(
 	ctx context.Context,
 	media *types.Media,
-	album *types.Album,
+	c *types.Collection,
 ) error {
-	slog.Info("populating album cover", slog.String("id", media.ID.String()))
+	slog.Info("populating collection cover", slog.String("id", media.ID.String()))
 
 	err := ctx.Err()
 	if err != nil {
@@ -157,13 +172,13 @@ func (p *Processor) ProcessImage(
 		return fmt.Errorf("unable to write preview image: %w", err)
 	}
 
-	if album.Cover == "" {
-		album.Cover = s3.CreateAssetKey("webp")
+	if c.Cover == "" {
+		c.Cover = s3.CreateAssetKey("webp")
 	}
 
 	_, err = s3.PutObject(
 		ctx,
-		album.Cover,
+		c.Cover,
 		bytes.NewReader(buf),
 		int64(len(buf)),
 		minio.PutObjectOptions{
@@ -179,9 +194,9 @@ func (p *Processor) ProcessImage(
 }
 
 func (p *Processor) ProcessVideo(
-	ctx context.Context, media *types.Media, album *types.Album,
+	ctx context.Context, media *types.Media, c *types.Collection,
 ) error {
-	slog.Info("process video asset thumbnail", slog.Any("id", media.ID))
+	slog.Info("process video collection thumbnail", slog.Any("id", media.ID))
 	err := ctx.Err()
 	if err != nil {
 		return fmt.Errorf("context cancelled: %w", err)
@@ -257,12 +272,12 @@ func (p *Processor) ProcessVideo(
 		return fmt.Errorf("unable to write preview image: %w", err)
 	}
 
-	if album.Cover != "" {
-		album.Cover = s3.CreateAssetKey("webp")
+	if c.Cover != "" {
+		c.Cover = s3.CreateAssetKey("webp")
 	}
 	_, err = s3.PutObject(
 		ctx,
-		album.Cover,
+		c.Cover,
 		bytes.NewReader(buf),
 		int64(len(buf)),
 		minio.PutObjectOptions{

@@ -5,6 +5,7 @@ export const CollectionSchema = new mongoose.Schema(
 	{
 		name: { type: String, index: true, unique: true },
 		description: String,
+		cover: String,
 		createdAt: { type: Date, default: Date.now },
 		modifiedAt: { type: Date, default: Date.now },
 		deletedAt: Date

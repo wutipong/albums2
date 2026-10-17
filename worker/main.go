@@ -16,7 +16,8 @@ import (
 	"github.com/kouhin/envflag"
 	"github.com/redis/go-redis/v9"
 	"github.com/wutipong/albums2/worker/processor"
-	"github.com/wutipong/albums2/worker/processor/cover"
+	"github.com/wutipong/albums2/worker/processor/albumcover"
+	"github.com/wutipong/albums2/worker/processor/collectioncover"
 	"github.com/wutipong/albums2/worker/processor/media"
 	"github.com/wutipong/albums2/worker/util"
 	"github.com/wutipong/albums2/worker/util/db"
@@ -135,7 +136,8 @@ func main() {
 	db.Init(client, cs.Database, redisClient)
 
 	processor.RegisterProcessor(&media.Processor{})
-	processor.RegisterProcessor(&cover.Processor{})
+	processor.RegisterProcessor(&albumcover.Processor{})
+	processor.RegisterProcessor(&collectioncover.Processor{})
 
 	util.Init(util.UtilOptions{
 		S3Bucket: *s3Bucket,

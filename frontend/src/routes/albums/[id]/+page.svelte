@@ -69,6 +69,37 @@
 
 		return true;
 	}
+
+	async function createRenditionJob(){
+		const resp = await fetch(`/api/media/${current._id}/rendition-job`, {
+			method: 'POST'
+		});
+
+		const obj = await resp.json();
+
+		return true;
+	}
+
+	async function createAlbumCover(){
+		const resp = await fetch(`/api/media/${current._id}/albumcover`, {
+			method: 'POST'
+		});
+
+		const obj = await resp.json();
+
+		return true;
+	}
+
+	async function createCollectionCover(){
+		const resp = await fetch(`/api/media/${current._id}/collectioncover`, {
+			method: 'POST'
+		});
+
+		const obj = await resp.json();
+
+		return true;
+	}
+
 </script>
 
 <div class="relative flex h-screen w-screen flex-col">
@@ -179,7 +210,7 @@
 		<li>
 			<button
 				onclick={() => {
-					// setAlbumCover(params.id, asset.id);
+					createAlbumCover();
 				}}
 			>
 				<Icon path={mdiImageAlbum} /> Set as album cover
@@ -188,7 +219,7 @@
 		<li>
 			<button
 				onclick={() => {
-					// setCollectionCover(params.id, asset.id);
+					createCollectionCover();
 				}}
 			>
 				<Icon path={mdiFolderMultipleImage} /> Set as collection cover
@@ -198,7 +229,7 @@
 		<li>
 			<button
 				onclick={() => {
-					// reprocessAsset(asset.id);
+					createRenditionJob()
 				}}
 			>
 				<Icon path={mdiBlender} /> Re-process this asset.

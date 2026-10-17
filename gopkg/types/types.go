@@ -5,18 +5,22 @@ import (
 )
 
 type Collection struct {
-	ID   bson.ObjectID `json:"_id" bson:"_id"`
-	Name string        `json:"name" bson:"_id"`
+	ID          bson.ObjectID `json:"_id" bson:"_id"`
+	Name        string        `json:"name" bson:"name"`
+	Description string        `json:"description" bson:"description"`
+	Cover       string        `json:"cover" bson:"cover"`
 }
 
 type Album struct {
-	ID    bson.ObjectID `json:"_id" bson:"_id"`
-	Name  string        `json:"name" bson:"name"`
-	Cover string        `json:"cover" bson:"cover"`
+	ID           bson.ObjectID `json:"_id" bson:"_id"`
+	CollectionID bson.ObjectID `json:"collectionId" bson:"collectionId"`
+	Name         string        `json:"name" bson:"name"`
+	Cover        string        `json:"cover" bson:"cover"`
 }
 
 type Media struct {
 	ID              bson.ObjectID `json:"_id" bson:"_id,omitempty"`
+	AlbumID         bson.ObjectID `json:"albumId" bson:"albumId"`
 	Name            string        `json:"name" bson:"name"`
 	Original        string        `json:"original" bson:"original"`
 	View            string        `json:"view" bson:"view"`

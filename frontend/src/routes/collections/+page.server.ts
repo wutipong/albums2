@@ -19,8 +19,8 @@ export const load: PageServerLoad = async ({ params }) => {
 					url: `s3://${env.S3_BUCKET}/${c.cover}`,
 					options: {
 						resizing_type: 'fill',
-						height: 300,
-						width: 450,
+						width: 300,
+						height: 450,
 						enlarge: 1
 					},
 					salt: env.IMGPROXY_SALT,

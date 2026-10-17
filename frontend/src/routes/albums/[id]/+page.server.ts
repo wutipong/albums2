@@ -12,3 +12,5 @@ export const load: PageServerLoad = async ({ params }) => {
         media: media
     }
 };
+
+export const ssr = false;

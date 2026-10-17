@@ -9,12 +9,12 @@
 		mdiImageAlbum,
 		mdiFolderMultipleImage,
 		mdiClipboardOutline,
-		mdiDownload
+		mdiDownload,
+		mdiLoading
 	} from '@mdi/js';
 	import log from '$lib/log';
 	import { untrack } from 'svelte';
 	import MediaViewer from '$lib/components/MediaViewer.svelte';
-	import { asset } from '$app/paths';
 
 	const { data } = $props();
 
@@ -70,7 +70,7 @@
 		return true;
 	}
 
-	async function createRenditionJob(){
+	async function createRenditionJob() {
 		const resp = await fetch(`/api/media/${current._id}/rendition-job`, {
 			method: 'POST'
 		});
@@ -80,7 +80,7 @@
 		return true;
 	}
 
-	async function createAlbumCover(){
+	async function createAlbumCover() {
 		const resp = await fetch(`/api/media/${current._id}/albumcover`, {
 			method: 'POST'
 		});
@@ -90,7 +90,7 @@
 		return true;
 	}
 
-	async function createCollectionCover(){
+	async function createCollectionCover() {
 		const resp = await fetch(`/api/media/${current._id}/collectioncover`, {
 			method: 'POST'
 		});
@@ -100,6 +100,22 @@
 		return true;
 	}
 
+	// Reusable Svelte 5 action
+	function observeVisibility(node, options = { threshold: 0.1 }) {
+		const observer = new IntersectionObserver(([entry]) => {
+			if (entry.isIntersecting) {
+				loadNextPage();
+			}
+		}, options);
+
+		observer.observe(node);
+
+		return {
+			destroy() {
+				observer.disconnect();
+			}
+		};
+	}
 </script>
 
 <div class="relative flex h-screen w-screen flex-col">
@@ -161,8 +177,12 @@
 			class="btn w-full btn-neutral"
 			class:hidden={currentPage.page == currentPage.totalPages}
 			class:disabled={isLoading}
-			onclick={loadNextPage}>Load More</button
+			onclick={loadNextPage}
+			use:observeVisibility
 		>
+			<Icon path={mdiLoading} spin={isLoading}></Icon>
+			Load More
+		</button>
 	</div>
 
 	<MediaViewer
@@ -205,7 +225,7 @@
 		</a>
 	</li-->
 	{#if /*data.user.role == 'admin' ||*/ true}
-	 	<li></li>
+		<li></li>
 		<li class="menu-item">Administration actions</li>
 		<li>
 			<button
@@ -229,7 +249,7 @@
 		<li>
 			<button
 				onclick={() => {
-					createRenditionJob()
+					createRenditionJob();
 				}}
 			>
 				<Icon path={mdiBlender} /> Re-process this asset.

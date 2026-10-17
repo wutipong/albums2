@@ -1,10 +1,20 @@
 <script lang="ts">
 	import Icon from '$lib/components/Icon.svelte';
 	import MediaThumbnail from '$lib/components/MediaThumbnail.svelte';
-	import { mdiInformationOutline, mdiImageOff, mdiBookshelf } from '@mdi/js';
+	import {
+		mdiInformationOutline,
+		mdiImageOff,
+		mdiBookshelf,
+		mdiBlender,
+		mdiImageAlbum,
+		mdiFolderMultipleImage,
+		mdiClipboardOutline,
+		mdiDownload
+	} from '@mdi/js';
 	import log from '$lib/log';
 	import { untrack } from 'svelte';
 	import MediaViewer from '$lib/components/MediaViewer.svelte';
+	import { asset } from '$app/paths';
 
 	const { data } = $props();
 
@@ -15,23 +25,23 @@
 	let mediaItems = $state(untrack(() => data.media.docs));
 	let currentPage = $state(untrack(() => data.media));
 	let isLoading = $state(false);
-	let index = $state(0)
-	let current = $derived(mediaItems[index])
-	let showViewer = $state(false)
+	let index = $state(0);
+	let current = $derived(mediaItems[index]);
+	let showViewer = $state(false);
 
 	function next() {
-		if (index == mediaItems.length -1) {
-			return
+		if (index == mediaItems.length - 1) {
+			return;
 		}
 
-		index = index +1 
+		index = index + 1;
 	}
 
 	function previous() {
 		if (index === 0) {
-			return
+			return;
 		}
-		index = index -1
+		index = index - 1;
 	}
 
 	async function loadNextPage() {
@@ -106,10 +116,13 @@
 		{:else}
 			<div class="flex flex-wrap justify-evenly gap-1">
 				{#each mediaItems as doc, i}
-					<MediaThumbnail media={doc} onclick={(asset: any) => {
-						index = i
-						showViewer = true;
-					}}/>
+					<MediaThumbnail
+						media={doc}
+						onclick={(asset: any) => {
+							index = i;
+							showViewer = true;
+						}}
+					/>
 				{/each}
 			</div>
 		{/if}
@@ -128,12 +141,68 @@
 		bind:show={showViewer}
 		{next}
 		{previous}
-		hasNext={index != 0}
-		hasPrevious={index == mediaItems.length -1}
+		hasNext={index != mediaItems.length - 1}
+		hasPrevious={index != 0}
 		menu={viewMenu}
 	/>
-
 </div>
 
 {#snippet viewMenu()}
+	<li>
+		<button
+			onclick={() => {
+				// assetInfoDialog.show(asset);
+			}}
+		>
+			<Icon path={mdiInformationOutline} /> Media information
+		</button>
+	</li>
+	<!-- li>
+		<button
+			disabled={asset.copy_url == undefined || asset.copy_url == ''}
+			onclick={() => {
+				copyImageToClipboard(asset.copy_url);
+				toast.add('Image copied to clipboard', 'success');
+			}}
+		>
+			<Icon path={mdiClipboardOutline} /> Copy to clipboard
+		</button>
+	</li>
+	<li>
+		<a href={asset.original_url} target="_blank">
+			<Icon path={mdiDownload} /> Download
+		</a>
+	</li-->
+	{#if /*data.user.role == 'admin' ||*/ true}
+	 	<li></li>
+		<li class="menu-item">Administration actions</li>
+		<li>
+			<button
+				onclick={() => {
+					// setAlbumCover(params.id, asset.id);
+				}}
+			>
+				<Icon path={mdiImageAlbum} /> Set as album cover
+			</button>
+		</li>
+		<li>
+			<button
+				onclick={() => {
+					// setCollectionCover(params.id, asset.id);
+				}}
+			>
+				<Icon path={mdiFolderMultipleImage} /> Set as collection cover
+			</button>
+		</li>
+
+		<li>
+			<button
+				onclick={() => {
+					// reprocessAsset(asset.id);
+				}}
+			>
+				<Icon path={mdiBlender} /> Re-process this asset.
+			</button>
+		</li>
+	{/if}
 {/snippet}

@@ -4,8 +4,6 @@
 	import Icon from '$lib/components/Icon.svelte';
 	import '@videojs/html/video/player';
 	import '@videojs/html/video/skin';
-	import type { VideoPlayerElement } from '@videojs/html/video';
-	import { PlayerController, selectPlayback } from '@videojs/html';
 
 	let {
 		viewURL = 'http://example.com',
@@ -20,32 +18,21 @@
 	} = $props();
 
 	let loading = $state(true);
-	let player: VideoPlayerElement;
-	let playback;
 
 	$effect(() => {
 		loading = true;
-		playback = new PlayerController(player, selectPlayback);
 	});
 
 	function doNext() {
-		if (playback) {
-			playback.pause();
-		}
 		next();
 	}
 
 	function doPrevious() {
-		if (playback) {
-			playback.pause();
-		}
 		previous();
 	}
 
 	function doClose() {
-		if (playback) {
-			playback.pause();
-		}
+        assetType = 'image'
 		show = false;
 	}
 
@@ -104,7 +91,7 @@
 	{/if}
 	{#if assetType === 'video'}
 		{#key viewURL}
-			<video-player title={filename} src={viewURL} bind:this={player}>
+			<video-player title={filename} src={viewURL}>
 				<video-skin class="block h-full w-full">
 					<video class="h-full w-full">
 						<source src={viewURL} type="video/mp4" />

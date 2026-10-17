@@ -36,7 +36,7 @@ export async function loadAlbumMediaPage(id: string, pageno: number) {
                 endpoint: env.IMGPROXY_URL,
                 url: `s3://${env.S3_BUCKET}/${media.preview}`,
                 options: {
-                    raw: media.type !== 'image',
+                    raw: true,
                     resizing_type: 'auto',
                     height: 450,
                     enlarge: 1

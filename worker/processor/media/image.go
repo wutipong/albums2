@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"mime"
 	"path/filepath"
 
 	"github.com/minio/minio-go/v7"
@@ -14,8 +15,12 @@ import (
 	"github.com/wutipong/albums2/worker/util/s3"
 )
 
-const MAX_VIEW_PIXEL = 50_000_000
-const VIEW_HEIGHT = 2000
+func calculateThumbnailSize(w, h int32) (width, height int32) {
+	width = (w * THUMBNAIL_HEIGHT) / h
+	height = THUMBNAIL_HEIGHT
+
+	return
+}
 
 func ProcessImageMedia(ctx context.Context, media *types.Media) error {
 	slog.Info("processing image media", slog.String("id", media.ID.String()))
@@ -53,6 +58,24 @@ func ProcessImageMedia(ctx context.Context, media *types.Media) error {
 		return fmt.Errorf("unable to read original image: %w", err)
 	}
 	defer original.Close()
+
+	originalExt := filepath.Ext(media.Original)
+	mt := mime.TypeByExtension(originalExt)
+	if mt == "image/jpeg" || mt == "image/webp" {
+		media.Preview = media.Original
+		media.Thumbnail = media.Original
+		tw, th := calculateThumbnailSize(int32(original.Width()), int32(original.PageHeight()))
+		media.ThumbnailWidth = tw
+		media.ThumbnailHeight = th
+
+		media.View = media.Original
+		media.ViewWidth = int32(original.Width())
+		media.ViewHeight = int32(original.PageHeight())
+
+		media.ImageFrames = 1
+
+		return nil
+	}
 
 	view, err := populateView(ctx, media, original)
 	if err != nil {
@@ -102,32 +125,10 @@ func populateView(
 		media.ViewHeight = int32(original.PageHeight())
 	}
 
-	if original.Width()*original.Height() < MAX_VIEW_PIXEL || original.Pages() == 1 {
-		media.View = media.Original
-
-		return
-	}
-
 	view, err = original.Copy(nil)
 	if err != nil {
 		err = fmt.Errorf("unable to copy original image: %w", err)
 		return
-	}
-
-	if view.Width()*view.Height() > MAX_VIEW_PIXEL {
-		factor := float64(view.Height()) / float64(VIEW_HEIGHT)
-
-		err = view.Resize(factor, &vips.ResizeOptions{
-			Kernel: vips.KernelLanczos3,
-			Gap:    2,
-		})
-		if err != nil {
-			err = fmt.Errorf("unable to resize view image: %w", err)
-			return
-		}
-
-		media.ViewWidth = int32(view.Width())
-		media.ViewHeight = int32(view.Height())
 	}
 
 	buf, err := view.WebpsaveBuffer(nil)
@@ -175,18 +176,12 @@ func populatePreview(
 
 	media.ImageFrames = int32(view.Pages())
 
-	if media.ImageFrames == 1 {
-		media.Preview = media.View
+	preview, err := view.Copy(nil)
 
-		return nil
-	}
-
-	preview, err := createPreviewForAnimationImage(view)
-	if err != nil {
-		return err
-	}
-
-	defer preview.Close()
+	err = view.ThumbnailImage(1_000_000, &vips.ThumbnailImageOptions{
+		Height: THUMBNAIL_HEIGHT,
+		Crop:   vips.InterestingNone,
+	})
 
 	params := vips.DefaultWebpsaveBufferOptions()
 	params.Q = THUMBNAIL_QUALITY
@@ -263,22 +258,22 @@ func populateThumbnail(
 		return fmt.Errorf("context cancelled: %w", err)
 	}
 
-	media.ThumbnailWidth = int32((view.Width() * THUMBNAIL_HEIGHT) / view.Height())
-	media.ThumbnailHeight = THUMBNAIL_HEIGHT
+	tw, th := calculateThumbnailSize(int32(view.Width()), int32(view.PageHeight()))
+	media.ThumbnailHeight = th
+	media.ThumbnailWidth = tw
 
-	if view.Pages() == 1 {
-		media.Thumbnail = media.View
-
-		return nil
-	}
-
-	media.ThumbnailWidth = int32((view.Width() * THUMBNAIL_HEIGHT) / view.PageHeight())
-
-	thumbnail, err := createThumbnailForAnimationImage(view, err)
+	thumbnail, err := view.Copy(nil)
 	if err != nil {
 		return err
 	}
 	defer thumbnail.Close()
+
+	thumbnail.ExtractArea(0, 0, thumbnail.Width(), thumbnail.PageHeight())
+	thumbnail.SetPages(1)
+
+	thumbnail.ThumbnailImage(1_000_000, &vips.ThumbnailImageOptions{
+		Height: THUMBNAIL_HEIGHT,
+	})
 
 	params := vips.DefaultWebpsaveBufferOptions()
 	params.Q = THUMBNAIL_QUALITY

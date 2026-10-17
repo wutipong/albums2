@@ -24,8 +24,8 @@ import (
 )
 
 const (
-	COVER_WIDTH   = 128
-	COVER_HEIGHT  = 128
+	COVER_WIDTH   = 400
+	COVER_HEIGHT  = 600
 	COVER_QUALITY = 75
 )
 

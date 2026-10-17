@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import Icon from '$lib/components/Icon.svelte';
-	import { mdiAlertCircle, mdiCircleOffOutline, mdiLibraryShelves } from '@mdi/js';
+	import CollectionThumbnail from '$lib/components/CollectionThumbnail.svelte'
+	import { mdiAlertCircle, mdiCircleOffOutline, mdiLibraryShelves, mdiSquareOff } from '@mdi/js';
 
 	let { data, form } = $props();
 
@@ -28,27 +29,20 @@
 	</div>
 </div>
 
-<ul class="list mx-auto mt-16 max-w-96 rounded-box border-2 border-base-300 bg-base-300 shadow-md">
-	<li class="p-4 pb-2 text-xs tracking-wide opacity-60">Available collections</li>
+<div class="mx-4 overflow-auto pt-4 pb-20">
 	{#if data.collections.length === 0}
-		<li class="list-row opacity-60">
-			<Icon path={mdiCircleOffOutline} size={1.5} />
-			<div>
-				<div>No Collection Available</div>
-				<div class="text-xs font-semibold">An administrator can add a new collection.</div>
-			</div>
-		</li>
+		<div class="mx-auto my-12 max-h-96 max-w-96 opacity-60">
+			<Icon path={mdiSquareOff} />
+			This collection contains no albums.
+		</div>
+	{:else}
+		<div class="flex flex-wrap justify-evenly gap-2">
+			{#each data.collections as collection}
+				<CollectionThumbnail {collection} />
+			{/each}
+		</div>
 	{/if}
-	{#each data.collections as c}
-		<li class="list-row">
-			<Icon path={mdiLibraryShelves} size={1.5} />
-			<a href="/collections/{c._id}">
-				<div>{c.name}</div>
-				<div class="text-xs font-semibold opacity-60">{c.description}</div>
-			</a>
-		</li>
-	{/each}
-</ul>
+</div>
 
 <div class="m-4 mx-auto max-w-96 rounded-box border-2 border-base-300 bg-base-200 p-4 shadow-md">
 	<div class="text-xs tracking-wide opacity-60">New collection</div>

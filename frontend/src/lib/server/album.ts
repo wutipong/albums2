@@ -25,7 +25,7 @@ export async function loadAlbumMediaPage(id: string, pageno: number) {
                 url: `s3://${env.S3_BUCKET}/${media.thumbnail}`,
                 options: {
                     resizing_type: 'auto',
-                    height: 300,
+                    height: 450,
                     enlarge: 1
                 },
                 salt: env.IMGPROXY_SALT,
@@ -38,7 +38,7 @@ export async function loadAlbumMediaPage(id: string, pageno: number) {
                 options: {
                     raw: media.type !== 'image',
                     resizing_type: 'auto',
-                    height: 300,
+                    height: 450,
                     enlarge: 1
                 },
                 salt: env.IMGPROXY_SALT,

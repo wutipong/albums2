@@ -72,7 +72,7 @@ func PutObject(
 	length int64,
 	options minio.PutObjectOptions,
 ) (info minio.UploadInfo, err error) {
-	slog.Info("put object to S3", "key", key, "reader", reader, "client", client)
+	slog.Info("put object to S3", "key", key)
 	return client.PutObject(
 		ctx, bucket,
 		key,

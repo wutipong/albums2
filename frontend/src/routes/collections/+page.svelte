@@ -33,7 +33,7 @@
 	{#if data.collections.length === 0}
 		<div class="mx-auto my-12 max-h-96 max-w-96 opacity-60">
 			<Icon path={mdiSquareOff} />
-			This collection contains no albums.
+			There is no collection available. Try create one.
 		</div>
 	{:else}
 		<div class="flex flex-wrap justify-evenly gap-2">

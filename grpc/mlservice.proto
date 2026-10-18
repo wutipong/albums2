@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+option go_package = "/service/pb";
+
+// Worker service definition.
+service EncodingService {
+
+  // EncodeText perform text embedding
+  rpc EncodeText(EncodeTextRequest) returns (EncodeResponse);
+
+  // Notify worker to queue unprocessed asset to processing queue.
+  rpc EncodeImage(EncodeImageRequest) returns (EncodeResponse);
+
+  // Return the image spec to be encoded.
+  rpc GetImageSpec(GetImageSpecRequest) returns (GetImageSpecResponse);
+}
+
+// input of text encoding
+message EncodeTextRequest{
+  string input = 1;
+}
+
+// input of image encoding
+message EncodeImageRequest {
+  bytes  image    = 1;
+}
+
+// output of encoding.
+message EncodeResponse {
+  bytes embedding = 1;
+}
+
+// get image spec input
+message GetImageSpecRequest{
+
+}
+
+// get image spec output
+message GetImageSpecResponse{
+    int32 width = 1;
+    int32 height = 2;
+}

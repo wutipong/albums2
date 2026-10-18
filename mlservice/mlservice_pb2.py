@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0fmlservice.proto\"\"\n\x11\x45ncodeTextRequest\x12\r\n\x05input\x18\x01 \x01(\t\"#\n\x12\x45ncodeImageRequest\x12\r\n\x05image\x18\x01 \x01(\x0c\"#\n\x0e\x45ncodeResponse\x12\x11\n\tembedding\x18\x01 \x01(\x0c\"\x15\n\x13GetImageSpecRequest\"5\n\x14GetImageSpecResponse\x12\r\n\x05width\x18\x01 \x01(\x05\x12\x0e\n\x06height\x18\x02 \x01(\x05\x32\xb6\x01\n\x0f\x45ncodingService\x12\x31\n\nEncodeText\x12\x12.EncodeTextRequest\x1a\x0f.EncodeResponse\x12\x33\n\x0b\x45ncodeImage\x12\x13.EncodeImageRequest\x1a\x0f.EncodeResponse\x12;\n\x0cGetImageSpec\x12\x14.GetImageSpecRequest\x1a\x15.GetImageSpecResponseB\rZ\x0b/service/pbb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0fmlservice.proto\"\"\n\x11\x45ncodeTextRequest\x12\r\n\x05input\x18\x01 \x01(\t\"#\n\x12\x45ncodeImageRequest\x12\r\n\x05image\x18\x01 \x01(\x0c\"#\n\x0e\x45ncodeResponse\x12\x11\n\tembedding\x18\x01 \x03(\x02\"\x15\n\x13GetImageSpecRequest\"5\n\x14GetImageSpecResponse\x12\r\n\x05width\x18\x01 \x01(\x05\x12\x0e\n\x06height\x18\x02 \x01(\x05\x32\xb6\x01\n\x0f\x45ncodingService\x12\x31\n\nEncodeText\x12\x12.EncodeTextRequest\x1a\x0f.EncodeResponse\x12\x33\n\x0b\x45ncodeImage\x12\x13.EncodeImageRequest\x1a\x0f.EncodeResponse\x12;\n\x0cGetImageSpec\x12\x14.GetImageSpecRequest\x1a\x15.GetImageSpecResponseB\rZ\x0b/service/pbb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)

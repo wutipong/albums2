@@ -4,7 +4,7 @@ import logging
 import threading
 import time
 from PIL import Image
-from transformers import CLIPModel, CLIPProcessor, CLIPConfig
+from transformers import AutoConfig, AutoModel, AutoProcessor
 import mlservice_pb2
 import mlservice_pb2_grpc
 import grpc
@@ -15,7 +15,7 @@ import torch
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-MODEL_ID = "openai/clip-vit-base-patch32"
+MODEL_ID = "google/siglip2-base-patch16-256"
 INACTIVITY_TIMEOUT = 300  # 5 minutes in seconds
 
 lock = threading.Lock()
@@ -24,8 +24,8 @@ class EncodingServer(mlservice_pb2_grpc.EncodingService):
     def __init__(self) -> None:
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.model = None
-        self.processor = CLIPProcessor.from_pretrained(MODEL_ID)
-        self.config = CLIPConfig.from_pretrained(MODEL_ID)
+        self.processor = AutoProcessor.from_pretrained(MODEL_ID)
+        self.config = AutoConfig.from_pretrained(MODEL_ID)
         self.logit_scale = None
         self._inactivity_timer = None
         self._load_model()
@@ -33,12 +33,12 @@ class EncodingServer(mlservice_pb2_grpc.EncodingService):
     def _load_model(self):
         """Load the model into memory."""
         if self.model is None:
-            self.model = CLIPModel.from_pretrained(
+            self.model = AutoModel.from_pretrained(
                 MODEL_ID,
             ).to(self.device)
             self.logit_scale = self.model.logit_scale.item(
             ) if self.model.logit_scale.item() else 4.60517
-            logger.info("Model clip loaded, device: %s", self.device)
+            logger.info("SigLIP2 model loaded, device: %s", self.device)
 
     def _unload_model(self):
         """Unload the model from memory after inactivity timeout."""
@@ -48,7 +48,7 @@ class EncodingServer(mlservice_pb2_grpc.EncodingService):
                 self.model = None
                 if self.device == "cuda":
                     torch.cuda.empty_cache()
-                logger.info("Model clip unloaded due to inactivity")
+                logger.info("SigLIP2 model unloaded due to inactivity")
 
     def _reset_inactivity_timer(self):
         """Reset the inactivity timer. Call this on every request."""
@@ -65,7 +65,7 @@ class EncodingServer(mlservice_pb2_grpc.EncodingService):
 
     def EncodeText(self, request, context):
         '''
-        generate the 512-d embeddings of the texts
+        generate the 768-d embeddings of the texts
         '''
 
         with lock:
@@ -73,13 +73,13 @@ class EncodingServer(mlservice_pb2_grpc.EncodingService):
             inputs = self.processor(
                 text=request.input, return_tensors="pt", padding=True).to(self.device)
             text_embeddings = self.model.get_text_features(**inputs)
-            output = text_embeddings.cpu().detach().numpy().tobytes()
+            output = text_embeddings.detach().cpu().flatten().tolist()
 
             return mlservice_pb2.EncodeResponse(embedding=output)
 
     def EncodeImage(self, request, context):
         '''
-        generate the 512-d embeddings of the images
+        generate the 768-d embeddings of the images
         '''
         with lock:
             self._ensure_model_loaded()
@@ -89,7 +89,7 @@ class EncodingServer(mlservice_pb2_grpc.EncodingService):
             inputs = self.processor(
                 images=image, return_tensors="pt", padding=True).to(self.device)
             image_embeddings = self.model.get_image_features(**inputs)
-            output = image_embeddings.cpu().detach().numpy().tobytes()
+            output = image_embeddings.detach().cpu().flatten().tolist()
 
             return mlservice_pb2.EncodeResponse(embedding=output)
 

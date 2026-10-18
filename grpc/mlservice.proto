@@ -22,12 +22,12 @@ message EncodeTextRequest{
 
 // input of image encoding
 message EncodeImageRequest {
-  bytes  image    = 1;
+  bytes image = 1;
 }
 
 // output of encoding.
 message EncodeResponse {
-  bytes embedding = 1;
+  repeated float embedding = 1;
 }
 
 // get image spec input
@@ -37,6 +37,6 @@ message GetImageSpecRequest{
 
 // get image spec output
 message GetImageSpecResponse{
-    int32 width = 1;
-    int32 height = 2;
+  int32 width  = 1;
+  int32 height = 2;
 }

@@ -12,29 +12,35 @@
 </script>
 
 <div class="navbar bg-base-100 shadow-sm">
-	<div class="flex-1">
-		<a class="btn btn-ghost text-xl">albums2</a>
+		<div class="flex-1">
+			<a class="btn btn-ghost text-xl">albums2</a>
+		</div>
+		<div class="flex gap-2">
+			<a class="btn btn-ghost" href="/collections/">
+				<Icon path={mdiLibraryShelves}></Icon>
+				Collections
+			</a>
+			<input type="text" placeholder="Search" class="input w-24 md:w-auto" />
+			<div class="dropdown dropdown-end">
+				<div tabindex="0" role="button" class="btn avatar btn-circle btn-ghost">
+					<div class="w-10 rounded-full">
+						<img
+							alt="Tailwind CSS Navbar component"
+							src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+						/>
+					</div>
+				</div>
+				<ul
+					tabindex="-1"
+					class="menu dropdown-content z-1 mt-3 w-52 menu-sm rounded-box bg-base-100 p-2 shadow"
+				>
+					<li>
+						<button onclick={createRenditionJobs}> Process media </button>
+					</li>
+				</ul>
+			</div>
+		</div>
 	</div>
-	<div class="flex-none">
-		<ul class="menu menu-horizontal px-1">
-			<li>
-				<a href="/collections">
-					<Icon path={mdiLibraryShelves} />
-					<span class="hidden sm:block">Collections</span>
-				</a>
-			</li>
-			<li>
-				<details>
-					<summary>Parent</summary>
-					<ul class="rounded-t-none bg-base-100 p-2">
-						<li><a>Link 1</a></li>
-						<li><a>Link 2</a></li>
-					</ul>
-				</details>
-			</li>
-		</ul>
-	</div>
-</div>
 <div class="flex h-12 w-full flex-row gap-2 bg-base-300 p-3">
 	<Icon path={mdiInformationOutline} />
 	<span>{collection.name}</span>

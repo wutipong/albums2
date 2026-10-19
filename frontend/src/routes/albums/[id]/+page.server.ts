@@ -1,6 +1,7 @@
 import { type PageServerLoad } from './$types';
 import { Album } from '$lib/server/database';
 import { loadAlbumMediaPage } from '$lib/server/album';
+import { redirect } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async ({ params }) => {
     const { id } = params;
@@ -14,3 +15,17 @@ export const load: PageServerLoad = async ({ params }) => {
 };
 
 export const ssr = false;
+
+
+export const actions = {
+    search: async ({ request }) => {
+
+        const data = await request.formData();
+        const text = data.get('text');
+        const collectionId = data.get('collectionId')
+
+        const query = new URLSearchParams({ search: text });
+
+        redirect(303, `/collections/${collectionId}/search?${query.toString()}`)
+    }
+};

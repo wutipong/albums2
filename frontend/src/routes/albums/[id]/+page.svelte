@@ -10,11 +10,15 @@
 		mdiFolderMultipleImage,
 		mdiClipboardOutline,
 		mdiDownload,
-		mdiLoading
+		mdiLoading,
+
+		mdiMagnify
+
 	} from '@mdi/js';
 	import log from '$lib/log';
 	import { untrack } from 'svelte';
 	import MediaViewer from '$lib/components/MediaViewer.svelte';
+	import { enhance } from '$app/forms';
 
 	const { data } = $props();
 
@@ -121,14 +125,18 @@
 <div class="relative flex h-screen w-screen flex-col">
 	<div class="navbar bg-base-100 shadow-sm">
 		<div class="flex-1">
-			<a class="btn btn-ghost text-xl">daisyUI</a>
+			<a class="btn btn-ghost text-xl">albums2</a>
 		</div>
 		<div class="flex gap-2">
 			<a class="btn btn-ghost" href="/collections/{album.collectionId}">
 				<Icon path={mdiBookshelf}></Icon>
 				Albums
 			</a>
-			<input type="text" placeholder="Search" class="input w-24 md:w-auto" />
+			<form class='join' method="POST" action="?/search" use:enhance>
+				<input type="hidden" name="collectionId" value={album.collectionId} />
+				<input type="text" placeholder="Search" required name="text" class="input join-item w-24 md:w-auto" />
+				<button class='btn join-item'><Icon path={mdiMagnify}/></button>
+			</form>
 			<div class="dropdown dropdown-end">
 				<div tabindex="0" role="button" class="btn avatar btn-circle btn-ghost">
 					<div class="w-10 rounded-full">

@@ -57,6 +57,9 @@ export const MediaSchema = new mongoose.Schema(
 		thumbnailHeight: Int32,
 		preview: String,
 		imageFrames: Int32,
+		embedding: {
+			type: [Number]
+		},
 		createdAt: { type: Date, default: Date.now },
 		modifiedAt: { type: Date, default: Date.now },
 		deletedAt: Date
@@ -68,3 +71,18 @@ export const MediaSchema = new mongoose.Schema(
 		}
 	}
 );
+
+MediaSchema.searchIndex({
+	name: 'media_search_index',
+	type: 'vectorSearch',
+	definition: {
+		fields: [
+			{
+				type: 'knnVector',
+				path: 'embedding',
+				dimensions: 768,       // ⚠️ Change to 1152 if using SO400M, or 1024/1536 depending on your model!
+				similarity: 'dotProduct' // SigLIP outputs normalized vectors; dotProduct is highly performant
+			}
+		]
+	}
+})

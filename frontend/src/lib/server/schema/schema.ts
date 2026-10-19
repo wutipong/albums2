@@ -38,6 +38,7 @@ export const AlbumSchema = new mongoose.Schema(
 export const MediaSchema = new mongoose.Schema(
 	{
 		name: String,
+		collectionId: ObjectId,
 		albumId: ObjectId,
 		original: String,
 		type: {

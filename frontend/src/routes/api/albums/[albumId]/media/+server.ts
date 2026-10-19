@@ -49,6 +49,7 @@ export const POST: RequestHandler = async ({ request, params }) => {
 		await asset.save();
 	} else {
 		asset = await Media.create({
+			collectionId: album.collectionId,
 			albumId: albumId,
 			name: name,
 			type: type,

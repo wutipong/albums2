@@ -24,7 +24,7 @@ class EncodingServer(mlservice_pb2_grpc.EncodingService):
     def __init__(self) -> None:
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.model = None
-        self.processor = AutoProcessor.from_pretrained(MODEL_ID)
+        self.processor = AutoProcessor.from_pretrained(MODEL_ID, use_fast=True)
         self.config = AutoConfig.from_pretrained(MODEL_ID)
         self.logit_scale = None
         self._inactivity_timer = None

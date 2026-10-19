@@ -9,7 +9,7 @@ export const load: PageServerLoad = async ({ params, url }) => {
         error(400, "search parameter is required.")
     }
     const embedding = await encodeText(search)
-    const media = await searchByVector(embedding)
+    const media = await searchByVector(embedding.embedding)
     
     return {
         id: params.id,

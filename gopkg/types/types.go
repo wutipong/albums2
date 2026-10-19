@@ -34,6 +34,7 @@ type Media struct {
 	Type            string        `json:"type" bson:"type"`
 	ProcessStatus   string        `json:"processStatus" bson:"processStatus"`
 	ImageFrames     int32         `json:"imageFrames" bson:"imageFrames"`
+	Embedding       []float32     `json:"embedding" bson:"embedding"`
 }
 
 type User struct {

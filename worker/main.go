@@ -18,6 +18,7 @@ import (
 	"github.com/wutipong/albums2/worker/processor"
 	"github.com/wutipong/albums2/worker/processor/albumcover"
 	"github.com/wutipong/albums2/worker/processor/collectioncover"
+	"github.com/wutipong/albums2/worker/processor/embedding"
 	"github.com/wutipong/albums2/worker/processor/media"
 	"github.com/wutipong/albums2/worker/util"
 	"github.com/wutipong/albums2/worker/util/db"
@@ -26,6 +27,8 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 	"go.mongodb.org/mongo-driver/v2/x/mongo/driver/connstring"
 )
+
+//go:generate protoc --go_out=. --go-grpc_out=. -I/workspaces/grpc mlservice.proto
 
 var (
 	logLevel    = flag.String("log-level", "info", "Set log level (debug, info, warn, error)")
@@ -138,6 +141,7 @@ func main() {
 	processor.RegisterProcessor(&media.Processor{})
 	processor.RegisterProcessor(&albumcover.Processor{})
 	processor.RegisterProcessor(&collectioncover.Processor{})
+	processor.RegisterProcessor(&embedding.Processor{})
 
 	util.Init(util.UtilOptions{
 		S3Bucket: *s3Bucket,

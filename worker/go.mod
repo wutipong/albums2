@@ -4,18 +4,21 @@ go 1.27.1
 
 require (
 	github.com/Marlliton/slogpretty v0.1.3
-	github.com/google/uuid v1.6.0
 	github.com/kouhin/envflag v0.0.0-20150818174321-0e9a86061649
 	github.com/minio/minio-go/v7 v7.3.0
 	github.com/redis/go-redis/v9 v9.23.0
 	github.com/u2takey/ffmpeg-go v0.5.0
+	github.com/wutipong/albums2/gopkg v0.0.0-20261019143850-5f87aaa61786
 	go.mongodb.org/mongo-driver/v2 v2.9.2
+	google.golang.org/grpc v1.84.0
+	google.golang.org/protobuf v1.36.12
 )
 
 require (
 	github.com/aws/aws-sdk-go v1.38.20 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
+	github.com/google/uuid v1.6.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/klauspost/compress v1.19.2 // indirect
 	github.com/klauspost/cpuid/v2 v2.4.0 // indirect
@@ -38,5 +41,7 @@ require (
 	golang.org/x/sync v0.22.0 // indirect
 	golang.org/x/sys v0.48.0 // indirect
 	golang.org/x/text v0.41.0 // indirect
+	google.golang.org/genproto v0.0.0-20261019180522-ce908d29299b // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20261012220534-4341edf3f941 // indirect
 	gopkg.in/ini.v1 v1.67.3 // indirect
 )

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import AlbumThumbnail from '$lib/components/AlbumThumbnail.svelte';
 	import Icon from '$lib/components/Icon.svelte';
+	import log from '$lib/log';
 	import Pagination from './Pagination.svelte';
 	import { mdiInformationOutline, mdiLibraryShelves, mdiSquareOff } from '@mdi/js';
 
@@ -9,6 +10,28 @@
 	const albums = $derived(data.albums);
 
 	$inspect(data);
+
+	async function createRenditionJobs() {
+		log.debug('request renditions.');
+		const resp = await fetch(`/api/albums/${data.collection._id}/rendition-jobs`, {
+			method: 'POST'
+		});
+
+		const obj = await resp.json();
+
+		return true;
+	}
+
+	async function createEmbeddingJobs() {
+		log.debug('request renditions.');
+		const resp = await fetch(`/api/albums/${data.collection._id}/rendition-jobs`, {
+			method: 'POST'
+		});
+
+		const obj = await resp.json();
+
+		return true;
+	}
 </script>
 
 <div class="navbar bg-base-100 shadow-sm">
@@ -36,6 +59,9 @@
 				>
 					<li>
 						<button onclick={createRenditionJobs}> Process media </button>
+					</li>
+					<li>
+						<button onclick={createEmbeddingJobs}> Generate media search data. </button>
 					</li>
 				</ul>
 			</div>

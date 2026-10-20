@@ -1,9 +1,10 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
 	import AlbumThumbnail from '$lib/components/AlbumThumbnail.svelte';
 	import Icon from '$lib/components/Icon.svelte';
 	import log from '$lib/log';
 	import Pagination from './Pagination.svelte';
-	import { mdiInformationOutline, mdiLibraryShelves, mdiSquareOff } from '@mdi/js';
+	import { mdiInformationOutline, mdiLibraryShelves, mdiMagnify, mdiSquareOff } from '@mdi/js';
 
 	const { data } = $props();
 	const collection = $derived(data.collection);
@@ -43,7 +44,17 @@
 			<Icon path={mdiLibraryShelves}></Icon>
 			Collections
 		</a>
-		<input type="text" placeholder="Search" class="input w-24 md:w-auto" />
+		<form class="join" method="POST" action="?/search" use:enhance>
+			<input type="hidden" name="collectionId" value={data.collection._id.toString()} />
+			<input
+				type="text"
+				placeholder="Search"
+				required
+				name="text"
+				class="input join-item w-24 md:w-auto"
+			/>
+			<button class="btn join-item"><Icon path={mdiMagnify} /></button>
+		</form>
 		<div class="dropdown dropdown-end">
 			<div tabindex="0" role="button" class="btn avatar btn-circle btn-ghost">
 				<div class="w-10 rounded-full">

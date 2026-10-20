@@ -4,6 +4,7 @@ import { error } from '@sveltejs/kit';
 import { Media } from '$lib/server/database';
 import { generateImageUrl } from '@imgproxy/imgproxy-node';
 import { env } from '$env/dynamic/private';
+import { ObjectId } from 'bson';
 
 export const ssr = false
 
@@ -16,56 +17,56 @@ export const load: PageServerLoad = async ({ params, url }) => {
 	const media = await searchByVector(params.id, embedding.embedding);
 
 	for (let i = 0; i < media.length; i++) {
-			let preview_url = ''
-			let thumbnail_url = ''
-			let view_url = ''
-	
-			let m = media[i]
-			if (m.processStatus === 'processed') {
-				thumbnail_url = generateImageUrl({
-					endpoint: env.IMGPROXY_URL,
-					url: `s3://${env.S3_BUCKET}/${m.thumbnail}`,
-					options: {
-						resizing_type: 'auto',
-						height: 450,
-						enlarge: 1
-					},
-					salt: env.IMGPROXY_SALT,
-					key: env.IMGPROXY_KEY
-				});
-	
-				preview_url = generateImageUrl({
-					endpoint: env.IMGPROXY_URL,
-					url: `s3://${env.S3_BUCKET}/${m.preview}`,
-					options: {
-						raw: true,
-						resizing_type: 'auto',
-						height: 450,
-						enlarge: 1
-					},
-					salt: env.IMGPROXY_SALT,
-					key: env.IMGPROXY_KEY
-				});
-	
-				view_url = generateImageUrl({
-					endpoint: env.IMGPROXY_URL,
-					url: `s3://${env.S3_BUCKET}/${m.view}`,
-					options: {
-						raw: true
-					},
-					salt: env.IMGPROXY_SALT,
-					key: env.IMGPROXY_KEY
-				});
-			}
-	
-			media[i] = {
-				...m,
-				preview_url,
-				thumbnail_url,
-				view_url,
-			}
+		let preview_url = ''
+		let thumbnail_url = ''
+		let view_url = ''
+
+		let m = media[i]
+		if (m.processStatus === 'processed') {
+			thumbnail_url = generateImageUrl({
+				endpoint: env.IMGPROXY_URL,
+				url: `s3://${env.S3_BUCKET}/${m.thumbnail}`,
+				options: {
+					resizing_type: 'auto',
+					height: 450,
+					enlarge: 1
+				},
+				salt: env.IMGPROXY_SALT,
+				key: env.IMGPROXY_KEY
+			});
+
+			preview_url = generateImageUrl({
+				endpoint: env.IMGPROXY_URL,
+				url: `s3://${env.S3_BUCKET}/${m.preview}`,
+				options: {
+					raw: true,
+					resizing_type: 'auto',
+					height: 450,
+					enlarge: 1
+				},
+				salt: env.IMGPROXY_SALT,
+				key: env.IMGPROXY_KEY
+			});
+
+			view_url = generateImageUrl({
+				endpoint: env.IMGPROXY_URL,
+				url: `s3://${env.S3_BUCKET}/${m.view}`,
+				options: {
+					raw: true
+				},
+				salt: env.IMGPROXY_SALT,
+				key: env.IMGPROXY_KEY
+			});
 		}
-	
+
+		media[i] = {
+			...m,
+			preview_url,
+			thumbnail_url,
+			view_url,
+		}
+	}
+
 
 	return {
 		collectionId: params.id,
@@ -80,10 +81,10 @@ async function searchByVector(collectionId: string, queryEmbedding: number[]) {
 			$vectorSearch: {
 				index: 'media_search_index',
 				path: 'embedding',
-				queryVector: queryEmbedding, // Float array generated from your SigLIP python client/server
+				queryVector: queryEmbedding, 
 				numCandidates: 100,
-				limit: 10,
-				//filter:{"collectionId": collectionId}
+				limit: 30,
+				filter: { "collectionId": new ObjectId(collectionId) }
 			}
 		},
 		{

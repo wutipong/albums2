@@ -114,7 +114,7 @@
 		{#if mediaItems.length === 0}
 			<div class="mx-auto my-12 max-h-96 max-w-96 opacity-60">
 				<Icon path={mdiImageOff} />
-				This album contains no media.
+				This search contains no results.
 			</div>
 		{:else}
 			<div class="flex flex-wrap justify-evenly gap-1">
@@ -131,6 +131,8 @@
 		{/if}
 	</div>
 
+    {#if current}
+
 	<MediaViewer
 		assetType={current.type}
 		viewURL={current.view_url}
@@ -142,6 +144,7 @@
 		hasPrevious={index != 0}
 		menu={viewMenu}
 	/>
+    {/if}
 </div>
 
 {#snippet viewMenu()}

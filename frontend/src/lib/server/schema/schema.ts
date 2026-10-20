@@ -81,8 +81,10 @@ MediaSchema.searchIndex({
 			type: 'vector',
 			path: 'embedding',
 			numDimensions: 768,
-			//dimensions: 768,
 			similarity: 'dotProduct',
+		}, {
+			type: 'filter',
+			path: 'collectionId'
 		}]
 	}
 })

@@ -1,6 +1,6 @@
 import { type PageServerLoad } from './$types';
 import { encodeText } from '$lib/server/grpc/mlservice';
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { Media } from '$lib/server/database';
 import { generateImageUrl } from '@imgproxy/imgproxy-node';
 import { env } from '$env/dynamic/private';
@@ -81,7 +81,7 @@ async function searchByVector(collectionId: string, queryEmbedding: number[]) {
 			$vectorSearch: {
 				index: 'media_search_index',
 				path: 'embedding',
-				queryVector: queryEmbedding, 
+				queryVector: queryEmbedding,
 				numCandidates: 100,
 				limit: 30,
 				filter: { "collectionId": new ObjectId(collectionId) }
@@ -95,3 +95,17 @@ async function searchByVector(collectionId: string, queryEmbedding: number[]) {
 		}
 	]);
 }
+
+
+export const actions = {
+	search: async ({ request }) => {
+
+		const data = await request.formData();
+		const text = data.get('text');
+		const collectionId = data.get('collectionId')
+
+		const query = new URLSearchParams({ search: text?.toString() ?? "" });
+
+		redirect(303, `/collections/${collectionId}/search?${query.toString()}`)
+	}
+};

@@ -81,8 +81,8 @@ MediaSchema.searchIndex({
 			{
 				type: 'knnVector',
 				path: 'embedding',
-				dimensions: 768,       // ⚠️ Change to 1152 if using SO400M, or 1024/1536 depending on your model!
-				similarity: 'dotProduct' // SigLIP outputs normalized vectors; dotProduct is highly performant
+				dimensions: 768,       
+				similarity: 'dotProduct'
 			}
 		]
 	}

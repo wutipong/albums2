@@ -7,9 +7,12 @@ import { env } from '$env/dynamic/private';
 import { sequence } from '@sveltejs/kit/hooks';
 import log from '$lib/log';
 import redis from '$lib/server/redis'
+import { Media } from '$lib/server/database';
 
 export const init: ServerInit = async () => {
 	await mongoose.connect(env.DB_CONNECTION);
+	await Media.init();
+	await Media.createSearchIndexes();
 	if (!redis.isReady) {
 		await redis.connect()
 	}

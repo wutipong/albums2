@@ -35,38 +35,38 @@
 </script>
 
 <div class="navbar bg-base-100 shadow-sm">
-		<div class="flex-1">
-			<a class="btn btn-ghost text-xl">albums2</a>
-		</div>
-		<div class="flex gap-2">
-			<a class="btn btn-ghost" href="/collections/">
-				<Icon path={mdiLibraryShelves}></Icon>
-				Collections
-			</a>
-			<input type="text" placeholder="Search" class="input w-24 md:w-auto" />
-			<div class="dropdown dropdown-end">
-				<div tabindex="0" role="button" class="btn avatar btn-circle btn-ghost">
-					<div class="w-10 rounded-full">
-						<img
-							alt="Tailwind CSS Navbar component"
-							src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-						/>
-					</div>
+	<div class="flex-1">
+		<a class="btn btn-ghost text-xl">albums2</a>
+	</div>
+	<div class="flex gap-2">
+		<a class="btn btn-ghost" href="/collections/">
+			<Icon path={mdiLibraryShelves}></Icon>
+			Collections
+		</a>
+		<input type="text" placeholder="Search" class="input w-24 md:w-auto" />
+		<div class="dropdown dropdown-end">
+			<div tabindex="0" role="button" class="btn avatar btn-circle btn-ghost">
+				<div class="w-10 rounded-full">
+					<img
+						alt="Tailwind CSS Navbar component"
+						src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+					/>
 				</div>
-				<ul
-					tabindex="-1"
-					class="menu dropdown-content z-1 mt-3 w-52 menu-sm rounded-box bg-base-100 p-2 shadow"
-				>
-					<li>
-						<button onclick={createRenditionJobs}> Process media </button>
-					</li>
-					<li>
-						<button onclick={createEmbeddingJobs}> Generate media search data. </button>
-					</li>
-				</ul>
 			</div>
+			<ul
+				tabindex="-1"
+				class="menu dropdown-content z-1 mt-3 w-52 menu-sm rounded-box bg-base-100 p-2 shadow"
+			>
+				<li>
+					<button onclick={createRenditionJobs}> Process media </button>
+				</li>
+				<li>
+					<button onclick={createEmbeddingJobs}> Generate media search data. </button>
+				</li>
+			</ul>
 		</div>
 	</div>
+</div>
 <div class="flex h-12 w-full flex-row gap-2 bg-base-300 p-3">
 	<Icon path={mdiInformationOutline} />
 	<span>{collection.name}</span>
@@ -87,4 +87,4 @@
 	{/if}
 </div>
 
-<Pagination currentPage={albums.page} totalPage={albums.totalPages}/>
+<Pagination currentPage={albums.page} totalPage={albums.totalPages} />

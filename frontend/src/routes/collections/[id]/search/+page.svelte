@@ -5,16 +5,8 @@
 		mdiInformationOutline,
 		mdiImageOff,
 		mdiBookshelf,
-		mdiBlender,
-		mdiImageAlbum,
 		mdiFolderMultipleImage,
-		mdiClipboardOutline,
-		mdiDownload,
-		mdiLoading,
-		mdiMagnify,
-		mdiFeatureSearchOutline
-	} from '@mdi/js';
-	import log from '$lib/log';
+		mdiMagnify	} from '@mdi/js';
 	import { untrack } from 'svelte';
 	import MediaViewer from '$lib/components/MediaViewer.svelte';
 	import { enhance } from '$app/forms';
@@ -63,7 +55,7 @@
 		<div class="flex gap-2">
 			<a class="btn btn-ghost" href="/collections/{data.collectionId}">
 				<Icon path={mdiBookshelf}></Icon>
-				Collection
+				Albums
 			</a>
 			<form class="join" method="POST" action="?/search" use:enhance>
 				<input type="hidden" name="collectionId" value={data.collectionId} />
@@ -118,7 +110,7 @@
 			</div>
 		{:else}
 			<div class="flex flex-wrap justify-evenly gap-1">
-				{#each mediaItems as doc, i}
+				{#each mediaItems as doc, i (doc._id)}
 					<MediaThumbnail
 						media={doc}
 						onclick={(asset: any) => {

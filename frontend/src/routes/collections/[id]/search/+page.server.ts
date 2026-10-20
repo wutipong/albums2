@@ -5,6 +5,7 @@ import { Media } from '$lib/server/database';
 import { generateImageUrl } from '@imgproxy/imgproxy-node';
 import { env } from '$env/dynamic/private';
 import { ObjectId } from 'bson';
+import log from '$lib/log'
 
 export const ssr = false
 
@@ -13,9 +14,13 @@ export const load: PageServerLoad = async ({ params, url }) => {
 	if (!search) {
 		error(400, 'search parameter is required.');
 	}
+
+	log.debug(`search: ${search}`)
+
 	const embedding = await encodeText(search);
 	const media = await searchByVector(params.id, embedding.embedding);
 
+	log.debug(`embedding: ${embedding.embedding}`)
 	for (let i = 0; i < media.length; i++) {
 		let preview_url = ''
 		let thumbnail_url = ''

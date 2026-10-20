@@ -11,6 +11,7 @@ import grpc
 import io
 import os
 import torch
+import torch.nn.functional as F
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -63,23 +64,33 @@ class EncodingServer(mlservice_pb2_grpc.EncodingService):
         self._load_model()
         self._reset_inactivity_timer()
 
+
     def EncodeText(self, request, context):
         '''
-        generate the 768-d embeddings of the texts
+        generate the L2-normalized 768-d embeddings of the texts
         '''
-
         with lock:
             self._ensure_model_loaded()
+            # Enforce max_length padding to match SigLip's training distribution
             inputs = self.processor(
-                text=request.input, return_tensors="pt", padding=True).to(self.device)
-            text_embeddings = self.model.get_text_features(**inputs)
-            output = text_embeddings.detach().cpu().flatten().tolist()
-
+                text=request.input, 
+                return_tensors="pt", 
+                padding="max_length", 
+                max_length=64, # Default for standard SigLip models
+                truncation=True
+            ).to(self.device)
+            
+            with torch.no_grad():
+                text_embeddings = self.model.get_text_features(**inputs)
+                # L2 Normalize along the final dimension (-1)
+                normalized_embeddings = F.normalize(text_embeddings, p=2, dim=-1)
+                
+            output = normalized_embeddings.cpu().flatten().tolist()
             return mlservice_pb2.EncodeResponse(embedding=output)
 
     def EncodeImage(self, request, context):
         '''
-        generate the 768-d embeddings of the images
+        generate the L2-normalized 768-d embeddings of the images
         '''
         with lock:
             self._ensure_model_loaded()
@@ -87,11 +98,16 @@ class EncodingServer(mlservice_pb2_grpc.EncodingService):
             image = Image.open(io.BytesIO(image_data))
 
             inputs = self.processor(
-                images=image, return_tensors="pt", padding=True).to(self.device)
-            image_embeddings = self.model.get_image_features(**inputs)
-            output = image_embeddings.detach().cpu().flatten().tolist()
-
+                images=image, return_tensors="pt").to(self.device) # padding=True is unnecessary for images
+                
+            with torch.no_grad():
+                image_embeddings = self.model.get_image_features(**inputs)
+                # L2 Normalize along the final dimension (-1)
+                normalized_embeddings = F.normalize(image_embeddings, p=2, dim=-1)
+                
+            output = normalized_embeddings.cpu().flatten().tolist()
             return mlservice_pb2.EncodeResponse(embedding=output)
+
 
     def GetImageSpec(self, request, context):
         width = self.config.vision_config.image_size

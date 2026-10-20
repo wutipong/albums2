@@ -9,7 +9,7 @@ export const load: PageServerLoad = async ({ params, url }) => {
 		error(400, 'search parameter is required.');
 	}
 	const embedding = await encodeText(search);
-	const media = await searchByVector(embedding.embedding);
+	const media = await searchByVector(params.id, embedding.embedding);
 
 	return {
 		id: params.id,
@@ -18,7 +18,7 @@ export const load: PageServerLoad = async ({ params, url }) => {
 	};
 };
 
-async function searchByVector(queryEmbedding: number[]) {
+async function searchByVector(collectionId: string, queryEmbedding: number[]) {
 	return await Media.aggregate([
 		{
 			$vectorSearch: {
@@ -26,7 +26,8 @@ async function searchByVector(queryEmbedding: number[]) {
 				path: 'embedding',
 				queryVector: queryEmbedding, // Float array generated from your SigLIP python client/server
 				numCandidates: 100,
-				limit: 10
+				limit: 10,
+				// filter:{"collectionId": collectionId}
 			}
 		},
 		{

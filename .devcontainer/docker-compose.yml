@@ -1,7 +1,8 @@
 services:
   app:
     # image: mcr.microsoft.com/devcontainers/base:dev-ubuntu26.04
-    env_file: .env
+    env_file: 
+      - .env
     build:
       context: .
       dockerfile: Dockerfile

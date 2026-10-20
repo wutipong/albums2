@@ -11,9 +11,8 @@
 		mdiClipboardOutline,
 		mdiDownload,
 		mdiLoading,
-
-		mdiMagnify
-
+		mdiMagnify,
+		mdiFeatureSearchOutline
 	} from '@mdi/js';
 	import log from '$lib/log';
 	import { untrack } from 'svelte';
@@ -84,6 +83,26 @@
 		return true;
 	}
 
+	async function createEmbeddingJobs() {
+		const resp = await fetch(`/api/albums/${album._id}/embedding-jobs`, {
+			method: 'POST'
+		});
+
+		const obj = await resp.json();
+
+		return true;
+	}
+
+	async function createEmbeddingJob() {
+		const resp = await fetch(`/api/media/${current._id}/embedding-job`, {
+			method: 'POST'
+		});
+
+		const obj = await resp.json();
+
+		return true;
+	}
+
 	async function createAlbumCover() {
 		const resp = await fetch(`/api/media/${current._id}/albumcover`, {
 			method: 'POST'
@@ -105,7 +124,7 @@
 	}
 
 	// Reusable Svelte 5 action
-	function observeVisibility(node, options = { threshold: 0.1 }) {
+	function observeVisibility(node: Element, options = { threshold: 0.1 }) {
 		const observer = new IntersectionObserver(([entry]) => {
 			if (entry.isIntersecting) {
 				loadNextPage();
@@ -132,10 +151,16 @@
 				<Icon path={mdiBookshelf}></Icon>
 				Albums
 			</a>
-			<form class='join' method="POST" action="?/search" use:enhance>
+			<form class="join" method="POST" action="?/search" use:enhance>
 				<input type="hidden" name="collectionId" value={album.collectionId} />
-				<input type="text" placeholder="Search" required name="text" class="input join-item w-24 md:w-auto" />
-				<button class='btn join-item'><Icon path={mdiMagnify}/></button>
+				<input
+					type="text"
+					placeholder="Search"
+					required
+					name="text"
+					class="input join-item w-24 md:w-auto"
+				/>
+				<button class="btn join-item"><Icon path={mdiMagnify} /></button>
 			</form>
 			<div class="dropdown dropdown-end">
 				<div tabindex="0" role="button" class="btn avatar btn-circle btn-ghost">
@@ -151,7 +176,16 @@
 					class="menu dropdown-content z-1 mt-3 w-52 menu-sm rounded-box bg-base-100 p-2 shadow"
 				>
 					<li>
-						<button onclick={createRenditionJobs}> Process media </button>
+						<button onclick={createRenditionJobs}>
+							<Icon path={mdiBlender} />
+							Process media
+						</button>
+					</li>
+					<li>
+						<button onclick={createEmbeddingJobs}>
+							<Icon path={mdiFeatureSearchOutline} />
+							Generate media search metadata
+						</button>
 					</li>
 				</ul>
 			</div>
@@ -261,6 +295,11 @@
 				}}
 			>
 				<Icon path={mdiBlender} /> Re-process this asset.
+			</button>
+		</li>
+		<li>
+			<button onclick={createEmbeddingJob}>
+				<Icon path={mdiFeatureSearchOutline} /> Generate search metadata
 			</button>
 		</li>
 	{/if}

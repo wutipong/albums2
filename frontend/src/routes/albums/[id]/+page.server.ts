@@ -16,17 +16,3 @@ export const load: PageServerLoad = async ({ params }) => {
 };
 
 export const ssr = false;
-
-
-export const actions = {
-    search: async ({ request }) => {
-
-        const data = await request.formData();
-        const text = data.get('text');
-        const collectionId = data.get('collectionId')
-
-        const query = new URLSearchParams({ search: text });
-
-        redirect(303, `/collections/${collectionId}/search?${query.toString()}`)
-    }
-};

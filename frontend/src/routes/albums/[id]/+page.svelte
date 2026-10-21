@@ -19,6 +19,7 @@
 	import MediaViewer from '$lib/components/MediaViewer.svelte';
 	import { enhance } from '$app/forms';
 	import MediaInfoDialog from '$lib/components/MediaInfoDialog.svelte';
+	import AlbumInfoDialog from '$lib/components/AlbumInfoDialog.svelte';
 
 	const { data } = $props();
 
@@ -141,7 +142,8 @@
 		};
 	}
 
-	let mediaInfoDlg: MediaInfoDialog
+	let mediaInfoDlg: MediaInfoDialog;
+	let albumInfoDlg: AlbumInfoDialog;
 </script>
 
 <div class="relative flex h-screen w-screen flex-col">
@@ -178,6 +180,13 @@
 					tabindex="-1"
 					class="menu dropdown-content z-1 mt-3 w-52 menu-sm rounded-box bg-base-100 p-2 shadow"
 				>
+					<li>
+						<button onclick={() => albumInfoDlg.show(current, data.collection)}>
+							<Icon path={mdiInformationOutline} />
+							Album information
+						</button>
+					</li>
+					<li></li>
 					<li>
 						<button onclick={createRenditionJobs}>
 							<Icon path={mdiBlender} />
@@ -244,6 +253,7 @@
 </div>
 
 <MediaInfoDialog bind:this={mediaInfoDlg} />
+<AlbumInfoDialog bind:this={albumInfoDlg} />
 
 {#snippet viewMenu()}
 	<li>

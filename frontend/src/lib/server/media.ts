@@ -3,9 +3,9 @@ import type { Media } from '$lib/server/database'
 import { generateImageUrl } from '@imgproxy/imgproxy-node';
 
 export function populateUrls(media: any): any {
-    let thumbnail_url, preview_url, view_url = ""
+    let thumbnailUrl, previewUrl, viewUrl = ""
     if (media.processStatus === 'processed') {
-        thumbnail_url = generateImageUrl({
+        thumbnailUrl = generateImageUrl({
             endpoint: env.IMGPROXY_URL,
             url: `s3://${env.S3_BUCKET}/${media.thumbnail}`,
             options: {
@@ -17,7 +17,7 @@ export function populateUrls(media: any): any {
             key: env.IMGPROXY_KEY
         });
 
-        preview_url = generateImageUrl({
+        previewUrl = generateImageUrl({
             endpoint: env.IMGPROXY_URL,
             url: `s3://${env.S3_BUCKET}/${media.preview}`,
             options: {
@@ -30,7 +30,7 @@ export function populateUrls(media: any): any {
             key: env.IMGPROXY_KEY
         });
 
-        view_url = generateImageUrl({
+        viewUrl = generateImageUrl({
             endpoint: env.IMGPROXY_URL,
             url: `s3://${env.S3_BUCKET}/${media.view}`,
             options: {
@@ -42,8 +42,8 @@ export function populateUrls(media: any): any {
     }
     return {
         ...media,
-        thumbnail_url, 
-        preview_url, 
-        view_url
+        thumbnailUrl, 
+        previewUrl, 
+        viewUrl
     }
 }

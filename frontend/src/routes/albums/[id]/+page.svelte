@@ -229,7 +229,7 @@
 
 	<MediaViewer
 		assetType={current.type}
-		viewURL={current.view_url}
+		viewURL={current.viewUrl}
 		filename={current.name}
 		bind:show={showViewer}
 		{next}

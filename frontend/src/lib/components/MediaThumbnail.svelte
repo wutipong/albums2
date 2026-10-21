@@ -37,13 +37,13 @@
 			class="box-border h-full w-full overflow-hidden rounded-xl border-1 border-base-content/20"
 			style={`width: ${thumbnailWidth}px; height: ${thumbnailHeight}px;`}
 		>
-			{#if media.thumbnail_url === undefined || media.thumbnail_url === ''}
+			{#if media.thumbnailUrl === undefined || media.thumbnailUrl === ''}
 				{@html notAvailableSvg}
 			{:else}
 				<img
 					width={media.thumbnailWidth}
 					height={media.thumbnailHeight}
-					src={media.thumbnail_url}
+					src={media.thumbnailUrl}
 					alt={media._id}
 					class="h-full w-full"
 					onload={() => (thumbnailLoading = false)}
@@ -57,13 +57,13 @@
 			class="box-border h-full w-full overflow-hidden rounded-xl border-1 border-base-content/20"
 			style={`width: ${thumbnailWidth}px; height: ${thumbnailHeight}px;`}
 		>
-			{#if media.preview_url === undefined || media.preview_url == ''}
+			{#if media.previewUrl === undefined || media.previewUrl == ''}
 				{@html notAvailableSvg}
 			{:else}
 				<img
 					width={media.thumbnailWidth}
 					height={media.thumbnailHeight}
-					src={media.preview_url}
+					src={media.previewUrl}
 					alt={media._id}
 					class="h-full w-full"
 					onload={() => (previewLoading = false)}

@@ -17,15 +17,24 @@
 	import log from '$lib/log'
 
 	const { data } = $props();
-	let collectionId = $derived(data.collectionId)
 	$inspect(data);
 
+	let resultsContainer: HTMLDivElement;
 	let mediaItems = $state(untrack(() => data.media.docs));
 	let currentPage = $state(untrack(() => data.media));
 	let index = $state(0);
 	let current = $derived(mediaItems[index]);
 	let showViewer = $state(false);
 	let isLoading = $state(false);
+
+	$effect(() => {
+		data.search;
+		mediaItems = data.media.docs;
+		currentPage = data.media;
+		index = 0;
+		showViewer = false;
+		resultsContainer?.scrollTo({ top: 0, behavior: 'smooth' });
+	});
 
 	function next() {
 		if (index == mediaItems.length - 1) {
@@ -139,7 +148,7 @@
 		<div>{data.search}</div>
 	</div>
 
-	<div class="mx-4 overflow-auto pt-8">
+	<div class="mx-4 overflow-auto pt-8" bind:this={resultsContainer}>
 		{#if mediaItems.length === 0}
 			<div class="mx-auto my-12 max-h-96 max-w-96 opacity-60">
 				<Icon path={mdiImageOff} />

@@ -3,7 +3,6 @@ import { Collection, Album } from '$lib/server/database';
 import { env } from '$env/dynamic/private'
 import log from '$lib/log'
 import { generateImageUrl } from '@imgproxy/imgproxy-node';
-import { redirect } from '@sveltejs/kit';
 import { ObjectId } from 'bson';
 
 const PAGE_SIZE = 30
@@ -47,15 +46,3 @@ export const load: PageServerLoad = async ({ params }) => {
     }
 };
 
-export const actions = {
-    search: async ({ request }) => {
-
-        const data = await request.formData();
-        const text = data.get('text');
-        const collectionId = data.get('collectionId')
-
-        const query = new URLSearchParams({ search: text?.toString() ?? "" });
-
-        redirect(303, `/collections/${collectionId}/search?${query.toString()}`)
-    }
-};

@@ -44,7 +44,7 @@
 			</a>
 		{/if}
 		{#if collectionId}
-			<form class="join" method="POST" action="?/search" use:enhance>
+			<form class="join" method="POST" action="/collections/{collectionId}/search?/search" use:enhance>
 				<input type="hidden" name="collectionId" value={collectionId} />
 				<input
 					type="text"
@@ -59,7 +59,7 @@
 		{#if menu}
 			<div class="dropdown dropdown-end">
 				<div tabindex="0" role="button" class="btn avatar btn-circle btn-ghost">
-					<div class="w-10 rounded-full">
+					<div class="rounded-full">
 						<Icon path={mdiMenu} />
 					</div>
 				</div>

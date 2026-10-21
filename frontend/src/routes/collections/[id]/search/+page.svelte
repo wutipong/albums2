@@ -6,20 +6,26 @@
 		mdiImageOff,
 		mdiBookshelf,
 		mdiFolderMultipleImage,
-		mdiMagnify
+		mdiMagnify,
+
+		mdiLoading
+
 	} from '@mdi/js';
 	import { untrack } from 'svelte';
 	import MediaViewer from '$lib/components/MediaViewer.svelte';
 	import { enhance } from '$app/forms';
+	import log from '$lib/log'
 
 	const { data } = $props();
-
+	let collectionId = $derived(data.collectionId)
 	$inspect(data);
 
 	let mediaItems = $state(untrack(() => data.media.docs));
+	let currentPage = $state(untrack(() => data.media));
 	let index = $state(0);
 	let current = $derived(mediaItems[index]);
 	let showViewer = $state(false);
+	let isLoading = $state(false);
 
 	function next() {
 		if (index == mediaItems.length - 1) {
@@ -44,6 +50,37 @@
 		const obj = await resp.json();
 
 		return true;
+	}
+
+	async function loadNextPage() {
+		if (currentPage.page == currentPage.totalPages) {
+			return;
+		}
+
+		isLoading = true;
+		const resp = await fetch(`/api/collections/${data.collectionId}/search?search=${data.search}&page=${currentPage.page + 1}`);
+		currentPage = await resp.json();
+		log.debug(currentPage);
+
+		mediaItems = [...mediaItems, ...currentPage.docs];
+
+		isLoading = false;
+	}
+
+	function observeVisibility(node: Element, options = { threshold: 0.1 }) {
+		const observer = new IntersectionObserver(([entry]) => {
+			if (entry.isIntersecting) {
+				loadNextPage();
+			}
+		}, options);
+
+		observer.observe(node);
+
+		return {
+			destroy() {
+				observer.disconnect();
+			}
+		};
 	}
 </script>
 
@@ -120,6 +157,16 @@
 					/>
 				{/each}
 			</div>
+			<button
+				class="btn w-full btn-neutral"
+				class:hidden={currentPage.page == currentPage.totalPages}
+				class:disabled={isLoading}
+				onclick={loadNextPage}
+				use:observeVisibility
+			>
+				<Icon path={mdiLoading} spin={isLoading}></Icon>
+				Load More
+			</button>
 		{/if}
 	</div>
 

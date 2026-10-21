@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { mdiCircleOffOutline, mdiLogout, mdiMagnify, mdiMenu, mdiStopCircleOutline } from '@mdi/js';
+	import { mdiCircleOffOutline, mdiDotsVertical, mdiLogout, mdiMagnify } from '@mdi/js';
 	import Icon from './Icon.svelte';
 	import { enhance } from '$app/forms';
 	import { onMount } from 'svelte';
@@ -65,7 +65,7 @@
 		<div class="dropdown dropdown-end">
 			<div tabindex="0" role="button" class="btn avatar btn-circle btn-ghost">
 				<div class="rounded-full">
-					<Icon path={mdiMenu} />
+					<Icon path={mdiDotsVertical} />
 				</div>
 			</div>
 			<ul

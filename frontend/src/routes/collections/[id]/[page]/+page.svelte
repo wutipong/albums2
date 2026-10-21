@@ -1,10 +1,19 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import AlbumInfoDialog from '$lib/components/AlbumInfoDialog.svelte';
 	import AlbumThumbnail from '$lib/components/AlbumThumbnail.svelte';
+	import CollectionInfoDialog from '$lib/components/CollectionInfoDialog.svelte';
 	import Icon from '$lib/components/Icon.svelte';
 	import log from '$lib/log';
 	import Pagination from './Pagination.svelte';
-	import { mdiInformationOutline, mdiLibraryShelves, mdiMagnify, mdiSquareOff } from '@mdi/js';
+	import {
+		mdiBlender,
+		mdiFeatureSearchOutline,
+		mdiInformationOutline,
+		mdiLibraryShelves,
+		mdiMagnify,
+		mdiSquareOff
+	} from '@mdi/js';
 
 	const { data } = $props();
 	const collection = $derived(data.collection);
@@ -33,6 +42,8 @@
 
 		return true;
 	}
+
+	let collectionInfoDlg: CollectionInfoDialog;
 </script>
 
 <div class="navbar bg-base-100 shadow-sm">
@@ -69,10 +80,21 @@
 				class="menu dropdown-content z-1 mt-3 w-52 menu-sm rounded-box bg-base-100 p-2 shadow"
 			>
 				<li>
-					<button onclick={createRenditionJobs}> Process media </button>
+					<button onclick={() => collectionInfoDlg.show(data.collection)}>
+						<Icon path={mdiInformationOutline} />Collection information
+					</button>
+				</li>
+				<li></li>
+				<li>
+					<button onclick={createRenditionJobs}>
+						<Icon path={mdiBlender} /> Process media
+					</button>
 				</li>
 				<li>
-					<button onclick={createEmbeddingJobs}> Generate media search data. </button>
+					<button onclick={createEmbeddingJobs}>
+						<Icon path={mdiFeatureSearchOutline} />
+						Generate media search metadata
+					</button>
 				</li>
 			</ul>
 		</div>
@@ -97,5 +119,7 @@
 		</div>
 	{/if}
 </div>
+
+<CollectionInfoDialog bind:this={collectionInfoDlg} />
 
 <Pagination currentPage={albums.page} totalPage={albums.totalPages} />

@@ -1,15 +1,15 @@
 import { populateUrls } from '$lib/server/media'
 import { Media } from '$lib/server/database';
 import { ObjectId } from 'bson';
+import { PAGE_SIZE } from '$lib/const';
 
-const PAGE_SIZE = 30
 
 export async function loadAlbumMediaPage(id: string, pageno: number) {
     const page = await Media.aggregatePaginate(
         Media.aggregate([
             { $match: { albumId: new ObjectId(id) } }
         ]), {
-        page: pageno, limit: 10, lean: true,
+        page: pageno, limit: PAGE_SIZE, lean: true,
     })
 
     for (let i = 0; i < page.docs.length; i++) {

@@ -6,7 +6,8 @@
 		mdiImageOff,
 		mdiBookshelf,
 		mdiFolderMultipleImage,
-		mdiMagnify	} from '@mdi/js';
+		mdiMagnify
+	} from '@mdi/js';
 	import { untrack } from 'svelte';
 	import MediaViewer from '$lib/components/MediaViewer.svelte';
 	import { enhance } from '$app/forms';
@@ -15,7 +16,7 @@
 
 	$inspect(data);
 
-	let mediaItems = $state(untrack(() => data.media));
+	let mediaItems = $state(untrack(() => data.media.docs));
 	let index = $state(0);
 	let current = $derived(mediaItems[index]);
 	let showViewer = $state(false);
@@ -44,7 +45,6 @@
 
 		return true;
 	}
-
 </script>
 
 <div class="relative flex h-screen w-screen flex-col">
@@ -123,20 +123,19 @@
 		{/if}
 	</div>
 
-    {#if current}
-
-	<MediaViewer
-		assetType={current.type}
-		viewURL={current.view_url}
-		filename={current.name}
-		bind:show={showViewer}
-		{next}
-		{previous}
-		hasNext={index != mediaItems.length - 1}
-		hasPrevious={index != 0}
-		menu={viewMenu}
-	/>
-    {/if}
+	{#if current}
+		<MediaViewer
+			assetType={current.type}
+			viewURL={current.view_url}
+			filename={current.name}
+			bind:show={showViewer}
+			{next}
+			{previous}
+			hasNext={index != mediaItems.length - 1}
+			hasPrevious={index != 0}
+			menu={viewMenu}
+		/>
+	{/if}
 </div>
 
 {#snippet viewMenu()}
@@ -177,6 +176,5 @@
 				<Icon path={mdiFolderMultipleImage} /> Set as collection cover
 			</button>
 		</li>
-
 	{/if}
 {/snippet}

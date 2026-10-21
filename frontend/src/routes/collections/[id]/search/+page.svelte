@@ -16,6 +16,7 @@
 	import { enhance } from '$app/forms';
 	import log from '$lib/log'
 	import MediaInfoDialog from '$lib/components/MediaInfoDialog.svelte';
+	import NavBar from '$lib/components/์NavBar.svelte';
 
 	const { data } = $props();
 	$inspect(data);
@@ -95,56 +96,13 @@
     let mediaInfoDlg: MediaInfoDialog
 </script>
 
+
+
 <div class="relative flex h-screen w-screen flex-col">
-	<div class="navbar bg-base-100 shadow-sm">
-		<div class="flex-1">
-			<a class="btn btn-ghost text-xl">albums2</a>
-		</div>
-		<div class="flex gap-2">
-			<a class="btn btn-ghost" href="/collections/{data.collectionId}">
-				<Icon path={mdiBookshelf}></Icon>
-				Albums
-			</a>
-			<form class="join" method="POST" action="?/search" use:enhance>
-				<input type="hidden" name="collectionId" value={data.collectionId} />
-				<input
-					type="text"
-					placeholder="Search"
-					required
-					name="text"
-					class="input join-item w-24 md:w-auto"
-				/>
-				<button class="btn join-item"><Icon path={mdiMagnify} /></button>
-			</form>
-			<div class="dropdown dropdown-end">
-				<div tabindex="0" role="button" class="btn avatar btn-circle btn-ghost">
-					<div class="w-10 rounded-full">
-						<img
-							alt="Tailwind CSS Navbar component"
-							src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-						/>
-					</div>
-				</div>
-				<ul
-					tabindex="-1"
-					class="menu dropdown-content z-1 mt-3 w-52 menu-sm rounded-box bg-base-100 p-2 shadow"
-				>
-					<!-- <li>
-						<button onclick={createRenditionJobs}>
-							<Icon path={mdiBlender} />
-							Process media
-						</button>
-					</li>
-					<li>
-						<button onclick={createEmbeddingJobs}>
-							<Icon path={mdiFeatureSearchOutline} />
-							Generate media search metadata
-						</button>
-					</li> -->
-				</ul>
-			</div>
-		</div>
-	</div>
+    <NavBar
+		up={{ description: 'Albums', icon: mdiBookshelf, url: `/collections/${data.collectionId}` }}
+		collectionId={data.collectionId}
+	/>
 	<div class="flex h-12 w-full flex-row gap-1 bg-base-300 p-3">
 		<Icon path={mdiMagnify} />
 		<div>{data.search}</div>

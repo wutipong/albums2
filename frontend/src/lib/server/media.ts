@@ -1,8 +1,11 @@
 import { env } from '$env/dynamic/private';
-import type { Media } from '$lib/server/database'
+import { Album, Collection } from '$lib/server/database'
 import { generateImageUrl } from '@imgproxy/imgproxy-node';
 
-export function populateUrls(media: any): any {
+export async function populateUrls(media: any): Promise<any> {
+    const c = await Collection.findById(media.collectionId)
+    const a = await Album.findById(media.albumId)
+
     let thumbnailUrl, previewUrl, viewUrl = ""
     if (media.processStatus === 'processed') {
         thumbnailUrl = generateImageUrl({
@@ -44,6 +47,8 @@ export function populateUrls(media: any): any {
         ...media,
         thumbnailUrl, 
         previewUrl, 
-        viewUrl
+        viewUrl,
+        collectionName: c.name,
+        albumName: a.name
     }
 }

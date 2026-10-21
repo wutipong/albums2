@@ -15,6 +15,7 @@
 	import MediaViewer from '$lib/components/MediaViewer.svelte';
 	import { enhance } from '$app/forms';
 	import log from '$lib/log'
+	import MediaInfoDialog from '$lib/components/MediaInfoDialog.svelte';
 
 	const { data } = $props();
 	$inspect(data);
@@ -91,6 +92,7 @@
 			}
 		};
 	}
+    let mediaInfoDlg: MediaInfoDialog
 </script>
 
 <div class="relative flex h-screen w-screen flex-col">
@@ -194,11 +196,13 @@
 	{/if}
 </div>
 
+<MediaInfoDialog bind:this={mediaInfoDlg} />
+
 {#snippet viewMenu()}
 	<li>
 		<button
 			onclick={() => {
-				// assetInfoDialog.show(asset);
+				mediaInfoDlg.show(current);
 			}}
 		>
 			<Icon path={mdiInformationOutline} /> Media information

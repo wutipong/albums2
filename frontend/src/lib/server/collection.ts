@@ -3,7 +3,7 @@ import { ObjectId } from "bson";
 import { Media } from "./database";
 import { populateUrls } from "./media";
 
-export async function searchMedia(collectionId: string, queryEmbedding: number[], page: number): Promise<any>{
+export async function searchMedia(collectionId: string, queryEmbedding: number[], page: number): Promise<any> {
     const aggregate = Media.aggregate([
         {
             $vectorSearch: {
@@ -30,7 +30,7 @@ export async function searchMedia(collectionId: string, queryEmbedding: number[]
     });
 
     for (let i = 0; i < results.docs.length; i++) {
-        let media = populateUrls(results.docs[i])
+        let media = await populateUrls(results.docs[i])
 
         results.docs[i] = media
     }

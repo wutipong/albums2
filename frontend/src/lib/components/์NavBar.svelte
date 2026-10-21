@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { mdiLogout, mdiMagnify, mdiMenu } from '@mdi/js';
+	import { mdiCircleOffOutline, mdiLogout, mdiMagnify, mdiMenu, mdiStopCircleOutline } from '@mdi/js';
 	import Icon from './Icon.svelte';
 	import { enhance } from '$app/forms';
 	import { onMount } from 'svelte';
@@ -20,11 +20,11 @@
 
 	const { up, collectionId, menu }: Props = $props();
 	let avatarSrc = $state('');
-    let user = $state({user: '<placeholder>', email: "placeholder@example.com"})
+	let user = $state({ user: '<placeholder>', email: 'placeholder@example.com' });
 
 	onMount(async () => {
-        const session = await authClient.getSession()
-        user = session.data.user
+		const session = await authClient.getSession();
+		user = session.data.user;
 
 		const hashVal = await createHash('SHA-256', 'hex').digest(user.email);
 
@@ -44,7 +44,12 @@
 			</a>
 		{/if}
 		{#if collectionId}
-			<form class="join" method="POST" action="/collections/{collectionId}/search?/search" use:enhance>
+			<form
+				class="join"
+				method="POST"
+				action="/collections/{collectionId}/search?/search"
+				use:enhance
+			>
 				<input type="hidden" name="collectionId" value={collectionId} />
 				<input
 					type="text"
@@ -56,23 +61,32 @@
 				<button class="btn join-item"><Icon path={mdiMagnify} /></button>
 			</form>
 		{/if}
-		{#if menu}
-			<div class="dropdown dropdown-end">
-				<div tabindex="0" role="button" class="btn avatar btn-circle btn-ghost">
-					<div class="rounded-full">
-						<Icon path={mdiMenu} />
-					</div>
+
+		<div class="dropdown dropdown-end">
+			<div tabindex="0" role="button" class="btn avatar btn-circle btn-ghost">
+				<div class="rounded-full">
+					<Icon path={mdiMenu} />
 				</div>
-				<ul
-					tabindex="-1"
-					class="menu dropdown-content z-1 mt-3 w-52 menu-sm rounded-box bg-base-100 p-2 shadow"
-				>
-					<ul class="rounded-t-none bg-base-100 p-2">
-						{@render menu()}
-					</ul>
-				</ul>
 			</div>
-		{/if}
+			<ul
+				tabindex="-1"
+				class="menu dropdown-content z-1 mt-3 w-52 menu-sm rounded-box bg-base-100 p-2 shadow"
+			>
+				<ul class="rounded-t-none bg-base-100 p-2">
+					{#if menu}
+						{@render menu()}
+					{:else}
+						<li class="menu-disabled">
+							<button class="disabled">
+								<Icon path={mdiCircleOffOutline} />
+								There is no actionable item.
+							</button>
+						</li>
+					{/if}
+				</ul>
+			</ul>
+		</div>
+
 		<div class="dropdown dropdown-end">
 			<div tabindex="0" role="button" class="btn avatar btn-circle btn-ghost">
 				<div class="w-10 rounded-full">

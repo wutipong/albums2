@@ -58,7 +58,6 @@
 		"mime-types": "^3.0.2",
 		"mongoose": "^9.10.3",
 		"mongoose-aggregate-paginate-v2": "^1.1.5",
-		"mongoose-paginate-v2": "^1.9.5",
 		"nice-grpc": "^2.1.17",
 		"nice-grpc-common": "^2.0.4",
 		"pino": "^10.3.1",

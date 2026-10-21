@@ -14,7 +14,6 @@
         "mime-types": "^3.0.2",
         "mongoose": "^9.10.3",
         "mongoose-aggregate-paginate-v2": "^1.1.5",
-        "mongoose-paginate-v2": "^1.9.5",
         "nice-grpc": "^2.1.17",
         "nice-grpc-common": "^2.0.4",
         "pino": "^10.3.1",
@@ -816,10 +815,6 @@
 
     "mongoose-aggregate-paginate-v2": ["mongoose-aggregate-paginate-v2@1.1.5", "", {}, "sha512-ZAw5GVz5hvQn/mRyVUbve/SXh0RUuCwRxs06o3J+nw55Y+0GMXtLSLGa/7hngXqARf3lMUawG3SpHiO6PcSRBw=="],
 
-    "mongoose-lean-virtuals": ["mongoose-lean-virtuals@1.1.1", "", { "dependencies": { "mpath": "^0.8.4" }, "peerDependencies": { "mongoose": ">=5.11.10" } }, "sha512-8chOqpVE3bcoWT2pIgcJeIZlXaOfQCavZgQZF4qytUtjRBqsNMyzUoR16qdw9XL2kC478N8iA8z0AA+NSS0d1A=="],
-
-    "mongoose-paginate-v2": ["mongoose-paginate-v2@1.9.5", "", { "dependencies": { "mongoose-lean-virtuals": "^1.1.0" } }, "sha512-sgPbV0G7SfdW1XdEuNMokzJOT85GNx786itp6UiNmDvKGyxMSHbeyn4tMZBseOmGu2uOo5ByVgfjhaxkOBY71A=="],
-
     "mpath": ["mpath@0.9.0", "", {}, "sha512-ikJRQTk8hw5DEoFVxHG1Gn9T/xcjtdnOKIU1JTmGjZZlg9LST2mBLmcX3/ICIbgJydT2GOc15RnNy5mHmzfSew=="],
 
     "mquery": ["mquery@6.0.0", "", {}, "sha512-b2KQNsmgtkscfeDgkYMcWGn9vZI9YoXh802VDEwE6qc50zxBFQ0Oo8ROkawbPAsXCY1/Z1yp0MagqsZStPWJjw=="],
@@ -1141,8 +1136,6 @@
     "mdast-util-from-markdown/unist-util-stringify-position": ["unist-util-stringify-position@4.0.0", "", { "dependencies": { "@types/unist": "^3.0.0" } }, "sha512-0ASV06AAoKCDkS2+xw5RXJywruurpbC4JZSm7nr7MOt1ojAzvyyaO+UxZf18j8FCF6kmzCZKcAgN/yu2gm2XgQ=="],
 
     "mongoose/mongodb": ["mongodb@7.6.0", "", { "dependencies": { "@mongodb-js/saslprep": "^1.4.11", "bson": "^7.2.0", "mongodb-connection-string-url": "^7.0.1" }, "peerDependencies": { "@aws-sdk/credential-providers": "^3.806.0", "@mongodb-js/zstd": "^7.0.0", "gcp-metadata": "^7.0.1", "kerberos": "^7.0.0", "mongodb-client-encryption": "^7.2.0", "snappy": "^7.3.2", "socks": "^2.8.6" }, "optionalPeers": ["@aws-sdk/credential-providers", "@mongodb-js/zstd", "gcp-metadata", "kerberos", "mongodb-client-encryption", "snappy", "socks"] }, "sha512-WbZ6OCjYw2c53LOjfkQa+reXr7kIiOVpXXglnASFuiMtif0BvsMwHe3ClJHLm1/r7wJFwaasfFtD6iYIktB01g=="],
-
-    "mongoose-lean-virtuals/mpath": ["mpath@0.8.4", "", {}, "sha512-DTxNZomBcTWlrMW76jy1wvV37X/cNNxPW1y2Jzd4DZkAaC5ZGsm8bfGfNOthcDuRJujXLqiuS6o3Tpy0JEoh7g=="],
 
     "path-scurry/lru-cache": ["lru-cache@10.4.3", "", {}, "sha512-JNAzZcXrCt42VGLuYz0zfAzDfAvJWW6AfYlDBQyDV5DClI2m5sAmK+OIO7s59XfsRsWHp02jAJrRadPRGTt6SQ=="],
 

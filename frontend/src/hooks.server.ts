@@ -1,4 +1,4 @@
-import { json, type Handle, type HandleServerError, type ServerInit } from '@sveltejs/kit';
+import { error, json, type Handle, type HandleServerError, type ServerInit } from '@sveltejs/kit';
 import { building } from '$app/environment';
 import { auth } from '$lib/server/auth';
 import { svelteKitHandler } from 'better-auth/svelte-kit';
@@ -29,4 +29,31 @@ const handleBetterAuth: Handle = async ({ event, resolve }) => {
 	return svelteKitHandler({ event, resolve, auth, building });
 };
 
-export const handle: Handle = sequence(handleBetterAuth /*, handleError*/);
+const handleSession: Handle = async ({ event, resolve }) => {
+	if (event.url.pathname == '/login' || event.url.pathname == '/') {
+		return resolve(event);
+	}
+
+	const session = event.locals.session;
+	if (!session) {
+		error(403, 'forbidden.');
+	}
+
+	return resolve(event);
+};
+
+const handleAdmin: Handle = async ({ event, resolve }) => {
+	if (!event.url.pathname.startsWith('/admin')) {
+		return resolve(event);
+	}
+
+	const user = event.locals.user;
+	if (!user || user.role !== 'admin') {
+		error(403, 'forbidden.');
+	}
+
+	return resolve(event);
+};
+
+
+export const handle: Handle = sequence(handleBetterAuth, handleAdmin, handleSession);

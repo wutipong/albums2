@@ -3,31 +3,15 @@
 	import Icon from '$lib/components/Icon.svelte';
 	import CollectionThumbnail from '$lib/components/CollectionThumbnail.svelte'
 	import { mdiAlertCircle, mdiCircleOffOutline, mdiLibraryShelves, mdiSquareOff } from '@mdi/js';
+	import NavBar from '$lib/components/์NavBar.svelte';
+	import { authClient } from '$lib/auth';
 
 	let { data, form } = $props();
 
 	$inspect(data);
 </script>
 
-<div class="navbar bg-base-100 shadow-sm">
-	<div class="flex-1">
-		<a class="btn btn-ghost text-xl">daisyUI</a>
-	</div>
-	<div class="flex-none">
-		<ul class="menu menu-horizontal px-1">
-			<li><a>Link</a></li>
-			<li>
-				<details>
-					<summary>Parent</summary>
-					<ul class="rounded-t-none bg-base-100 p-2">
-						<li><a>Link 1</a></li>
-						<li><a>Link 2</a></li>
-					</ul>
-				</details>
-			</li>
-		</ul>
-	</div>
-</div>
+<NavBar />
 
 <div class="mx-4 overflow-auto pt-4 pb-20">
 	{#if data.collections.length === 0}

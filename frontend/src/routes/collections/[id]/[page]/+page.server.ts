@@ -4,6 +4,7 @@ import { env } from '$env/dynamic/private'
 import log from '$lib/log'
 import { generateImageUrl } from '@imgproxy/imgproxy-node';
 import { redirect } from '@sveltejs/kit';
+import { ObjectId } from 'bson';
 
 const PAGE_SIZE = 30
 
@@ -11,13 +12,12 @@ export const load: PageServerLoad = async ({ params }) => {
     const { id, page } = params;
     const collection = await Collection.findById(id).lean()
 
-    const albums = await Album.paginate({
-        collectionId: id,
-    }, {
-        page: page,
-        limit: PAGE_SIZE,
-        lean: true,
-    })
+    const albums = await Album.aggregatePaginate(
+            Album.aggregate([
+                { $match: { collectionId: new ObjectId(id), } }
+            ]), {
+            page: page, limit: PAGE_SIZE, lean: true,
+        })
 
     log.debug(albums, "albums response")
 

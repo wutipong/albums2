@@ -44,7 +44,7 @@
 					width={media.thumbnailWidth}
 					height={media.thumbnailHeight}
 					src={media.thumbnail_url}
-					alt={media.id}
+					alt={media._id}
 					class="h-full w-full"
 					onload={() => (thumbnailLoading = false)}
 				/>
@@ -64,7 +64,7 @@
 					width={media.thumbnailWidth}
 					height={media.thumbnailHeight}
 					src={media.preview_url}
-					alt={media.id}
+					alt={media._id}
 					class="h-full w-full"
 					onload={() => (previewLoading = false)}
 				/>

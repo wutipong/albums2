@@ -3,6 +3,7 @@ import { MongoClient } from 'mongodb';
 import mongoose from 'mongoose';
 import { CollectionSchema, AlbumSchema, MediaSchema } from '$lib/server/schema/schema';
 import mongoosePaginate from 'mongoose-paginate-v2'
+import aggregatePaginate from 'mongoose-aggregate-paginate-v2'
 
 export const client = new MongoClient(env.DB_CONNECTION);
 export const db = client.db();
@@ -19,6 +20,10 @@ if (import.meta.hot) {
 CollectionSchema.plugin(mongoosePaginate)
 AlbumSchema.plugin(mongoosePaginate)
 MediaSchema.plugin(mongoosePaginate)
+
+CollectionSchema.plugin(aggregatePaginate)
+AlbumSchema.plugin(aggregatePaginate)
+MediaSchema.plugin(aggregatePaginate)
 
 export const Collection =
 	mongoose.models.Collection || mongoose.model('Collection', CollectionSchema);

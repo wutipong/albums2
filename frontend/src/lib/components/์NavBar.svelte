@@ -40,7 +40,7 @@
 		{#if up}
 			<a class="btn btn-ghost" href={up.url}>
 				<Icon path={up.icon}></Icon>
-				{up.description}
+				<span class="hidden lg:block">{up.description}</span>
 			</a>
 		{/if}
 		{#if collectionId}

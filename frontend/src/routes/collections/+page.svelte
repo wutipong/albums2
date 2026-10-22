@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import Icon from '$lib/components/Icon.svelte';
-	import CollectionThumbnail from '$lib/components/CollectionThumbnail.svelte'
+	import CollectionThumbnail from '$lib/components/CollectionThumbnail.svelte';
 	import { mdiAlertCircle, mdiCircleOffOutline, mdiLibraryShelves, mdiSquareOff } from '@mdi/js';
 	import NavBar from '$lib/components/NavBar.svelte';
 
@@ -16,7 +16,7 @@
 	{#if data.collections.length === 0}
 		<div class="mx-auto my-12 max-h-96 max-w-96 opacity-60">
 			<Icon path={mdiSquareOff} />
-			There is no collection available. Try create one.
+			There is no collection available.
 		</div>
 	{:else}
 		<div class="flex flex-wrap justify-evenly gap-2">
@@ -27,26 +27,36 @@
 	{/if}
 </div>
 
-<div class="divider">Or! Create a new collection.</div>
+{#if data.user.role === 'admin'}
+	<div class="divider">Or! Create a new collection.</div>
 
-<div class="m-4 mt-8 mx-auto max-w-96 rounded-box border-2 border-base-300 bg-base-200 p-4 shadow-md">
-	<div class="text-xs tracking-wide opacity-60">New collection</div>
+	<div
+		class="m-4 mx-auto mt-8 max-w-96 rounded-box border-2 border-base-300 bg-base-200 p-4 shadow-md"
+	>
+		<div class="text-xs tracking-wide opacity-60">New collection</div>
 
-	{#if form?.message}
-		<div role="alert" class="alert alert-error">
-			<Icon path={mdiAlertCircle} />
-			<span>{form.message}</span>
-		</div>
-	{/if}
+		{#if form?.message}
+			<div role="alert" class="alert alert-error">
+				<Icon path={mdiAlertCircle} />
+				<span>{form.message}</span>
+			</div>
+		{/if}
 
-	<form method="POST" action="?/create" use:enhance>
-		<fieldset class="fieldset">
-			<legend class="fieldset-legend">collection</legend>
-			<input type="text" class="input w-full" required name="name" placeholder="collection name" />
-			<textarea class="textarea h-24 w-full" name="description" placeholder="description"
-			></textarea>
+		<form method="POST" action="?/create" use:enhance>
+			<fieldset class="fieldset">
+				<legend class="fieldset-legend">collection</legend>
+				<input
+					type="text"
+					class="input w-full"
+					required
+					name="name"
+					placeholder="collection name"
+				/>
+				<textarea class="textarea h-24 w-full" name="description" placeholder="description"
+				></textarea>
 
-			<button class="btn btn-neutral">Add</button>
-		</fieldset>
-	</form>
-</div>
+				<button class="btn btn-neutral">Add</button>
+			</fieldset>
+		</form>
+	</div>
+{/if}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { mdiCircleOffOutline, mdiDotsVertical, mdiLogout, mdiMagnify } from '@mdi/js';
+	import { mdiCircleOffOutline, mdiClose, mdiDotsVertical, mdiLogout, mdiMagnify } from '@mdi/js';
 	import Icon from './Icon.svelte';
 	import { enhance } from '$app/forms';
 	import { onMount } from 'svelte';
@@ -30,6 +30,8 @@
 
 		avatarSrc = `https://gravatar.com/avatar/${hashVal} `;
 	});
+
+	let searchDlg: HTMLDialogElement;
 </script>
 
 <div class="navbar bg-base-100 shadow-sm">
@@ -38,27 +40,30 @@
 	</div>
 	<div class="flex gap-2">
 		{#if up}
-			<a class="btn max-lg:btn-circle btn-ghost rounded-full" href={up.url}>
+			<a class="btn rounded-full btn-ghost max-lg:btn-circle" href={up.url}>
 				<Icon path={up.icon}></Icon>
 				<span class="hidden lg:block">{up.description}</span>
 			</a>
 		{/if}
 		{#if collectionId}
+			<button class="bth-circle btn btn-ghost lg:hidden" onclick={() => searchDlg.showModal()}>
+				<Icon path={mdiMagnify} />
+			</button>
 			<form
-				class="join"
+				class="join max-lg:hidden"
 				method="POST"
 				action="/collections/{collectionId}/search?/search"
 				use:enhance
 			>
-				
+				<input type="hidden" name="collectionId" value={collectionId} />
 				<input
 					type="text"
 					placeholder="Search"
 					required
 					name="text"
-					class="input join-item w-24 md:w-auto rounded-l-full"
+					class="input join-item w-24 rounded-l-full md:w-auto"
 				/>
-				<input type="hidden" name="collectionId" value={collectionId} />
+
 				<button class="btn join-item rounded-r-full"><Icon path={mdiMagnify} /></button>
 			</form>
 		{/if}
@@ -108,3 +113,21 @@
 		</div>
 	</div>
 </div>
+
+<dialog class="modal modal-bottom sm:modal-middle" bind:this={searchDlg}>
+	<div class="modal-box">
+		<h3 class="text-lg font-bold">Search</h3>
+		<form method="POST" action="/collections/{collectionId}/search?/search" use:enhance>
+			<input type="text" placeholder="Search" required name="text" class="input w-full" />
+			<input type="hidden" name="collectionId" value={collectionId} />
+			<div class="modal-action justify-end gap-2">
+				<button type="submit" class="btn btn-primary">
+					<Icon path={mdiMagnify} />Search
+				</button>
+				<button type="button" class="btn" onclick={() => searchDlg.close()}>
+					<Icon path={mdiClose} />Close
+				</button>
+			</div>
+		</form>
+	</div>
+</dialog>

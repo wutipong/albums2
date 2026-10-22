@@ -1,5 +1,12 @@
 <script lang="ts">
-	import { mdiCircleOffOutline, mdiClose, mdiDotsVertical, mdiLogout, mdiMagnify } from '@mdi/js';
+	import {
+		mdiCircleOffOutline,
+		mdiClose,
+		mdiDotsVertical,
+		mdiLogout,
+		mdiMagnify,
+		mdiShieldCrown
+	} from '@mdi/js';
 	import Icon from './Icon.svelte';
 	import { enhance } from '$app/forms';
 	import { onMount } from 'svelte';
@@ -20,7 +27,7 @@
 
 	const { up, collectionId, menu }: Props = $props();
 	let avatarSrc = $state('');
-	let user = $state({ user: '<placeholder>', email: 'placeholder@example.com' });
+	let user = $state({ user: '<placeholder>', email: 'placeholder@example.com', role: 'user' });
 
 	onMount(async () => {
 		const session = await authClient.getSession();
@@ -99,10 +106,17 @@
 					<img alt={user.email} src={avatarSrc} />
 				</div>
 			</div>
+
 			<ul
 				tabindex="-1"
 				class="menu dropdown-content z-1 mt-3 w-52 menu-sm rounded-box bg-base-100 p-2 shadow"
 			>
+				{#if user.role}
+					<li>
+						<a href="/admin"><Icon path={mdiShieldCrown} />Administrator</a>
+					</li>
+					<li></li>
+				{/if}
 				<li>
 					<button onclick={() => authClient.logout()}>
 						<Icon path={mdiLogout} />

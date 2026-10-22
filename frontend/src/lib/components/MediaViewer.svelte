@@ -16,6 +16,7 @@
 	} = $props();
 
 	let loading = $state(true);
+	let type = $derived(media.type)
 
 	$effect(() => {
 		loading = true;
@@ -30,7 +31,7 @@
 	}
 
 	function doClose() {
-        mediaType = 'image'
+        type = 'image'
 		show = false;
 	}
 
@@ -76,7 +77,7 @@
 	{@attach hammerJsAttachment}
 >
 	{#if media.processStatus === 'processed'}
-		{#if media.type === 'image'}
+		{#if type === 'image'}
 			<div class="h-full w-full">
 				<img
 					class:hidden={loading}
@@ -88,7 +89,7 @@
 				/>
 			</div>
 		{/if}
-		{#if media.type === 'video'}
+		{#if type === 'video'}
 			{#key media.viewUrl}
 				<video-player title={media.name} src={media.viewUrl}>
 					<video-skin class="block h-full w-full">

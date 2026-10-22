@@ -9,19 +9,19 @@
 </script>
 
 <NavBar
-    user={data.user}
+	user={data.user}
 	onMenuBtn={() => {
 		drawerToggle.checked = !drawerToggle.checked;
 	}}
 />
 <div class="drawer lg:drawer-open">
-	<input id="my-drawer-3" type="checkbox" class="drawer-toggle" bind:this={drawerToggle} />
+	<input id="drawer-toggle" type="checkbox" class="drawer-toggle" bind:this={drawerToggle} />
 	<div class="drawer-content">
 		{@render children()}
 	</div>
 	<div class="drawer-side">
-		<label for="my-drawer-3" aria-label="close sidebar" class="drawer-overlay"></label>
-		<ul class="menu min-h-full w-80 bg-base-200 p-4">
+		<label for="drawer-toggle" aria-label="close sidebar" class="drawer-overlay"></label>
+		<ul class="menu min-h-full w-80 bg-base-300 p-4">
 			<li><h2 class="menu-title">Administration Menu</h2></li>
 			<li class:menu-active={page.url.pathname === '/admin/albums'}>
 				<a href="/admin/albums">
@@ -29,7 +29,7 @@
 				</a>
 			</li>
 
-			<!-- <li class:menu-active={page.url.pathname === '/admin/asset'}>
+			<li class:menu-active={page.url.pathname === '/admin/asset'}>
 				<a href="/admin/asset">
 					<Icon path={mdiImage} /> Assets
 				</a>
@@ -39,7 +39,7 @@
 				<a href="/admin/queue">
 					<Icon path={mdiTrayFull} /> Processing Queue
 				</a>
-			</li> -->
+			</li>
 			<li class:menu-active={page.url.pathname === '/admin/key'}>
 				<a href="/admin/key">
 					<Icon path={mdiKeyChain} /> API Keys

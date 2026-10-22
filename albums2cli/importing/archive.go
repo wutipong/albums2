@@ -30,12 +30,17 @@ func ProcessArchive(
 	}
 	archiveFile, err := os.Open(albumPath)
 	if err != nil {
-		return fmt.Errorf("failed to open archive: %s: %w.",
+		return fmt.Errorf("failed to open archive: %s: %w",
 			albumPath,
 			err,
 		)
 	}
-	defer archiveFile.Close()
+	defer func() {
+		err = archiveFile.Close()
+		if err != nil {
+			slog.Error("error closing archive file", "error", err)
+		}
+	}()
 
 	err = WalkArchive(ctx, server, album.ID.Hex(), albumPath, archiveFile, containerPath)
 	if err != nil {
@@ -136,21 +141,40 @@ func WalkArchive(
 				if err != nil {
 					return fmt.Errorf("failed to open nested archive %s: %w", filename, err)
 				}
-				defer file.Close()
+				defer func() {
+					err = file.Close()
+					if err != nil {
+						slog.Error("error closing file", "error", err)
+					}
+				}()
 
 				tempFile, err := os.CreateTemp("", filepath.Base(filename))
 				if err != nil {
 					return fmt.Errorf("unable to create temporary file: %w", err)
 				}
 
-				defer os.Remove(tempFile.Name())
-				defer tempFile.Close()
+				defer func() {
+					err = os.Remove(tempFile.Name())
+					if err != nil {
+						slog.Error("error removing temporary file", "error", err)
+					}
+				}()
+
+				defer func() {
+					err = tempFile.Close()
+					if err != nil {
+						slog.Error("failed to close the temporary file", "error", err)
+					}
+				}()
 
 				_, err = io.Copy(tempFile, file)
 				if err != nil {
 					return fmt.Errorf("unable to copy data to the temporary: %w", err)
 				}
-				tempFile.Seek(0, io.SeekStart)
+				_, err = tempFile.Seek(0, io.SeekStart)
+				if err != nil {
+					return fmt.Errorf("failed to reset file pointer: %w", err)
+				}
 
 				err = WalkArchive(
 					ctx, server, albumID, filepath.Join(archivePath, filename), tempFile, archivePath,
@@ -215,7 +239,12 @@ func uploadArchiveMedia(
 		return
 	}
 
-	defer file.Close()
+	defer func() {
+		err = file.Close()
+		if err != err {
+			slog.Error("error closing the archive file", "error", err, "file", f.Name())
+		}
+	}()
 
 	stat, err := file.Stat()
 	if err != nil {

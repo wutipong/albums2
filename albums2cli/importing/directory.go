@@ -26,7 +26,7 @@ func ProcessDirectory(
 		slog.String("path", path),
 	)
 
-	filepath.WalkDir(path, func(path string, d fs.DirEntry, err error) error {
+	err := filepath.WalkDir(path, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			slog.Error(
 				"failed to access path",
@@ -55,6 +55,10 @@ func ProcessDirectory(
 		return nil
 	})
 
+	if err != nil {
+		return fmt.Errorf("failed to process directory: %w", err)
+	}
+
 	return nil
 }
 
@@ -79,7 +83,12 @@ func processMediaFile(
 	if err != nil {
 		return fmt.Errorf("failed to open file %s: %w", path, err)
 	}
-	defer file.Close()
+	defer func() {
+		err = file.Close()
+		if err != nil {
+			slog.Error("error closing file: %w", "error", err)
+		}
+	}()
 
 	info, err := file.Stat()
 	if err != nil {

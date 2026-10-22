@@ -23,7 +23,7 @@ func getCollectionById(ctx context.Context, profileName string, dryRun bool, col
 
 	serverUrl, err := url.Parse(config.URL)
 	if err != nil {
-		return fmt.Errorf("Unable to parse server URL: %w", err)
+		return fmt.Errorf("unable to parse server URL: %w", err)
 	}
 	server := api.ServerConfig{
 		URL:    serverUrl,
@@ -57,7 +57,7 @@ func getCollectionByName(ctx context.Context, profileName string, dryRun bool, c
 
 	serverUrl, err := url.Parse(config.URL)
 	if err != nil {
-		return fmt.Errorf("Unable to parse server URL: %w", err)
+		return fmt.Errorf("unable to parse server URL: %w", err)
 	}
 	server := api.ServerConfig{
 		URL:    serverUrl,

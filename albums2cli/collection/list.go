@@ -23,7 +23,7 @@ func listCollections(ctx context.Context, profileName string, dryRun bool) (err 
 
 	serverUrl, err := url.Parse(config.URL)
 	if err != nil {
-		return fmt.Errorf("Unable to parse server URL: %w", err)
+		return fmt.Errorf("unable to parse server URL: %w", err)
 	}
 	server := api.ServerConfig{
 		URL:    serverUrl,

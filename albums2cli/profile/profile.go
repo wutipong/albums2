@@ -55,7 +55,12 @@ func openConfigMap(ctx context.Context) (profileMap map[string]Profile, err erro
 		err = fmt.Errorf("failed to open configuration file: %w", err)
 		return
 	}
-	defer file.Close()
+	defer func() {
+		err = file.Close()
+		if err != nil {
+			slog.Error("error closing configuration file", "error", err)
+		}
+	}()
 
 	profileMap = make(map[string]Profile)
 	decoder := yaml.NewDecoder(file)
@@ -95,10 +100,20 @@ func saveConfigMap(ctx context.Context, configMap map[string]Profile) error {
 	if err != nil {
 		return fmt.Errorf("failed to save configuration file: %w", err)
 	}
-	defer file.Close()
+	defer func() {
+		err = file.Close()
+		if err != nil {
+			slog.Error("error closing configuration file", "error", err)
+		}
+	}()
 
 	yamlEncoder := yaml.NewEncoder(file)
-	defer yamlEncoder.Close()
+	defer func() {
+		err = yamlEncoder.Close()
+		if err != nil {
+			slog.Error("error closing yaml encoder.", "error", err)
+		}
+	}()
 
 	err = yamlEncoder.Encode(configMap)
 	if err != nil {

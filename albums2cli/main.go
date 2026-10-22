@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -51,17 +52,28 @@ func main() {
 			process.Command(&profileStr),
 			importing.Command(&profileStr),
 		},
-		Before: func(ctx context.Context, c *cli.Command) (context.Context, error) {
+		Before: func(ctx context.Context, c *cli.Command) (outCtx context.Context, err error) {
 			level := slog.LevelInfo.String()
 			if debug {
 				level = slog.LevelDebug.String()
 			}
-			log.Setup(profileStr, level, true, level)
-			return ctx, nil
+			err = log.Setup(profileStr, level, true, level)
+			if err != nil {
+				err = fmt.Errorf("failed setting up logging system: %w", err)
+				return
+			}
+
+			outCtx = ctx
+			return
 
 		},
 	}
-	defer log.CleanUp()
+	defer func() {
+		err := log.CleanUp()
+		if err != nil {
+			slog.Error("error cleaning up loggin system", "error", err)
+		}
+	}()
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()

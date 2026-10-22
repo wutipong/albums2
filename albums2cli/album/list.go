@@ -23,7 +23,7 @@ func listAlbum(ctx context.Context, profileName string, collection string, dryRu
 
 	serverUrl, err := url.Parse(config.URL)
 	if err != nil {
-		return fmt.Errorf("Unable to parse server URL: %w", err)
+		return fmt.Errorf("unable to parse server URL: %w", err)
 	}
 	server := api.ServerConfig{
 		URL:    serverUrl,
@@ -37,7 +37,7 @@ func listAlbum(ctx context.Context, profileName string, collection string, dryRu
 	}
 
 	if !r.Existed {
-		return fmt.Errorf("collection does not exist.")
+		return fmt.Errorf("collection does not exist")
 	}
 
 	slog.Info("collection", "name", r.Collection.Name, "id", r.Collection.ID)

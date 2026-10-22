@@ -4,8 +4,9 @@
 	import Icon from '$lib/components/Icon.svelte';
 	import '@videojs/html/video/player';
 	import '@videojs/html/video/skin';
-
+	import notAvailable from '$lib/assets/not-available.svg';
 	let {
+		media,
 		viewURL = 'http://example.com',
 		assetType = 'image',
 		filename = '',
@@ -77,28 +78,38 @@
 	class:hidden={!show}
 	{@attach hammerJsAttachment}
 >
-	{#if assetType === 'image'}
+	{#if media.processStatus === 'processed'}
+		{#if assetType === 'image'}
+			<div class="h-full w-full">
+				<img
+					class:hidden={loading}
+					onload={() => (loading = false)}
+					onerror={() => (loading = false)}
+					src={viewURL}
+					alt={filename}
+					class="m-auto h-full w-full object-contain"
+				/>
+			</div>
+		{/if}
+		{#if assetType === 'video'}
+			{#key viewURL}
+				<video-player title={filename} src={viewURL}>
+					<video-skin class="block h-full w-full">
+						<video class="h-full w-full">
+							<source src={viewURL} type="video/mp4" />
+						</video>
+					</video-skin>
+				</video-player>
+			{/key}
+		{/if}
+	{:else}
 		<div class="h-full w-full">
 			<img
-				class:hidden={loading}
-				onload={() => (loading = false)}
-				onerror={() => (loading = false)}
-				src={viewURL}
+				src={notAvailable}
 				alt={filename}
 				class="m-auto h-full w-full object-contain"
 			/>
 		</div>
-	{/if}
-	{#if assetType === 'video'}
-		{#key viewURL}
-			<video-player title={filename} src={viewURL}>
-				<video-skin class="block h-full w-full">
-					<video class="h-full w-full">
-						<source src={viewURL} type="video/mp4" />
-					</video>
-				</video-skin>
-			</video-player>
-		{/key}
 	{/if}
 	<div class="absolute top-1/2 left-4 -translate-y-1/2 bg-transparent">
 		<button

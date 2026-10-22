@@ -3,7 +3,7 @@ import { Album, Collection } from '$lib/server/database';
 import { loadAlbumMediaPage } from '$lib/server/album';
 import { redirect } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async ({ params }) => {
+export const load: PageServerLoad = async ({ params, locals }) => {
     const { id } = params;
     const album = await Album.findById(id).lean()
     const media = await loadAlbumMediaPage(id, 1)
@@ -11,7 +11,8 @@ export const load: PageServerLoad = async ({ params }) => {
     return {
         collection: collection,
         album: album,
-        media: media
+        media: media,
+        user: locals.user
     }
 };
 

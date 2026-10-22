@@ -53,18 +53,21 @@
 			<Icon path={mdiInformationOutline} />Collection information
 		</button>
 	</li>
-	<li></li>
-	<li>
-		<button onclick={createRenditionJobs}>
-			<Icon path={mdiBlender} /> Process media
-		</button>
-	</li>
-	<li>
-		<button onclick={createEmbeddingJobs}>
-			<Icon path={mdiFeatureSearchOutline} />
-			Generate media search metadata
-		</button>
-	</li>
+	{#if data.user.role == 'admin'}
+		<li></li>
+		<li class="menu-item">Administration actions</li>
+		<li>
+			<button onclick={createRenditionJobs}>
+				<Icon path={mdiBlender} /> Process media
+			</button>
+		</li>
+		<li>
+			<button onclick={createEmbeddingJobs}>
+				<Icon path={mdiFeatureSearchOutline} />
+				Generate media search metadata
+			</button>
+		</li>
+	{/if}
 {/snippet}
 
 <NavBar

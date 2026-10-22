@@ -13,7 +13,6 @@
 		mdiLoading,
 		mdiFeatureSearchOutline,
 		mdiBookOpenVariant
-
 	} from '@mdi/js';
 	import log from '$lib/log';
 	import { untrack } from 'svelte';
@@ -154,19 +153,22 @@
 			Album information
 		</button>
 	</li>
-	<li></li>
-	<li>
-		<button onclick={createRenditionJobs}>
-			<Icon path={mdiBlender} />
-			Process media
-		</button>
-	</li>
-	<li>
-		<button onclick={createEmbeddingJobs}>
-			<Icon path={mdiFeatureSearchOutline} />
-			Generate media search metadata
-		</button>
-	</li>
+	{#if data.user.role == 'admin'}
+		<li></li>
+		<li class="menu-item">Administration actions</li>
+		<li>
+			<button onclick={createRenditionJobs}>
+				<Icon path={mdiBlender} />
+				Process media
+			</button>
+		</li>
+		<li>
+			<button onclick={createEmbeddingJobs}>
+				<Icon path={mdiFeatureSearchOutline} />
+				Generate media search metadata
+			</button>
+		</li>
+	{/if}
 {/snippet}
 
 <div class="relative flex h-screen w-screen flex-col">
@@ -254,7 +256,7 @@
 			<Icon path={mdiDownload} /> Download
 		</a>
 	</li-->
-	{#if /*data.user.role == 'admin' ||*/ true}
+	{#if data.user.role == 'admin'}
 		<li></li>
 		<li class="menu-item">Administration actions</li>
 		<li>

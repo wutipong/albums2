@@ -181,7 +181,7 @@
 			<Icon path={mdiDownload} /> Download
 		</a>
 	</li-->
-	{#if /*data.user.role == 'admin' ||*/ true}
+	{#if data.user.role == 'admin' }
 		<li></li>
 		<li class="menu-item">Administration actions</li>
 		<li>

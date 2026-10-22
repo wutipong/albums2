@@ -29,7 +29,6 @@
 		log.debug(media, 'thumbnail clicked.')
 		onclick(media);
 	}}
-	disabled={media.processStatus != 'processed'}
 >
 	<div class="relative h-full w-full">
 		<div

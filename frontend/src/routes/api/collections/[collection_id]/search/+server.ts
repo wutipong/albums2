@@ -1,4 +1,4 @@
-import type { RequestHandler } from './[page]/$types';
+import type { RequestHandler } from './$types';
 import { searchMedia } from '$lib/server/collection';
 import { json } from '@sveltejs/kit';
 import { encodeText } from '$lib/server/grpc/mlservice';

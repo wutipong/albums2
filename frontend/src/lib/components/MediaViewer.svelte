@@ -7,9 +7,6 @@
 	import notAvailable from '$lib/assets/not-available.svg';
 	let {
 		media,
-		viewURL = 'http://example.com',
-		assetType = 'image',
-		filename = '',
 		show = $bindable(false),
 		next,
 		previous,
@@ -33,7 +30,7 @@
 	}
 
 	function doClose() {
-        assetType = 'image'
+        mediaType = 'image'
 		show = false;
 	}
 
@@ -79,24 +76,24 @@
 	{@attach hammerJsAttachment}
 >
 	{#if media.processStatus === 'processed'}
-		{#if assetType === 'image'}
+		{#if media.type === 'image'}
 			<div class="h-full w-full">
 				<img
 					class:hidden={loading}
 					onload={() => (loading = false)}
 					onerror={() => (loading = false)}
-					src={viewURL}
-					alt={filename}
+					src={media.viewUrl}
+					alt={media.name}
 					class="m-auto h-full w-full object-contain"
 				/>
 			</div>
 		{/if}
-		{#if assetType === 'video'}
-			{#key viewURL}
-				<video-player title={filename} src={viewURL}>
+		{#if media.type === 'video'}
+			{#key media.viewUrl}
+				<video-player title={media.name} src={media.viewUrl}>
 					<video-skin class="block h-full w-full">
 						<video class="h-full w-full">
-							<source src={viewURL} type="video/mp4" />
+							<source src={media.viewUrl} type="video/mp4" />
 						</video>
 					</video-skin>
 				</video-player>
@@ -106,7 +103,7 @@
 		<div class="h-full w-full">
 			<img
 				src={notAvailable}
-				alt={filename}
+				alt={media.name}
 				class="m-auto h-full w-full object-contain"
 			/>
 		</div>

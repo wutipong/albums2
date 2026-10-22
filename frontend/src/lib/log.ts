@@ -3,7 +3,5 @@ import { dev } from '$app/environment';
 
 export default pino({
 	level: dev ? 'trace' : 'info',
-	transport: {
-		target: dev ? 'pino-pretty' : ''
-	}
+	transport: dev ? { target: 'pino-pretty' } : undefined
 });

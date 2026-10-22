@@ -39,4 +39,11 @@ npm run build
 
 You can preview the production build with `npm run preview`.
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+This project uses the Node adapter for self-hosted deployments. Build and start the generated server with:
+
+```sh
+bun run build
+bun run start
+```
+
+The production server listens on port `3000` by default. Set `HOST` and `PORT` to change its bind address.

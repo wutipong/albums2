@@ -2,3 +2,4 @@ albums2cli/.input*
 **/.DS_Store
 mlservice/__pycache__/
 mlservice/.venv
+albums2cli/albums2cli

@@ -54,7 +54,7 @@
 			</a>
 		{/if}
 		{#if collectionId}
-			<button class="bth-circle btn btn-ghost lg:hidden" onclick={() => searchDlg.showModal()}>
+			<button class="btn-circle btn btn-ghost lg:hidden" onclick={() => searchDlg.showModal()}>
 				<Icon path={mdiMagnify} />
 			</button>
 			<form

@@ -3,6 +3,7 @@
 	import Icon from '$lib/components/Icon.svelte';
 	import { onMount } from 'svelte';
 	import { createHash } from '@better-auth/utils/hash';
+	import { authClient } from '$lib/auth';
 	//import logo from '$lib/assets/logo.svg?raw';
 
 	let { onMenuBtn = null, user } = $props();
@@ -47,7 +48,7 @@
 			</li>
 			<li></li>
 			<li>
-				<a href="/logout" data-sveltekit-preload-data="off"><Icon path={mdiLogout} /> Logout</a>
+				<button onclick={() => authClient.signOut()}><Icon path={mdiLogout} /> Logout</button>
 			</li>
 		</ul>
 	</div>

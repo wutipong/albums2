@@ -1,5 +1,6 @@
 <script lang="ts">
 	import {
+	mdiAccount,
 		mdiCircleOffOutline,
 		mdiClose,
 		mdiDotsVertical,
@@ -111,17 +112,18 @@
 				tabindex="-1"
 				class="menu dropdown-content z-1 mt-3 w-52 menu-sm rounded-box bg-base-100 p-2 shadow"
 			>
-				{#if user.role}
+				{#if user.role === 'admin'}
 					<li>
 						<a href="/admin"><Icon path={mdiShieldCrown} />Administrator</a>
 					</li>
 					<li></li>
 				{/if}
 				<li>
-					<button onclick={() => authClient.logout()}>
-						<Icon path={mdiLogout} />
-						Log out
-					</button>
+					<a href="/user"><Icon path={mdiAccount} /> User</a>
+				</li>
+				<li></li>
+				<li>
+					<button onclick={() => authClient.signOut()}><Icon path={mdiLogout} /> Logout</button>
 				</li>
 			</ul>
 		</div>

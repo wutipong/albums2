@@ -116,14 +116,13 @@
 					<li>
 						<a href="/admin"><Icon path={mdiShieldCrown} />Administrator</a>
 					</li>
-					<li></li>
 				{/if}
 				<li>
 					<a href="/user"><Icon path={mdiAccount} /> User</a>
 				</li>
 				<li></li>
 				<li>
-					<button onclick={() => authClient.signOut()}><Icon path={mdiLogout} /> Logout</button>
+					<a href="/logout"><Icon path={mdiLogout} /> Logout</a>
 				</li>
 			</ul>
 		</div>

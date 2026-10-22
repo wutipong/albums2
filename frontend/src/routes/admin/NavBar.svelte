@@ -48,7 +48,7 @@
 			</li>
 			<li></li>
 			<li>
-				<button onclick={() => authClient.signOut()}><Icon path={mdiLogout} /> Logout</button>
+				<a href="/logout"><Icon path={mdiLogout} /> Logout</a>
 			</li>
 		</ul>
 	</div>

@@ -27,7 +27,9 @@
 	{/if}
 </div>
 
-<div class="m-4 mx-auto max-w-96 rounded-box border-2 border-base-300 bg-base-200 p-4 shadow-md">
+<div class="divider">Or! Create a new collection.</div>
+
+<div class="m-4 mt-8 mx-auto max-w-96 rounded-box border-2 border-base-300 bg-base-200 p-4 shadow-md">
 	<div class="text-xs tracking-wide opacity-60">New collection</div>
 
 	{#if form?.message}

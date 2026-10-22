@@ -38,7 +38,7 @@
 	</div>
 	<div class="flex gap-2">
 		{#if up}
-			<a class="btn btn-ghost" href={up.url}>
+			<a class="btn max-lg:btn-circle btn-ghost rounded-full" href={up.url}>
 				<Icon path={up.icon}></Icon>
 				<span class="hidden lg:block">{up.description}</span>
 			</a>
@@ -50,15 +50,16 @@
 				action="/collections/{collectionId}/search?/search"
 				use:enhance
 			>
-				<input type="hidden" name="collectionId" value={collectionId} />
+				
 				<input
 					type="text"
 					placeholder="Search"
 					required
 					name="text"
-					class="input join-item w-24 md:w-auto"
+					class="input join-item w-24 md:w-auto rounded-l-full"
 				/>
-				<button class="btn join-item"><Icon path={mdiMagnify} /></button>
+				<input type="hidden" name="collectionId" value={collectionId} />
+				<button class="btn join-item rounded-r-full"><Icon path={mdiMagnify} /></button>
 			</form>
 		{/if}
 

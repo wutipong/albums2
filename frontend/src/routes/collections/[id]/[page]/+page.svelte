@@ -4,7 +4,7 @@
 	import AlbumThumbnail from '$lib/components/AlbumThumbnail.svelte';
 	import CollectionInfoDialog from '$lib/components/CollectionInfoDialog.svelte';
 	import Icon from '$lib/components/Icon.svelte';
-	import NavBar from '$lib/components/์NavBar.svelte';
+	import NavBar from '$lib/components/NavBar.svelte';
 	import log from '$lib/log';
 	import Pagination from './Pagination.svelte';
 	import {

@@ -20,7 +20,7 @@
 	import MediaViewer from '$lib/components/MediaViewer.svelte';
 	import MediaInfoDialog from '$lib/components/MediaInfoDialog.svelte';
 	import AlbumInfoDialog from '$lib/components/AlbumInfoDialog.svelte';
-	import NavBar from '$lib/components/์NavBar.svelte';
+	import NavBar from '$lib/components/NavBar.svelte';
 
 	const { data } = $props();
 

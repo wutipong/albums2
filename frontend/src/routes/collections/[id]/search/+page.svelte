@@ -13,10 +13,9 @@
 	} from '@mdi/js';
 	import { untrack } from 'svelte';
 	import MediaViewer from '$lib/components/MediaViewer.svelte';
-	import { enhance } from '$app/forms';
 	import log from '$lib/log'
 	import MediaInfoDialog from '$lib/components/MediaInfoDialog.svelte';
-	import NavBar from '$lib/components/์NavBar.svelte';
+	import NavBar from '$lib/components/NavBar.svelte';
 
 	const { data } = $props();
 	$inspect(data);

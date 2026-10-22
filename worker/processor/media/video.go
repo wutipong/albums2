@@ -39,7 +39,12 @@ func ProcessVideoMedia(ctx context.Context, media *types.Media) error {
 	if err != nil {
 		return fmt.Errorf("unable to get object from s3: %w", err)
 	}
-	defer s3Obj.Close()
+	defer func() {
+		err = s3Obj.Close()
+		if err != nil {
+			slog.Error("error closing S3 object", "error", err)
+		}
+	}()
 
 	originalFile, err := os.CreateTemp("",
 		fmt.Sprintf("*.%s", filepath.Base(media.Original)),
@@ -48,9 +53,18 @@ func ProcessVideoMedia(ctx context.Context, media *types.Media) error {
 	if err != nil {
 		return fmt.Errorf("unable to create temp file for original file: %w", err)
 	}
-	defer os.Remove(originalFile.Name())
 
-	io.Copy(originalFile, s3Obj)
+	defer func() {
+		err = os.Remove(originalFile.Name())
+		if err != nil {
+			slog.Error("error removing temporary source file: %w", "error", err)
+		}
+	}()
+
+	_, err = io.Copy(originalFile, s3Obj)
+	if err != nil {
+		return fmt.Errorf("unable to copy data from S3 to temporary file: %w", err)
+	}
 
 	probe, err := video.ReadProbe(originalFile.Name())
 	if err != nil {
@@ -92,7 +106,13 @@ func processVideoView(
 	if err != nil {
 		return fmt.Errorf("unable to create temp file to transcode: %w", err)
 	}
-	defer os.Remove(outputFile.Name())
+
+	defer func() {
+		err = os.Remove(outputFile.Name())
+		if err != nil {
+			slog.Error("error deleting temprary source file", "error", err)
+		}
+	}()
 
 	err = ffmpeg.Input(originalFile.Name()).
 		Output(outputFile.Name(), ffmpeg.KwArgs{
@@ -124,7 +144,10 @@ func processVideoView(
 	media.ViewWidth = int32(viewVideoStream.Width)
 	media.ViewHeight = int32(viewVideoStream.Height)
 
-	outputFile.Seek(0, io.SeekStart)
+	_, err = outputFile.Seek(0, io.SeekStart)
+	if err != nil {
+		return fmt.Errorf("fails to reset file back to the begining: %w", err)
+	}
 
 	_, err = s3.PutObject(
 		ctx,
@@ -135,6 +158,10 @@ func processVideoView(
 			ContentType: "video/mp4",
 		},
 	)
+
+	if err != nil {
+		return fmt.Errorf("error putting object to S3: %w", err)
+	}
 
 	return nil
 }
@@ -148,7 +175,7 @@ func processVideoThumbnail(
 		return fmt.Errorf("context cancelled: %w", err)
 	}
 
-	duration, err := strconv.ParseFloat(info.Format.Duration, 10)
+	duration, err := strconv.ParseFloat(info.Format.Duration, 32)
 	if err != nil {
 		return fmt.Errorf("unable to parse duration: %w", err)
 	}
@@ -157,7 +184,13 @@ func processVideoThumbnail(
 	if err != nil {
 		return fmt.Errorf("unable to create temp file to transcode: %w", err)
 	}
-	defer os.Remove(outputFile.Name())
+
+	defer func() {
+		err = os.Remove(outputFile.Name())
+		if err != nil {
+			slog.Error("error deleting temporary output file", "error", err)
+		}
+	}()
 
 	// save thumbnail at 1/3 duration
 	err = ffmpeg.
@@ -200,6 +233,10 @@ func processVideoThumbnail(
 		},
 	)
 
+	if err != nil {
+		return fmt.Errorf("failed to put object to S3: %w", err)
+	}
+
 	return nil
 }
 
@@ -216,9 +253,14 @@ func processVideoPreview(
 	if err != nil {
 		return fmt.Errorf("unable to create temp file to transcode: %w", err)
 	}
-	defer os.Remove(outputFile.Name())
+	defer func() {
+		err = os.Remove(outputFile.Name())
+		if err != nil {
+			slog.Error("error deleting temporary output file", "error", err)
+		}
+	}()
 
-	duration, err := strconv.ParseFloat(info.Format.Duration, 10)
+	duration, err := strconv.ParseFloat(info.Format.Duration, 32)
 	if err != nil {
 		return fmt.Errorf("unable to parse duration: %w", err)
 	}
@@ -251,7 +293,7 @@ func processVideoPreview(
 	)
 
 	if err != nil {
-		err = fmt.Errorf("unable to upload to S3: %w", err)
+		return fmt.Errorf("unable to upload to S3: %w", err)
 	}
 	return nil
 }

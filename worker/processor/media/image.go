@@ -41,7 +41,13 @@ func ProcessImageMedia(ctx context.Context, media *types.Media) error {
 	if err != nil {
 		return fmt.Errorf("unable to get object from s3: %w", err)
 	}
-	defer object.Close()
+
+	defer func() {
+		err = object.Close()
+		if err != nil {
+			slog.Error("error closing S3 object", "error", err)
+		}
+	}()
 
 	source := vips.NewSource(object)
 	defer source.Close()
@@ -115,7 +121,7 @@ func populateView(
 	}
 
 	if original == nil {
-		err = fmt.Errorf("Invalid image")
+		err = fmt.Errorf("invalid image")
 		return
 	}
 
@@ -183,11 +189,18 @@ func populatePreview(
 	media.ImageFrames = int32(view.Pages())
 
 	preview, err := view.Copy(nil)
+	if err != nil {
+		return fmt.Errorf("unable to create copy image: %w", err)
+	}
 
 	err = view.ThumbnailImage(1_000_000, &vips.ThumbnailImageOptions{
 		Height: THUMBNAIL_HEIGHT,
 		Crop:   vips.InterestingNone,
 	})
+
+	if err != nil {
+		return fmt.Errorf("fails to resize image: %w", err)
+	}
 
 	params := vips.DefaultWebpsaveBufferOptions()
 	params.Q = THUMBNAIL_QUALITY

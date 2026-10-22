@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"os"
 
 	"github.com/wutipong/albums2/worker/service/pb"
@@ -22,7 +23,12 @@ func GetImageSpec(ctx context.Context) (
 		return
 	}
 
-	defer conn.Close()
+	defer func() {
+		err := conn.Close()
+		if err != nil {
+			slog.Error("error closing connection.", "error", err)
+		}
+	}()
 
 	client := pb.NewEncodingServiceClient(conn)
 	resp, err = client.GetImageSpec(ctx, &pb.GetImageSpecRequest{})
@@ -46,7 +52,12 @@ func EncodeText(ctx context.Context, input string) (
 		return
 	}
 
-	defer conn.Close()
+	defer func() {
+		err := conn.Close()
+		if err != nil {
+			slog.Error("error on closing connection.", "error", err)
+		}
+	}()
 
 	client := pb.NewEncodingServiceClient(conn)
 	resp, err = client.EncodeText(ctx, &pb.EncodeTextRequest{
@@ -72,7 +83,12 @@ func EncodeImage(ctx context.Context, input []byte) (
 		return
 	}
 
-	defer conn.Close()
+	defer func() {
+		err := conn.Close()
+		if err != nil {
+			slog.Error("error closing connection", "error", err)
+		}
+	}()
 
 	client := pb.NewEncodingServiceClient(conn)
 	resp, err = client.EncodeImage(ctx, &pb.EncodeImageRequest{

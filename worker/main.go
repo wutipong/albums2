@@ -48,7 +48,11 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
-	envflag.Parse()
+	err := envflag.Parse()
+	if err != nil {
+		slog.Error("Error parsing parameters", "error", err)
+		os.Exit(-1)
+	}
 
 	if dev != nil && *dev {
 		handler := slogpretty.New(os.Stdout, nil)
@@ -138,10 +142,26 @@ func main() {
 
 	db.Init(client, cs.Database, redisClient)
 
-	processor.RegisterProcessor(&media.Processor{})
-	processor.RegisterProcessor(&albumcover.Processor{})
-	processor.RegisterProcessor(&collectioncover.Processor{})
-	processor.RegisterProcessor(&embedding.Processor{})
+	err = processor.RegisterProcessor(&media.Processor{})
+	if err != nil {
+		slog.Error("failed to register media processor", "error", err)
+		os.Exit(-1)
+	}
+	err = processor.RegisterProcessor(&albumcover.Processor{})
+	if err != nil {
+		slog.Error("failed to register album cover processor", "error", err)
+		os.Exit(-1)
+	}
+	err = processor.RegisterProcessor(&collectioncover.Processor{})
+	if err != nil {
+		slog.Error("failed to register collection cover processor", "error", err)
+		os.Exit(-1)
+	}
+	err = processor.RegisterProcessor(&embedding.Processor{})
+	if err != nil {
+		slog.Error("failed to register embedding processor", "error", err)
+		os.Exit(-1)
+	}
 
 	util.Init(util.UtilOptions{
 		S3Bucket: *s3Bucket,

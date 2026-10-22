@@ -77,7 +77,12 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 	if err != nil {
 		return fmt.Errorf("unable to get thumbnail object: %w", err)
 	}
-	defer object.Close()
+	defer func() {
+		err = object.Close()
+		if err != nil {
+			slog.Error("error closing S3 object", "error", err)
+		}
+	}()
 
 	src := vips.NewSource(object)
 	defer src.Close()

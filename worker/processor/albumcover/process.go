@@ -56,7 +56,7 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 
 	r := db.MongoDB().
 		Collection("media").
-		FindOne(ctx, bson.D{{"_id", mediaId}})
+		FindOne(ctx, bson.D{{Key: "_id", Value: mediaId}})
 
 	if r.Err() != nil {
 		return fmt.Errorf("unable to get media information: %w", r.Err())
@@ -72,7 +72,7 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 	album := types.Album{}
 	r = db.MongoDB().
 		Collection("albums").
-		FindOne(ctx, bson.D{{"_id", media.AlbumID}})
+		FindOne(ctx, bson.D{{Key: "_id", Value: media.AlbumID}})
 
 	if r.Err() != nil {
 		return fmt.Errorf("unable to get album information: %w", r.Err())
@@ -89,6 +89,10 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 		err = p.ProcessImage(ctx, &media, &album)
 	case "video":
 		err = p.ProcessVideo(ctx, &media, &album)
+	}
+
+	if err != nil {
+		return fmt.Errorf("failed to process media: %w", err)
 	}
 
 	_, err = db.MongoDB().
@@ -194,7 +198,13 @@ func (p *Processor) ProcessVideo(
 	if err != nil {
 		return fmt.Errorf("unable to create temp file for original file: %w", err)
 	}
-	defer os.Remove(originalFile.Name())
+
+	defer func() {
+		err = os.Remove(originalFile.Name())
+		if err != nil {
+			slog.Error("error deleting temporary source file", "error", err)
+		}
+	}()
 
 	object, err := s3.GetObject(
 		ctx,
@@ -204,9 +214,17 @@ func (p *Processor) ProcessVideo(
 	if err != nil {
 		return fmt.Errorf("unable to get source object: %w", err)
 	}
-	defer object.Close()
+	defer func() {
+		err = object.Close()
+		if err != nil {
+			slog.Error("error on closing S3 object", "error", err)
+		}
+	}()
 
-	io.Copy(originalFile, object)
+	_, err = io.Copy(originalFile, object)
+	if err != nil {
+		return fmt.Errorf("fails to create copy image: %w", err)
+	}
 
 	probe, err := video.ReadProbe(originalFile.Name())
 	if err != nil {
@@ -217,9 +235,14 @@ func (p *Processor) ProcessVideo(
 	if err != nil {
 		return fmt.Errorf("unable to create temp file to transcode: %w", err)
 	}
-	defer os.Remove(outputFile.Name())
+	defer func() {
+		err = os.Remove(outputFile.Name())
+		if err != nil {
+			slog.Error("error deleting temporary output file", "error", err)
+		}
+	}()
 
-	duration, err := strconv.ParseFloat(probe.Format.Duration, 10)
+	duration, err := strconv.ParseFloat(probe.Format.Duration, 32)
 	if err != nil {
 		return fmt.Errorf("unable to parse duration: %w", err)
 	}
@@ -249,6 +272,10 @@ func (p *Processor) ProcessVideo(
 	options.Crop = vips.InterestingAttention
 
 	err = image.ThumbnailImage(COVER_WIDTH, options)
+	if err != nil {
+		return fmt.Errorf("fail to resize image: %w", err)
+	}
+
 	params := vips.DefaultWebpsaveBufferOptions()
 	params.Q = COVER_QUALITY
 

@@ -12,7 +12,7 @@
 		mdiFeatureSearchOutline,
 		mdiInformationOutline,
 		mdiLibraryShelves,
-		mdiMagnify,
+		mdiBookshelf,
 		mdiSquareOff
 	} from '@mdi/js';
 
@@ -74,7 +74,7 @@
 />
 
 <div class="flex h-12 w-full flex-row gap-2 bg-base-300 p-3">
-	<Icon path={mdiInformationOutline} />
+	<Icon path={mdiBookshelf} />
 	<span>{collection.name}</span>
 </div>
 

@@ -11,8 +11,9 @@
 		mdiClipboardOutline,
 		mdiDownload,
 		mdiLoading,
-		mdiMagnify,
-		mdiFeatureSearchOutline
+		mdiFeatureSearchOutline,
+		mdiBookOpenVariant
+
 	} from '@mdi/js';
 	import log from '$lib/log';
 	import { untrack } from 'svelte';
@@ -176,7 +177,7 @@
 	/>
 
 	<div class="flex h-12 w-full flex-row gap-1 bg-base-300 p-3">
-		<Icon path={mdiInformationOutline} />
+		<Icon path={mdiBookOpenVariant} />
 		<div>{album.name}</div>
 	</div>
 

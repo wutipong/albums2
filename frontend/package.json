@@ -16,7 +16,7 @@
 		"gen:protoc": "protoc --ts_proto_out=./src/lib/server/grpc/proto --ts_proto_opt=outputServices=nice-grpc,outputServices=generic-definitions,useExactTypes=false  -I /workspaces/grpc mlservice.proto"
 	},
 	"devDependencies": {
-		"@better-auth/mongo-adapter": "^1.7.6",
+		"@better-auth/mongo-adapter": "^1.7.12",
 		"@eslint/js": "^10.0.1",
 		"@sveltejs/adapter-node": "^5",
 		"@sveltejs/kit": "^2.63.0",

@@ -20,7 +20,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 export const GET: RequestHandler = async () => {
 	log.debug('GET /api/collections');
-	const collections = await Collection.find({ deletedAt: null }).sort({ name: 1 })
+	const collections = await Collection.find({ deletedAt: null }).sort({ name: 1 });
 
 	log.debug(collections, 'GET /api/collections result');
 

@@ -26,12 +26,12 @@
 		<h3 class="text-lg font-bold">Move to page</h3>
 		<div class="flex flex-col py-4">
 			<div class="join mt-3 flex">
-				<button class="join-item btn flex-none" onclick={() => goto(createLink(0))}>
+				<button class="btn join-item flex-none" onclick={() => goto(createLink(0))}>
 					<Icon path={mdiPageFirst} />
 					<div class="text hidden sm:block">First</div></button
 				>
 				<button
-					class="join-item btn flex-none"
+					class="btn join-item flex-none"
 					class:btn-disabled={currentPage <= 1}
 					onclick={() => goto(createLink(currentPage))}
 				>
@@ -39,16 +39,16 @@
 					<div class="text hidden sm:block">Previous</div>
 				</button>
 
-				<input type="number" readonly class="join input flex-1" value={currentPage} />
+				<input type="number" readonly class="input join flex-1" value={currentPage} />
 				<button
-					class="join-item btn flex-none"
+					class="btn join-item flex-none"
 					class:btn-disabled={currentPage >= totalPage}
 					onclick={() => goto(createLink(currentPage))}
 				>
 					<Icon path={mdiChevronRight} />
 					<div class="text hidden sm:block">Next</div>
 				</button>
-				<button class="join-item btn" onclick={() => goto(createLink(totalPage - 1))}>
+				<button class="btn join-item" onclick={() => goto(createLink(totalPage - 1))}>
 					<Icon path={mdiPageLast} />
 					<div class="text hidden sm:block">Last</div>
 				</button>
@@ -67,21 +67,21 @@
 					min={1}
 				/>
 				<button
-					class="join-item btn flex-none"
+					class="btn join-item flex-none"
 					class:btn-disabled={customPage == 1}
 					onclick={() => (customPage = Math.max(customPage - 1, 1))}
 				>
 					<Icon path={mdiMinus} />
 				</button>
 				<button
-					class="join-item btn flex-none"
+					class="btn join-item flex-none"
 					class:btn-disabled={customPage == totalPage}
 					onclick={() => (customPage = Math.min(customPage + 1, totalPage))}
 				>
 					<Icon path={mdiPlus} />
 				</button>
 
-				<button class="join-item btn flex-none" onclick={() => goto(createLink(customPage))}>
+				<button class="btn join-item flex-none" onclick={() => goto(createLink(customPage))}>
 					<Icon path={mdiPageNext}></Icon>
 					<div class="text hidden sm:block">Go</div>
 				</button>

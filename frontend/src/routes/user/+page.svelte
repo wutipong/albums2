@@ -2,11 +2,11 @@
 	import NavBar from '$lib/components/NavBar.svelte';
 	import { mdiLogout, mdiLibraryShelves } from '@mdi/js';
 	import Icon from '$lib/components/Icon.svelte';
-    import { createHash } from '@better-auth/utils/hash';
+	import { createHash } from '@better-auth/utils/hash';
 
 	let { data } = $props();
 
-    const hashVal = $derived.by(()=>createHash('SHA-256', 'hex').digest(data.user.email));
+	const hashVal = $derived.by(() => createHash('SHA-256', 'hex').digest(data.user.email));
 	const avatarSrc = $derived(`https://gravatar.com/avatar/${hashVal}`);
 </script>
 

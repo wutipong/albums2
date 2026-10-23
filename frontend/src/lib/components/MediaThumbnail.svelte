@@ -2,7 +2,7 @@
 	import notAvailableSvg from '$lib/assets/not-available.svg?raw';
 	import { mdiAlertCircle, mdiClock, mdiFilmstrip, mdiMovie } from '@mdi/js';
 	import Icon from '$lib/components/Icon.svelte';
-	import log from '$lib/log'
+	import log from '$lib/log';
 
 	let { media, onclick = (id: string) => {} } = $props();
 
@@ -16,7 +16,6 @@
 
 	let thumbnailLoading = $state(true);
 	let previewLoading = $state(true);
-
 </script>
 
 <button
@@ -26,7 +25,7 @@
 	onmouseenter={() => (preview = true)}
 	onmouseleave={() => (preview = false)}
 	onclick={() => {
-		log.debug(media, 'thumbnail clicked.')
+		log.debug(media, 'thumbnail clicked.');
 		onclick(media);
 	}}
 >

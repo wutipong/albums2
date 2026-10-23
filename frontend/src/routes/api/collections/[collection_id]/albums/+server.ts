@@ -28,8 +28,9 @@ export const GET: RequestHandler = async ({ request, params }) => {
 		return error(404, { message: 'collection not found' });
 	}
 
-	const albums = await Album.find({ collectionId: params.collection_id, deletedAt: null })
-		.sort({ name: 1 });
+	const albums = await Album.find({ collectionId: params.collection_id, deletedAt: null }).sort({
+		name: 1
+	});
 
 	return json({ albums });
 };

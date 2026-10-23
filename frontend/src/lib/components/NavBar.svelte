@@ -1,6 +1,6 @@
 <script lang="ts">
 	import {
-	mdiAccount,
+		mdiAccount,
 		mdiCircleOffOutline,
 		mdiClose,
 		mdiDotsVertical,
@@ -54,7 +54,7 @@
 			</a>
 		{/if}
 		{#if collectionId}
-			<button class="btn-circle btn btn-ghost lg:hidden" onclick={() => searchDlg.showModal()}>
+			<button class="btn btn-circle btn-ghost lg:hidden" onclick={() => searchDlg.showModal()}>
 				<Icon path={mdiMagnify} />
 			</button>
 			<form

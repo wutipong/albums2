@@ -13,7 +13,7 @@
 		pageToShow?: number;
 	}
 
-	let { currentPage = 1, totalPage = 1, pageToShow = 5}: Props = $props();
+	let { currentPage = 1, totalPage = 1, pageToShow = 5 }: Props = $props();
 
 	let first = $derived.by(() => Math.max(1, currentPage - Math.floor(pageToShow / 2)));
 	let last = $derived.by(() => Math.min(totalPage, first + pageToShow - 1));
@@ -24,21 +24,21 @@
 
 	let customInput: PaginationDialog;
 
-    function createLink(p: number): string{
-        const params = {
-			id: page.params.id ?? "",
+	function createLink(p: number): string {
+		const params = {
+			id: page.params.id ?? '',
 			page: String(p)
-		}
+		};
 
-        return resolve('/collections/[id]/[page]', params)
-    }
+		return resolve('/collections/[id]/[page]', params);
+	}
 </script>
 
 <div class="fixed inset-x-1/2 bottom-10 hidden md:flex">
 	<div class="join -translate-x-1/2 shadow-xl">
 		<a class="btn join-item" href={createLink(1)}>
 			<Icon path={mdiPageFirst} />
-        </a>
+		</a>
 
 		{#each pageNumbers as i (i)}
 			<a
@@ -48,19 +48,16 @@
 				href={createLink(i)}
 			>
 				{i}
-    </a>
+			</a>
 		{/each}
 
 		<button class="btn join-item" onclick={() => customInput.showModal()}>
 			<Icon path={mdiDotsVertical} />
 		</button>
 
-		<a
-			class="btn join-item"
-			href={createLink(totalPage)}
-		>
+		<a class="btn join-item" href={createLink(totalPage)}>
 			<Icon path={mdiPageLast} />
-        </a>
+		</a>
 	</div>
 </div>
 

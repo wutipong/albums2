@@ -77,14 +77,17 @@ MediaSchema.searchIndex({
 	name: 'media_search_index',
 	type: 'vectorSearch',
 	definition: {
-		fields: [{
-			type: 'vector',
-			path: 'embedding',
-			numDimensions: 768,
-			similarity: 'cosine',
-		}, {
-			type: 'filter',
-			path: 'collectionId'
-		}]
+		fields: [
+			{
+				type: 'vector',
+				path: 'embedding',
+				numDimensions: 768,
+				similarity: 'cosine'
+			},
+			{
+				type: 'filter',
+				path: 'collectionId'
+			}
+		]
 	}
-})
+});

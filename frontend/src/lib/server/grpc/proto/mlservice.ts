@@ -5,503 +5,517 @@
 // source: mlservice.proto
 
 /* eslint-disable */
-import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
-import type { CallContext, CallOptions } from "nice-grpc-common";
+import { BinaryReader, BinaryWriter } from '@bufbuild/protobuf/wire';
+import type { CallContext, CallOptions } from 'nice-grpc-common';
 
-export const protobufPackage = "";
+export const protobufPackage = '';
 
-export const protobufFileName = "mlservice.proto";
+export const protobufFileName = 'mlservice.proto';
 
 /** input of text encoding */
 export interface EncodeTextRequest {
-  input: string;
+	input: string;
 }
 
 /** input of image encoding */
 export interface EncodeImageRequest {
-  image: Uint8Array;
+	image: Uint8Array;
 }
 
 /** output of encoding. */
 export interface EncodeResponse {
-  embedding: number[];
+	embedding: number[];
 }
 
 /** get image spec input */
-export interface GetImageSpecRequest {
-}
+export interface GetImageSpecRequest {}
 
 /** get image spec output */
 export interface GetImageSpecResponse {
-  width: number;
-  height: number;
+	width: number;
+	height: number;
 }
 
 function createBaseEncodeTextRequest(): EncodeTextRequest {
-  return { input: "" };
+	return { input: '' };
 }
 
 export const EncodeTextRequest: MessageFns<EncodeTextRequest> = {
-  encode(message: EncodeTextRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.input !== "") {
-      writer.uint32(10).string(message.input);
-    }
-    return writer;
-  },
+	encode(message: EncodeTextRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+		if (message.input !== '') {
+			writer.uint32(10).string(message.input);
+		}
+		return writer;
+	},
 
-  decode(input: BinaryReader | Uint8Array, length?: number): EncodeTextRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const previousRecursionDepth = (reader as any).__tsProtoDecodeDepth ?? 0;
-    if (previousRecursionDepth >= 100) {
-      throw new globalThis.Error("protobuf decode recursion limit exceeded");
-    }
-    (reader as any).__tsProtoDecodeDepth = previousRecursionDepth + 1;
-    try {
-      const end = length === undefined ? reader.len : reader.pos + length;
-      const message = createBaseEncodeTextRequest();
-      while (reader.pos < end) {
-        const tag = reader.uint32();
-        switch (tag >>> 3) {
-          case 1: {
-            if (tag !== 10) {
-              break;
-            }
+	decode(input: BinaryReader | Uint8Array, length?: number): EncodeTextRequest {
+		const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+		const previousRecursionDepth = (reader as any).__tsProtoDecodeDepth ?? 0;
+		if (previousRecursionDepth >= 100) {
+			throw new globalThis.Error('protobuf decode recursion limit exceeded');
+		}
+		(reader as any).__tsProtoDecodeDepth = previousRecursionDepth + 1;
+		try {
+			const end = length === undefined ? reader.len : reader.pos + length;
+			const message = createBaseEncodeTextRequest();
+			while (reader.pos < end) {
+				const tag = reader.uint32();
+				switch (tag >>> 3) {
+					case 1: {
+						if (tag !== 10) {
+							break;
+						}
 
-            message.input = reader.string();
-            continue;
-          }
-        }
-        if ((tag & 7) === 4 || tag === 0) {
-          break;
-        }
-        reader.skip(tag & 7);
-      }
-      return message;
-    } finally {
-      (reader as any).__tsProtoDecodeDepth = previousRecursionDepth;
-    }
-  },
+						message.input = reader.string();
+						continue;
+					}
+				}
+				if ((tag & 7) === 4 || tag === 0) {
+					break;
+				}
+				reader.skip(tag & 7);
+			}
+			return message;
+		} finally {
+			(reader as any).__tsProtoDecodeDepth = previousRecursionDepth;
+		}
+	},
 
-  fromJSON(object: any): EncodeTextRequest {
-    return { input: isSet(object.input) ? globalThis.String(object.input) : "" };
-  },
+	fromJSON(object: any): EncodeTextRequest {
+		return { input: isSet(object.input) ? globalThis.String(object.input) : '' };
+	},
 
-  toJSON(message: EncodeTextRequest): unknown {
-    const obj: any = {};
-    if (message.input !== "") {
-      obj.input = message.input;
-    }
-    return obj;
-  },
+	toJSON(message: EncodeTextRequest): unknown {
+		const obj: any = {};
+		if (message.input !== '') {
+			obj.input = message.input;
+		}
+		return obj;
+	},
 
-  create(base?: DeepPartial<EncodeTextRequest>): EncodeTextRequest {
-    return EncodeTextRequest.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<EncodeTextRequest>): EncodeTextRequest {
-    const message = createBaseEncodeTextRequest();
-    message.input = object.input ?? "";
-    return message;
-  },
+	create(base?: DeepPartial<EncodeTextRequest>): EncodeTextRequest {
+		return EncodeTextRequest.fromPartial(base ?? {});
+	},
+	fromPartial(object: DeepPartial<EncodeTextRequest>): EncodeTextRequest {
+		const message = createBaseEncodeTextRequest();
+		message.input = object.input ?? '';
+		return message;
+	}
 };
 
 function createBaseEncodeImageRequest(): EncodeImageRequest {
-  return { image: new Uint8Array(0) };
+	return { image: new Uint8Array(0) };
 }
 
 export const EncodeImageRequest: MessageFns<EncodeImageRequest> = {
-  encode(message: EncodeImageRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.image.length !== 0) {
-      writer.uint32(10).bytes(message.image);
-    }
-    return writer;
-  },
+	encode(message: EncodeImageRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+		if (message.image.length !== 0) {
+			writer.uint32(10).bytes(message.image);
+		}
+		return writer;
+	},
 
-  decode(input: BinaryReader | Uint8Array, length?: number): EncodeImageRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const previousRecursionDepth = (reader as any).__tsProtoDecodeDepth ?? 0;
-    if (previousRecursionDepth >= 100) {
-      throw new globalThis.Error("protobuf decode recursion limit exceeded");
-    }
-    (reader as any).__tsProtoDecodeDepth = previousRecursionDepth + 1;
-    try {
-      const end = length === undefined ? reader.len : reader.pos + length;
-      const message = createBaseEncodeImageRequest();
-      while (reader.pos < end) {
-        const tag = reader.uint32();
-        switch (tag >>> 3) {
-          case 1: {
-            if (tag !== 10) {
-              break;
-            }
+	decode(input: BinaryReader | Uint8Array, length?: number): EncodeImageRequest {
+		const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+		const previousRecursionDepth = (reader as any).__tsProtoDecodeDepth ?? 0;
+		if (previousRecursionDepth >= 100) {
+			throw new globalThis.Error('protobuf decode recursion limit exceeded');
+		}
+		(reader as any).__tsProtoDecodeDepth = previousRecursionDepth + 1;
+		try {
+			const end = length === undefined ? reader.len : reader.pos + length;
+			const message = createBaseEncodeImageRequest();
+			while (reader.pos < end) {
+				const tag = reader.uint32();
+				switch (tag >>> 3) {
+					case 1: {
+						if (tag !== 10) {
+							break;
+						}
 
-            message.image = reader.bytes();
-            continue;
-          }
-        }
-        if ((tag & 7) === 4 || tag === 0) {
-          break;
-        }
-        reader.skip(tag & 7);
-      }
-      return message;
-    } finally {
-      (reader as any).__tsProtoDecodeDepth = previousRecursionDepth;
-    }
-  },
+						message.image = reader.bytes();
+						continue;
+					}
+				}
+				if ((tag & 7) === 4 || tag === 0) {
+					break;
+				}
+				reader.skip(tag & 7);
+			}
+			return message;
+		} finally {
+			(reader as any).__tsProtoDecodeDepth = previousRecursionDepth;
+		}
+	},
 
-  fromJSON(object: any): EncodeImageRequest {
-    return { image: isSet(object.image) ? bytesFromBase64(object.image) : new Uint8Array(0) };
-  },
+	fromJSON(object: any): EncodeImageRequest {
+		return { image: isSet(object.image) ? bytesFromBase64(object.image) : new Uint8Array(0) };
+	},
 
-  toJSON(message: EncodeImageRequest): unknown {
-    const obj: any = {};
-    if (message.image.length !== 0) {
-      obj.image = base64FromBytes(message.image);
-    }
-    return obj;
-  },
+	toJSON(message: EncodeImageRequest): unknown {
+		const obj: any = {};
+		if (message.image.length !== 0) {
+			obj.image = base64FromBytes(message.image);
+		}
+		return obj;
+	},
 
-  create(base?: DeepPartial<EncodeImageRequest>): EncodeImageRequest {
-    return EncodeImageRequest.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<EncodeImageRequest>): EncodeImageRequest {
-    const message = createBaseEncodeImageRequest();
-    message.image = object.image ?? new Uint8Array(0);
-    return message;
-  },
+	create(base?: DeepPartial<EncodeImageRequest>): EncodeImageRequest {
+		return EncodeImageRequest.fromPartial(base ?? {});
+	},
+	fromPartial(object: DeepPartial<EncodeImageRequest>): EncodeImageRequest {
+		const message = createBaseEncodeImageRequest();
+		message.image = object.image ?? new Uint8Array(0);
+		return message;
+	}
 };
 
 function createBaseEncodeResponse(): EncodeResponse {
-  return { embedding: [] };
+	return { embedding: [] };
 }
 
 export const EncodeResponse: MessageFns<EncodeResponse> = {
-  encode(message: EncodeResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.embedding.length !== 0) {
-      writer.uint32(10).fork();
-      for (const v of message.embedding) {
-        writer.float(v);
-      }
-      writer.join();
-    }
-    return writer;
-  },
+	encode(message: EncodeResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+		if (message.embedding.length !== 0) {
+			writer.uint32(10).fork();
+			for (const v of message.embedding) {
+				writer.float(v);
+			}
+			writer.join();
+		}
+		return writer;
+	},
 
-  decode(input: BinaryReader | Uint8Array, length?: number): EncodeResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const previousRecursionDepth = (reader as any).__tsProtoDecodeDepth ?? 0;
-    if (previousRecursionDepth >= 100) {
-      throw new globalThis.Error("protobuf decode recursion limit exceeded");
-    }
-    (reader as any).__tsProtoDecodeDepth = previousRecursionDepth + 1;
-    try {
-      const end = length === undefined ? reader.len : reader.pos + length;
-      const message = createBaseEncodeResponse();
-      while (reader.pos < end) {
-        const tag = reader.uint32();
-        switch (tag >>> 3) {
-          case 1: {
-            if (tag === 13) {
-              message.embedding.push(reader.float());
+	decode(input: BinaryReader | Uint8Array, length?: number): EncodeResponse {
+		const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+		const previousRecursionDepth = (reader as any).__tsProtoDecodeDepth ?? 0;
+		if (previousRecursionDepth >= 100) {
+			throw new globalThis.Error('protobuf decode recursion limit exceeded');
+		}
+		(reader as any).__tsProtoDecodeDepth = previousRecursionDepth + 1;
+		try {
+			const end = length === undefined ? reader.len : reader.pos + length;
+			const message = createBaseEncodeResponse();
+			while (reader.pos < end) {
+				const tag = reader.uint32();
+				switch (tag >>> 3) {
+					case 1: {
+						if (tag === 13) {
+							message.embedding.push(reader.float());
 
-              continue;
-            }
+							continue;
+						}
 
-            if (tag === 10) {
-              const end2 = reader.uint32() + reader.pos;
-              while (reader.pos < end2) {
-                message.embedding.push(reader.float());
-              }
+						if (tag === 10) {
+							const end2 = reader.uint32() + reader.pos;
+							while (reader.pos < end2) {
+								message.embedding.push(reader.float());
+							}
 
-              continue;
-            }
+							continue;
+						}
 
-            break;
-          }
-        }
-        if ((tag & 7) === 4 || tag === 0) {
-          break;
-        }
-        reader.skip(tag & 7);
-      }
-      return message;
-    } finally {
-      (reader as any).__tsProtoDecodeDepth = previousRecursionDepth;
-    }
-  },
+						break;
+					}
+				}
+				if ((tag & 7) === 4 || tag === 0) {
+					break;
+				}
+				reader.skip(tag & 7);
+			}
+			return message;
+		} finally {
+			(reader as any).__tsProtoDecodeDepth = previousRecursionDepth;
+		}
+	},
 
-  fromJSON(object: any): EncodeResponse {
-    return {
-      embedding: globalThis.Array.isArray(object?.embedding)
-        ? object.embedding.map((e: any) => globalThis.Number(e))
-        : [],
-    };
-  },
+	fromJSON(object: any): EncodeResponse {
+		return {
+			embedding: globalThis.Array.isArray(object?.embedding)
+				? object.embedding.map((e: any) => globalThis.Number(e))
+				: []
+		};
+	},
 
-  toJSON(message: EncodeResponse): unknown {
-    const obj: any = {};
-    if (message.embedding?.length) {
-      obj.embedding = message.embedding.map((e) => floatToJson(e));
-    }
-    return obj;
-  },
+	toJSON(message: EncodeResponse): unknown {
+		const obj: any = {};
+		if (message.embedding?.length) {
+			obj.embedding = message.embedding.map((e) => floatToJson(e));
+		}
+		return obj;
+	},
 
-  create(base?: DeepPartial<EncodeResponse>): EncodeResponse {
-    return EncodeResponse.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<EncodeResponse>): EncodeResponse {
-    const message = createBaseEncodeResponse();
-    message.embedding = object.embedding?.map((e) => e) || [];
-    return message;
-  },
+	create(base?: DeepPartial<EncodeResponse>): EncodeResponse {
+		return EncodeResponse.fromPartial(base ?? {});
+	},
+	fromPartial(object: DeepPartial<EncodeResponse>): EncodeResponse {
+		const message = createBaseEncodeResponse();
+		message.embedding = object.embedding?.map((e) => e) || [];
+		return message;
+	}
 };
 
 function createBaseGetImageSpecRequest(): GetImageSpecRequest {
-  return {};
+	return {};
 }
 
 export const GetImageSpecRequest: MessageFns<GetImageSpecRequest> = {
-  encode(_: GetImageSpecRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    return writer;
-  },
+	encode(_: GetImageSpecRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+		return writer;
+	},
 
-  decode(input: BinaryReader | Uint8Array, length?: number): GetImageSpecRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const previousRecursionDepth = (reader as any).__tsProtoDecodeDepth ?? 0;
-    if (previousRecursionDepth >= 100) {
-      throw new globalThis.Error("protobuf decode recursion limit exceeded");
-    }
-    (reader as any).__tsProtoDecodeDepth = previousRecursionDepth + 1;
-    try {
-      const end = length === undefined ? reader.len : reader.pos + length;
-      const message = createBaseGetImageSpecRequest();
-      while (reader.pos < end) {
-        const tag = reader.uint32();
-        switch (tag >>> 3) {
-        }
-        if ((tag & 7) === 4 || tag === 0) {
-          break;
-        }
-        reader.skip(tag & 7);
-      }
-      return message;
-    } finally {
-      (reader as any).__tsProtoDecodeDepth = previousRecursionDepth;
-    }
-  },
+	decode(input: BinaryReader | Uint8Array, length?: number): GetImageSpecRequest {
+		const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+		const previousRecursionDepth = (reader as any).__tsProtoDecodeDepth ?? 0;
+		if (previousRecursionDepth >= 100) {
+			throw new globalThis.Error('protobuf decode recursion limit exceeded');
+		}
+		(reader as any).__tsProtoDecodeDepth = previousRecursionDepth + 1;
+		try {
+			const end = length === undefined ? reader.len : reader.pos + length;
+			const message = createBaseGetImageSpecRequest();
+			while (reader.pos < end) {
+				const tag = reader.uint32();
+				switch (tag >>> 3) {
+				}
+				if ((tag & 7) === 4 || tag === 0) {
+					break;
+				}
+				reader.skip(tag & 7);
+			}
+			return message;
+		} finally {
+			(reader as any).__tsProtoDecodeDepth = previousRecursionDepth;
+		}
+	},
 
-  fromJSON(_: any): GetImageSpecRequest {
-    return {};
-  },
+	fromJSON(_: any): GetImageSpecRequest {
+		return {};
+	},
 
-  toJSON(_: GetImageSpecRequest): unknown {
-    const obj: any = {};
-    return obj;
-  },
+	toJSON(_: GetImageSpecRequest): unknown {
+		const obj: any = {};
+		return obj;
+	},
 
-  create(base?: DeepPartial<GetImageSpecRequest>): GetImageSpecRequest {
-    return GetImageSpecRequest.fromPartial(base ?? {});
-  },
-  fromPartial(_: DeepPartial<GetImageSpecRequest>): GetImageSpecRequest {
-    const message = createBaseGetImageSpecRequest();
-    return message;
-  },
+	create(base?: DeepPartial<GetImageSpecRequest>): GetImageSpecRequest {
+		return GetImageSpecRequest.fromPartial(base ?? {});
+	},
+	fromPartial(_: DeepPartial<GetImageSpecRequest>): GetImageSpecRequest {
+		const message = createBaseGetImageSpecRequest();
+		return message;
+	}
 };
 
 function createBaseGetImageSpecResponse(): GetImageSpecResponse {
-  return { width: 0, height: 0 };
+	return { width: 0, height: 0 };
 }
 
 export const GetImageSpecResponse: MessageFns<GetImageSpecResponse> = {
-  encode(message: GetImageSpecResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.width !== 0) {
-      writer.uint32(8).int32(message.width);
-    }
-    if (message.height !== 0) {
-      writer.uint32(16).int32(message.height);
-    }
-    return writer;
-  },
+	encode(message: GetImageSpecResponse, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+		if (message.width !== 0) {
+			writer.uint32(8).int32(message.width);
+		}
+		if (message.height !== 0) {
+			writer.uint32(16).int32(message.height);
+		}
+		return writer;
+	},
 
-  decode(input: BinaryReader | Uint8Array, length?: number): GetImageSpecResponse {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const previousRecursionDepth = (reader as any).__tsProtoDecodeDepth ?? 0;
-    if (previousRecursionDepth >= 100) {
-      throw new globalThis.Error("protobuf decode recursion limit exceeded");
-    }
-    (reader as any).__tsProtoDecodeDepth = previousRecursionDepth + 1;
-    try {
-      const end = length === undefined ? reader.len : reader.pos + length;
-      const message = createBaseGetImageSpecResponse();
-      while (reader.pos < end) {
-        const tag = reader.uint32();
-        switch (tag >>> 3) {
-          case 1: {
-            if (tag !== 8) {
-              break;
-            }
+	decode(input: BinaryReader | Uint8Array, length?: number): GetImageSpecResponse {
+		const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+		const previousRecursionDepth = (reader as any).__tsProtoDecodeDepth ?? 0;
+		if (previousRecursionDepth >= 100) {
+			throw new globalThis.Error('protobuf decode recursion limit exceeded');
+		}
+		(reader as any).__tsProtoDecodeDepth = previousRecursionDepth + 1;
+		try {
+			const end = length === undefined ? reader.len : reader.pos + length;
+			const message = createBaseGetImageSpecResponse();
+			while (reader.pos < end) {
+				const tag = reader.uint32();
+				switch (tag >>> 3) {
+					case 1: {
+						if (tag !== 8) {
+							break;
+						}
 
-            message.width = reader.int32();
-            continue;
-          }
-          case 2: {
-            if (tag !== 16) {
-              break;
-            }
+						message.width = reader.int32();
+						continue;
+					}
+					case 2: {
+						if (tag !== 16) {
+							break;
+						}
 
-            message.height = reader.int32();
-            continue;
-          }
-        }
-        if ((tag & 7) === 4 || tag === 0) {
-          break;
-        }
-        reader.skip(tag & 7);
-      }
-      return message;
-    } finally {
-      (reader as any).__tsProtoDecodeDepth = previousRecursionDepth;
-    }
-  },
+						message.height = reader.int32();
+						continue;
+					}
+				}
+				if ((tag & 7) === 4 || tag === 0) {
+					break;
+				}
+				reader.skip(tag & 7);
+			}
+			return message;
+		} finally {
+			(reader as any).__tsProtoDecodeDepth = previousRecursionDepth;
+		}
+	},
 
-  fromJSON(object: any): GetImageSpecResponse {
-    return {
-      width: isSet(object.width) ? globalThis.Number(object.width) : 0,
-      height: isSet(object.height) ? globalThis.Number(object.height) : 0,
-    };
-  },
+	fromJSON(object: any): GetImageSpecResponse {
+		return {
+			width: isSet(object.width) ? globalThis.Number(object.width) : 0,
+			height: isSet(object.height) ? globalThis.Number(object.height) : 0
+		};
+	},
 
-  toJSON(message: GetImageSpecResponse): unknown {
-    const obj: any = {};
-    if (message.width !== 0) {
-      obj.width = Math.round(message.width);
-    }
-    if (message.height !== 0) {
-      obj.height = Math.round(message.height);
-    }
-    return obj;
-  },
+	toJSON(message: GetImageSpecResponse): unknown {
+		const obj: any = {};
+		if (message.width !== 0) {
+			obj.width = Math.round(message.width);
+		}
+		if (message.height !== 0) {
+			obj.height = Math.round(message.height);
+		}
+		return obj;
+	},
 
-  create(base?: DeepPartial<GetImageSpecResponse>): GetImageSpecResponse {
-    return GetImageSpecResponse.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<GetImageSpecResponse>): GetImageSpecResponse {
-    const message = createBaseGetImageSpecResponse();
-    message.width = object.width ?? 0;
-    message.height = object.height ?? 0;
-    return message;
-  },
+	create(base?: DeepPartial<GetImageSpecResponse>): GetImageSpecResponse {
+		return GetImageSpecResponse.fromPartial(base ?? {});
+	},
+	fromPartial(object: DeepPartial<GetImageSpecResponse>): GetImageSpecResponse {
+		const message = createBaseGetImageSpecResponse();
+		message.width = object.width ?? 0;
+		message.height = object.height ?? 0;
+		return message;
+	}
 };
 
 /** Worker service definition. */
 export type EncodingServiceDefinition = typeof EncodingServiceDefinition;
 export const EncodingServiceDefinition = {
-  name: "EncodingService",
-  fullName: "EncodingService",
-  methods: {
-    /** EncodeText perform text embedding */
-    encodeText: {
-      name: "EncodeText",
-      requestType: EncodeTextRequest as typeof EncodeTextRequest,
-      requestStream: false,
-      responseType: EncodeResponse as typeof EncodeResponse,
-      responseStream: false,
-      options: {},
-    },
-    /** Notify worker to queue unprocessed asset to processing queue. */
-    encodeImage: {
-      name: "EncodeImage",
-      requestType: EncodeImageRequest as typeof EncodeImageRequest,
-      requestStream: false,
-      responseType: EncodeResponse as typeof EncodeResponse,
-      responseStream: false,
-      options: {},
-    },
-    /** Return the image spec to be encoded. */
-    getImageSpec: {
-      name: "GetImageSpec",
-      requestType: GetImageSpecRequest as typeof GetImageSpecRequest,
-      requestStream: false,
-      responseType: GetImageSpecResponse as typeof GetImageSpecResponse,
-      responseStream: false,
-      options: {},
-    },
-  },
+	name: 'EncodingService',
+	fullName: 'EncodingService',
+	methods: {
+		/** EncodeText perform text embedding */
+		encodeText: {
+			name: 'EncodeText',
+			requestType: EncodeTextRequest as typeof EncodeTextRequest,
+			requestStream: false,
+			responseType: EncodeResponse as typeof EncodeResponse,
+			responseStream: false,
+			options: {}
+		},
+		/** Notify worker to queue unprocessed asset to processing queue. */
+		encodeImage: {
+			name: 'EncodeImage',
+			requestType: EncodeImageRequest as typeof EncodeImageRequest,
+			requestStream: false,
+			responseType: EncodeResponse as typeof EncodeResponse,
+			responseStream: false,
+			options: {}
+		},
+		/** Return the image spec to be encoded. */
+		getImageSpec: {
+			name: 'GetImageSpec',
+			requestType: GetImageSpecRequest as typeof GetImageSpecRequest,
+			requestStream: false,
+			responseType: GetImageSpecResponse as typeof GetImageSpecResponse,
+			responseStream: false,
+			options: {}
+		}
+	}
 } as const;
 
 export interface EncodingServiceImplementation<CallContextExt = {}> {
-  /** EncodeText perform text embedding */
-  encodeText(request: EncodeTextRequest, context: CallContext & CallContextExt): Promise<DeepPartial<EncodeResponse>>;
-  /** Notify worker to queue unprocessed asset to processing queue. */
-  encodeImage(request: EncodeImageRequest, context: CallContext & CallContextExt): Promise<DeepPartial<EncodeResponse>>;
-  /** Return the image spec to be encoded. */
-  getImageSpec(
-    request: GetImageSpecRequest,
-    context: CallContext & CallContextExt,
-  ): Promise<DeepPartial<GetImageSpecResponse>>;
+	/** EncodeText perform text embedding */
+	encodeText(
+		request: EncodeTextRequest,
+		context: CallContext & CallContextExt
+	): Promise<DeepPartial<EncodeResponse>>;
+	/** Notify worker to queue unprocessed asset to processing queue. */
+	encodeImage(
+		request: EncodeImageRequest,
+		context: CallContext & CallContextExt
+	): Promise<DeepPartial<EncodeResponse>>;
+	/** Return the image spec to be encoded. */
+	getImageSpec(
+		request: GetImageSpecRequest,
+		context: CallContext & CallContextExt
+	): Promise<DeepPartial<GetImageSpecResponse>>;
 }
 
 export interface EncodingServiceClient<CallOptionsExt = {}> {
-  /** EncodeText perform text embedding */
-  encodeText(request: DeepPartial<EncodeTextRequest>, options?: CallOptions & CallOptionsExt): Promise<EncodeResponse>;
-  /** Notify worker to queue unprocessed asset to processing queue. */
-  encodeImage(
-    request: DeepPartial<EncodeImageRequest>,
-    options?: CallOptions & CallOptionsExt,
-  ): Promise<EncodeResponse>;
-  /** Return the image spec to be encoded. */
-  getImageSpec(
-    request: DeepPartial<GetImageSpecRequest>,
-    options?: CallOptions & CallOptionsExt,
-  ): Promise<GetImageSpecResponse>;
+	/** EncodeText perform text embedding */
+	encodeText(
+		request: DeepPartial<EncodeTextRequest>,
+		options?: CallOptions & CallOptionsExt
+	): Promise<EncodeResponse>;
+	/** Notify worker to queue unprocessed asset to processing queue. */
+	encodeImage(
+		request: DeepPartial<EncodeImageRequest>,
+		options?: CallOptions & CallOptionsExt
+	): Promise<EncodeResponse>;
+	/** Return the image spec to be encoded. */
+	getImageSpec(
+		request: DeepPartial<GetImageSpecRequest>,
+		options?: CallOptions & CallOptionsExt
+	): Promise<GetImageSpecResponse>;
 }
 
 function bytesFromBase64(b64: string): Uint8Array {
-  if ((globalThis as any).Buffer) {
-    return Uint8Array.from((globalThis as any).Buffer.from(b64, "base64"));
-  } else {
-    const bin = globalThis.atob(b64);
-    const arr = new Uint8Array(bin.length);
-    for (let i = 0; i < bin.length; ++i) {
-      arr[i] = bin.charCodeAt(i);
-    }
-    return arr;
-  }
+	if ((globalThis as any).Buffer) {
+		return Uint8Array.from((globalThis as any).Buffer.from(b64, 'base64'));
+	} else {
+		const bin = globalThis.atob(b64);
+		const arr = new Uint8Array(bin.length);
+		for (let i = 0; i < bin.length; ++i) {
+			arr[i] = bin.charCodeAt(i);
+		}
+		return arr;
+	}
 }
 
 function base64FromBytes(arr: Uint8Array): string {
-  if ((globalThis as any).Buffer) {
-    return (globalThis as any).Buffer.from(arr).toString("base64");
-  } else {
-    const bin: string[] = [];
-    arr.forEach((byte) => {
-      bin.push(globalThis.String.fromCharCode(byte));
-    });
-    return globalThis.btoa(bin.join(""));
-  }
+	if ((globalThis as any).Buffer) {
+		return (globalThis as any).Buffer.from(arr).toString('base64');
+	} else {
+		const bin: string[] = [];
+		arr.forEach((byte) => {
+			bin.push(globalThis.String.fromCharCode(byte));
+		});
+		return globalThis.btoa(bin.join(''));
+	}
 }
 
 function floatToJson(value: number | null | undefined): number | string | null | undefined {
-  return typeof value === "number" && !globalThis.Number.isFinite(value) ? globalThis.String(value) : value;
+	return typeof value === 'number' && !globalThis.Number.isFinite(value)
+		? globalThis.String(value)
+		: value;
 }
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 
-export type DeepPartial<T> = T extends Builtin ? T
-  : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>>
-  : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
-  : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
-  : Partial<T>;
+export type DeepPartial<T> = T extends Builtin
+	? T
+	: T extends globalThis.Array<infer U>
+		? globalThis.Array<DeepPartial<U>>
+		: T extends ReadonlyArray<infer U>
+			? ReadonlyArray<DeepPartial<U>>
+			: T extends {}
+				? { [K in keyof T]?: DeepPartial<T[K]> }
+				: Partial<T>;
 
 function isSet(value: any): boolean {
-  return value !== null && value !== undefined;
+	return value !== null && value !== undefined;
 }
 
 export interface MessageFns<T> {
-  encode(message: T, writer?: BinaryWriter): BinaryWriter;
-  decode(input: BinaryReader | Uint8Array, length?: number): T;
-  fromJSON(object: any): T;
-  toJSON(message: T): unknown;
-  create(base?: DeepPartial<T>): T;
-  fromPartial(object: DeepPartial<T>): T;
+	encode(message: T, writer?: BinaryWriter): BinaryWriter;
+	decode(input: BinaryReader | Uint8Array, length?: number): T;
+	fromJSON(object: any): T;
+	toJSON(message: T): unknown;
+	create(base?: DeepPartial<T>): T;
+	fromPartial(object: DeepPartial<T>): T;
 }

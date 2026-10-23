@@ -13,12 +13,10 @@ export default defineConfig({
 			info: {
 				title: 'Albums2 API',
 				version: '1.0.0',
-				description: 'Albums2 API documentation',
+				description: 'Albums2 API documentation'
 			},
 			// OpenAPI servers configuration
-			servers: [
-				{ url: 'http://localhost:5173', description: 'Development' }
-			],
+			servers: [{ url: 'http://localhost:5173', description: 'Development' }],
 			// Path to shared schema definitions
 			baseSchemasPath: 'src/lib/schemas.js',
 			// Additional YAML files to include

@@ -16,7 +16,7 @@
 	} = $props();
 
 	let loading = $state(true);
-	let type = $derived(media.type)
+	let type = $derived(media.type);
 
 	$effect(() => {
 		loading = true;
@@ -31,7 +31,7 @@
 	}
 
 	function doClose() {
-        type = 'image'
+		type = 'image';
 		show = false;
 	}
 
@@ -102,11 +102,7 @@
 		{/if}
 	{:else}
 		<div class="h-full w-full">
-			<img
-				src={notAvailable}
-				alt={media.name}
-				class="m-auto h-full w-full object-contain"
-			/>
+			<img src={notAvailable} alt={media.name} class="m-auto h-full w-full object-contain" />
 		</div>
 	{/if}
 	<div class="absolute top-1/2 left-4 -translate-y-1/2 bg-transparent">

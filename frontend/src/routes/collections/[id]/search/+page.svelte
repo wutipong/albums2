@@ -7,13 +7,11 @@
 		mdiBookshelf,
 		mdiFolderMultipleImage,
 		mdiMagnify,
-
 		mdiLoading
-
 	} from '@mdi/js';
 	import { untrack } from 'svelte';
 	import MediaViewer from '$lib/components/MediaViewer.svelte';
-	import log from '$lib/log'
+	import log from '$lib/log';
 	import MediaInfoDialog from '$lib/components/MediaInfoDialog.svelte';
 	import NavBar from '$lib/components/NavBar.svelte';
 
@@ -68,7 +66,9 @@
 		}
 
 		isLoading = true;
-		const resp = await fetch(`/api/collections/${data.collectionId}/search?search=${data.search}&page=${currentPage.page + 1}`);
+		const resp = await fetch(
+			`/api/collections/${data.collectionId}/search?search=${data.search}&page=${currentPage.page + 1}`
+		);
 		currentPage = await resp.json();
 		log.debug(currentPage);
 
@@ -92,13 +92,11 @@
 			}
 		};
 	}
-    let mediaInfoDlg: MediaInfoDialog
+	let mediaInfoDlg: MediaInfoDialog;
 </script>
 
-
-
 <div class="relative flex h-screen w-screen flex-col">
-    <NavBar
+	<NavBar
 		up={{ description: 'Albums', icon: mdiBookshelf, url: `/collections/${data.collectionId}` }}
 		collectionId={data.collectionId}
 	/>
@@ -179,7 +177,7 @@
 			<Icon path={mdiDownload} /> Download
 		</a>
 	</li-->
-	{#if data.user.role == 'admin' }
+	{#if data.user.role == 'admin'}
 		<li></li>
 		<li class="menu-item">Administration actions</li>
 		<li>

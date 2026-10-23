@@ -6,7 +6,7 @@ import mongoose from 'mongoose';
 import { env } from '$env/dynamic/private';
 import { sequence } from '@sveltejs/kit/hooks';
 import log from '$lib/log';
-import redis from '$lib/server/redis'
+import redis from '$lib/server/redis';
 import { Media } from '$lib/server/database';
 
 export const init: ServerInit = async () => {
@@ -14,7 +14,7 @@ export const init: ServerInit = async () => {
 	await Media.init();
 	await Media.createSearchIndexes();
 	if (!redis.isReady) {
-		await redis.connect()
+		await redis.connect();
 	}
 };
 
@@ -54,6 +54,5 @@ const handleAdmin: Handle = async ({ event, resolve }) => {
 
 	return resolve(event);
 };
-
 
 export const handle: Handle = sequence(handleBetterAuth, handleAdmin, handleSession);

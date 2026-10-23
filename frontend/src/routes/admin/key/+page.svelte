@@ -59,7 +59,7 @@
 
 <div class="w-full p-4 pt-8">
 	<h2 class="p-4 text-2xl font-semibold">API Keys</h2>
-	<table class="table-pin-rows table table-zebra">
+	<table class="table table-pin-rows table-zebra">
 		<thead>
 			<tr>
 				<th>Key</th>

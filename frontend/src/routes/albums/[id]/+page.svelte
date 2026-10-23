@@ -20,7 +20,7 @@
 	import MediaInfoDialog from '$lib/components/MediaInfoDialog.svelte';
 	import AlbumInfoDialog from '$lib/components/AlbumInfoDialog.svelte';
 	import NavBar from '$lib/components/NavBar.svelte';
-	import Toast from '$lib/components/Toast.svelte'
+	import Toast from '$lib/components/Toast.svelte';
 
 	const { data } = $props();
 
@@ -73,7 +73,7 @@
 
 		const obj = await resp.json();
 
-		toast.add(`rendition job of ${obj.count} media have been added.`, 'info')
+		toast.add(`rendition job of ${obj.count} media have been added.`, 'info');
 		return true;
 	}
 
@@ -84,7 +84,7 @@
 
 		const obj = await resp.json();
 
-		toast.add(`rendition job of a media has been added.`, 'info')
+		toast.add(`rendition job of a media has been added.`, 'info');
 		return true;
 	}
 
@@ -95,7 +95,7 @@
 
 		const obj = await resp.json();
 
-		toast.add(`embedding job of ${obj.count} media have been added.`, 'info')
+		toast.add(`embedding job of ${obj.count} media have been added.`, 'info');
 		return true;
 	}
 
@@ -106,7 +106,7 @@
 
 		const obj = await resp.json();
 
-		toast.add(`embedding job of a media has been added.`, 'info')
+		toast.add(`embedding job of a media has been added.`, 'info');
 		return true;
 	}
 
@@ -117,7 +117,7 @@
 
 		const obj = await resp.json();
 
-		toast.add(`album cover job have been added.`, 'info')
+		toast.add(`album cover job have been added.`, 'info');
 
 		return true;
 	}
@@ -128,7 +128,7 @@
 		});
 
 		const obj = await resp.json();
-		toast.add(`collection cover job of the collection have been added.`, 'info')
+		toast.add(`collection cover job of the collection have been added.`, 'info');
 
 		return true;
 	}
@@ -236,7 +236,7 @@
 
 <MediaInfoDialog bind:this={mediaInfoDlg} />
 <AlbumInfoDialog bind:this={albumInfoDlg} />
-<Toast bind:this={toast}/>
+<Toast bind:this={toast} />
 {#snippet viewMenu()}
 	<li>
 		<button

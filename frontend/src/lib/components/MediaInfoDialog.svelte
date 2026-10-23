@@ -32,10 +32,10 @@
 		preview: '',
 		thumbnail: '',
 
-        albumId: new ObjectId(),
-        albumName: '<placeholder>',
-        collectionId: new ObjectId(),
-        collectionName: '<placeholder>'
+		albumId: new ObjectId(),
+		albumName: '<placeholder>',
+		collectionId: new ObjectId(),
+		collectionName: '<placeholder>'
 	});
 
 	export function show(m: Media) {
@@ -68,17 +68,21 @@
 					</tr>
 					<tr>
 						<th>Album</th>
-						<td><a class="link flex gap-1" href="/albums/{media.albumId.toHexString()}">
-                            {media.albumName} 
-                            <Icon path={mdiLink}/>
-                        </a></td>
+						<td
+							><a class="flex link gap-1" href="/albums/{media.albumId.toHexString()}">
+								{media.albumName}
+								<Icon path={mdiLink} />
+							</a></td
+						>
 					</tr>
 					<tr>
 						<th>Collection</th>
-						<td><a class="link flex gap-1" href="/collections/{media.collectionId.toHexString()}">
-                            {media.collectionName}  
-                            <Icon path={mdiLink}/>
-                        </a></td>
+						<td
+							><a class="flex link gap-1" href="/collections/{media.collectionId.toHexString()}">
+								{media.collectionName}
+								<Icon path={mdiLink} />
+							</a></td
+						>
 					</tr>
 					<tr>
 						<th>Created At</th>

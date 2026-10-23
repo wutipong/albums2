@@ -3,9 +3,11 @@ on:
   push:
     paths:
       - 'gopkg/**'
+      - ".github/workflows/gopkg-build-and-test.yml"
   pull_request:
     paths:
       - 'gopkg/**'
+      - ".github/workflows/gopkg-build-and-test.yml"
 
 jobs:
   build-and-test:

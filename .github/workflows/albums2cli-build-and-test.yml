@@ -3,9 +3,11 @@ on:
   push:
     paths:
       - 'albums2cli/**'
+      - ".github/workflows/albums2cli-build-and-test.yml"
   pull_request:
     paths:
       - 'albums2cli/**'
+      - ".github/workflows/albums2cli-build-and-test.yml"
 
 jobs:
   build-and-test:

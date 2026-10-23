@@ -5,7 +5,6 @@
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
   "workspaceFolder": "/workspaces/",
-
   // Features to add to the dev container. More info: https://containers.dev/features.
   "features": {
     // Official, heavy runtime features are safe and easy to leave here
@@ -18,21 +17,24 @@
     "ghcr.io/devcontainers/features/python:1": {
       "version": "3.11"
     },
-    // Clean developer tools
-    "ghcr.io/devcontainers-extra/features/bun:1": { "version": "latest" },
+    "ghcr.io/devcontainers-extra/features/bun:1": {
+      "version": "latest"
+    },
     "ghcr.io/jsburckhardt/devcontainer-features/uv:1": {},
     "ghcr.io/devcontainers-extra/features/act:1": {},
-    "ghcr.io/devcontainers-extra/features/protoc:1": {}
+    "ghcr.io/devcontainers-extra/features/protoc:1": {},
+    "ghcr.io/devcontainers-extra/features/actionlint:1": {},
+    "ghcr.io/devcontainers/features/docker-in-docker:4": {},
+    "ghcr.io/devcontainers-extra/features/golangci-lint:1": {},
+    "ghcr.io/devcontainers-extra/features/rclone:1": {}
   },
   // Handle your custom Go packages sequentially AFTER runtimes are ready
   "postCreateCommand": "go install google.golang.org/protobuf/cmd/protoc-gen-go@latest & go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest & go install github.com/minio/mc@latest & go install github.com/cshum/vipsgen/cmd/vipsgen@latest",
   "postStartCommand": "caddy start --config .devcontainer/Caddyfile",
-
   // "mounts": [
   //   "source=./mc,target=/home/vscode/.mc,type=bind,consistency=cached",
   //   "source=./bin,target=/home/vscode/bin,type=bind,consistency=cached"
   // ],
-
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   // This can be used to network with other containers or with the host.
   "forwardPorts": [

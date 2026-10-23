@@ -4,15 +4,15 @@ go 1.27.1
 
 require (
 	github.com/imroc/req/v3 v3.61.0
-	github.com/lmittmann/tint v1.1.3
+	github.com/lmittmann/tint v1.2.1
 	github.com/manifoldco/promptui v0.9.0
 	github.com/mholt/archives v0.1.5
 	github.com/saintfish/chardet v0.0.0-20230101081208-5e3ef4b5456d
-	github.com/urfave/cli/v3 v3.8.0
+	github.com/urfave/cli/v3 v3.14.0
 	github.com/wutipong/albums2/gopkg v0.0.0-20261006145831-7eb11830fb6c
 	go.mongodb.org/mongo-driver/v2 v2.9.2
-	go.yaml.in/yaml/v4 v4.0.0-rc.4
-	golang.org/x/text v0.41.0
+	go.yaml.in/yaml/v4 v4.0.0-rc.6
+	golang.org/x/text v0.43.0
 )
 
 require (

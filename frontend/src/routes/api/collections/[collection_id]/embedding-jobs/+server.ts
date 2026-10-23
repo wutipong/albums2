@@ -4,7 +4,7 @@ import { type RequestHandler } from './$types';
 import redis from '$lib/server/redis';
 
 export const POST: RequestHandler = async ({ params }) => {
-	let media = await Media.find({ collectionId: params.collection_id });
+	const media = await Media.find({ collectionId: params.collection_id });
 	const tasks = [];
 	for (const m of media) {
 		tasks.push(

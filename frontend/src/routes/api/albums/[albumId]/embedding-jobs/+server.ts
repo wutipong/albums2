@@ -10,7 +10,7 @@ export const POST: RequestHandler = async ({ params }) => {
 
 	log.debug(`id: "${params.albumId}"`);
 
-	let media = await Media.find({ albumId: albumId });
+	const media = await Media.find({ albumId: albumId });
 	log.info(media, 'media information');
 	log.info(`media count: ${media.length}`);
 	const tasks = [];

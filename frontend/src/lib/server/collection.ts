@@ -34,7 +34,7 @@ export async function searchMedia(
 	});
 
 	for (let i = 0; i < results.docs.length; i++) {
-		let media = await populateUrls(results.docs[i]);
+		const media = await populateUrls(results.docs[i]);
 
 		results.docs[i] = media;
 	}

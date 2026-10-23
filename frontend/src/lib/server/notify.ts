@@ -1,7 +1,7 @@
 import redis from '$lib/server/redis';
 import log from '$lib/log';
 
-export async function notifyProcessMedia(id: String) {
+export async function notifyProcessMedia(id: string) {
 	log.debug(redis, 'redis');
 	try {
 		const taskRequest = {

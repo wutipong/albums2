@@ -9,7 +9,7 @@ export const PATCH: RequestHandler = async ({ request, params }) => {
 	const id = params.id;
 	const success = req.success;
 
-	let asset = await Media.findById(id).where({ deletedAt: null });
+	const asset = await Media.findById(id).where({ deletedAt: null });
 	if (!asset) {
 		return error(500, { message: 'media data does not existed.' });
 	}

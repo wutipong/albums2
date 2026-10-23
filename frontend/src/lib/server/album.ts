@@ -14,7 +14,7 @@ export async function loadAlbumMediaPage(id: string, pageno: number) {
 	);
 
 	for (let i = 0; i < page.docs.length; i++) {
-		let media = await populateUrls(page.docs[i]);
+		const media = await populateUrls(page.docs[i]);
 
 		page.docs[i] = media;
 	}

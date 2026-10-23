@@ -22,7 +22,7 @@ updates:
     interval: weekly
 
 - package-ecosystem: "gomod"
-  directory: "gomodpkg"
+  directory: "gopkg"
   schedule:
     interval: weekly
 

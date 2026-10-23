@@ -11,7 +11,7 @@ require (
 	github.com/urfave/cli/v3 v3.8.0
 	github.com/wutipong/albums2/gopkg v0.0.0-20261006145831-7eb11830fb6c
 	go.mongodb.org/mongo-driver/v2 v2.9.2
-	go.yaml.in/yaml/v4 v4.0.0-rc.4
+	go.yaml.in/yaml/v4 v4.0.0-rc.6
 	golang.org/x/text v0.41.0
 )
 

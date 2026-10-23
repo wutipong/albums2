@@ -5,6 +5,7 @@ WORKDIR /app
 # Enable bytecode compilation and set link mode for faster installs
 ENV UV_COMPILE_BYTECODE=1
 ENV UV_LINK_MODE=copy
+ENV HF_HOME=/app/hf_cache
 
 # Install dependencies using the lockfile
 RUN --mount=type=cache,target=/root/.cache/uv \
@@ -20,5 +21,8 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen
 
 EXPOSE 8173
+
+RUN uv add huggingface_hub[cli]
+RUN huggingface-cli download google/siglip2-base-patch16-256 --local-dir /app/model
 
 CMD ["uv", "run", "server.py"]

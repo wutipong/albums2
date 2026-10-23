@@ -42,7 +42,7 @@
 		"prettier-plugin-svelte": "^4.1.0",
 		"prettier-plugin-tailwindcss": "^0.8.0",
 		"svelte": "^5.57.2",
-		"svelte-check": "^4.6.0",
+		"svelte-check": "^4.7.7",
 		"sveltekit-openapi-generator": "^0.1.6",
 		"tailwindcss": "^4.3.0",
 		"typescript": "^6.0.3",

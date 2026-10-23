@@ -1,11 +1,11 @@
-name: albums2-cli-golangci-lint
+name: gopkg-build-and-test
 on:
   push:
     paths:
-      - 'albums2cli/**'
+      - 'gopkg/**'
   pull_request:
     paths:
-      - 'albums2cli/**'
+      - 'gopkg/**'
 
 jobs:
   build-and-test:
@@ -22,5 +22,5 @@ jobs:
     - name: Golangci-lint
       uses: golangci/golangci-lint-action@v9.3.0
       with:
-        working-directory: ${{ github.workspace }}/albums2cli
+        working-directory: ${{ github.workspace }}/gopkg
         

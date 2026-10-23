@@ -16,17 +16,17 @@ updates:
   schedule:
     interval: weekly
 
-- package-ecosystem: "go"
+- package-ecosystem: "gomod"
   directory: "albums2cli"
   schedule:
     interval: weekly
 
-- package-ecosystem: "go"
-  directory: "gopkg"
+- package-ecosystem: "gomod"
+  directory: "gomodpkg"
   schedule:
     interval: weekly
 
-- package-ecosystem: "go"
+- package-ecosystem: "gomod"
   directory: "worker"
   schedule:
     interval: weekly

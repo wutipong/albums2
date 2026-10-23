@@ -1,7 +1,11 @@
-name: albums2 cli golangci-lint
+name: albums2-cli-golangci-lint
 on:
   push:
+    paths:
+      - 'albums2cli/**'
   pull_request:
+    paths:
+      - 'albums2cli/**'
 
 jobs:
   build-and-test:

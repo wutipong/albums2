@@ -6,7 +6,7 @@ on:
       - master
     paths:
       - "worker/**"
-      - ".github/workflows/docker-worker.yml"
+      - ".github/workflows/worker-docker.yml"
   pull_request:
     branches:
       - master

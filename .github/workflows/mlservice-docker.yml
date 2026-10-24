@@ -7,7 +7,7 @@ on:
       - master
     paths:
       - "mlservice/**"
-      - ".github/workflows/mlservice-docker"
+      - ".github/workflows/mlservice-docker.yml"
 
 jobs:
   build-and-push:

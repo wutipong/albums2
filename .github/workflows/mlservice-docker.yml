@@ -31,6 +31,6 @@ jobs:
         with:
           context: ./mlservice
           push: true
-          tags: wutipong/albumss-mlservice:latest
+          tags: wutipong/albums2-mlservice:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max

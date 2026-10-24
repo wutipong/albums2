@@ -6,6 +6,9 @@ import { defineConfig } from 'vite';
 import openapiPlugin from 'sveltekit-openapi-generator';
 
 export default defineConfig({
+	ssr: {
+		external: ['mongodb', 'bson']
+	},
 	plugins: [
 		tailwindcss(),
 		openapiPlugin({

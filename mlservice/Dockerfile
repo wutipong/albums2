@@ -23,6 +23,6 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 EXPOSE 8173
 
 RUN uv add huggingface_hub[cli]
-RUN huggingface-cli download google/siglip2-base-patch16-256 --local-dir /app/model
+RUN uv run huggingface-cli download google/siglip2-base-patch16-256 --local-dir /app/model
 
 CMD ["uv", "run", "server.py"]

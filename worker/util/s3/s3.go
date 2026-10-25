@@ -18,12 +18,13 @@ var (
 	client *minio.Client = nil
 )
 
-func Init(endpoint string, accessKeyId string, secret string, bucketName string) error {
+func Init(endpoint string, accessKeyId string, secret string, bucketName string, region string) error {
 	slog.Info("using S3 credential",
 		"endpoint", endpoint,
 		"accessKeyId", accessKeyId,
 		"secret", secret,
 		"bucketName", bucketName,
+		"region", region,
 	)
 
 	endpoint, secure, err := GetMinioEndpoint(endpoint)
@@ -36,6 +37,7 @@ func Init(endpoint string, accessKeyId string, secret string, bucketName string)
 		Creds:        credentials.NewStaticV4(accessKeyId, secret, ""),
 		Secure:       secure,
 		BucketLookup: minio.BucketLookupPath,
+		Region:       region,
 	})
 	if err != nil {
 		return fmt.Errorf("unable to create minio client: %w", err)

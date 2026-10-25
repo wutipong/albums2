@@ -40,6 +40,7 @@ var (
 	secret      = flag.String("aws-secret-access-key", "", "AWS/S3 Secret Key")
 	awsEndpoint = flag.String("aws-endpoint-url", "", "AWS/S3 Endpoint URL")
 	s3Bucket    = flag.String("s3-bucket", "", "S3 Bucket Name")
+	awsRegion   = flag.String("aws-default-region", "", "AWS/S3 Region")
 
 	ErrDrainingInterrupted = errors.New("draining interrupted")
 )
@@ -169,7 +170,7 @@ func main() {
 		MongoDatabase: cs.Database,
 	})
 
-	err = s3.Init(*awsEndpoint, *accessKeyId, *secret, *s3Bucket)
+	err = s3.Init(*awsEndpoint, *accessKeyId, *secret, *s3Bucket, *awsRegion)
 	if err != nil {
 		slog.Error("S3 client initialization fails", "error", err)
 		return

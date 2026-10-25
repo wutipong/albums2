@@ -9,7 +9,7 @@ require (
 	github.com/mholt/archives v0.1.5
 	github.com/saintfish/chardet v0.0.0-20230101081208-5e3ef4b5456d
 	github.com/urfave/cli/v3 v3.14.0
-	github.com/wutipong/albums2/gopkg v0.0.0-20261006145831-7eb11830fb6c
+	github.com/wutipong/albums2/gopkg v0.0.0-20261025112945-9e879ff3063b
 	go.mongodb.org/mongo-driver/v2 v2.9.2
 	go.yaml.in/yaml/v4 v4.0.0-rc.6
 	golang.org/x/text v0.43.0

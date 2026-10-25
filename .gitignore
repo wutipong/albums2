@@ -3,3 +3,4 @@ albums2cli/.input*
 mlservice/__pycache__/
 mlservice/.venv
 albums2cli/albums2cli
+worker/worker

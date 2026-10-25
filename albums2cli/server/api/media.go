@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"mime"
 	"path"
+	"path/filepath"
 	"time"
 
 	"github.com/wutipong/albums2/gopkg/types"
@@ -94,12 +96,19 @@ func PostMedia(
 		slog.Bool("success", postMediaRequest.Success),
 	)
 
-	slog.Debug("put object", slog.Int("size", len(data)), slog.String("url", postMediaRequest.URL))
+	originalExt := filepath.Ext(name)
+	mt := mime.TypeByExtension(originalExt)
+
+	slog.Debug("put object",
+		slog.Int("size", len(data)),
+		slog.String("url", postMediaRequest.URL),
+		slog.String("content-type", mt))
 
 	_, err = c.R().
 		SetBodyBytes(data).
 		SetRetryCount(10).
 		SetContext(ctx).
+		SetContentType(mt).
 		Put(postMediaRequest.URL)
 
 	success := true

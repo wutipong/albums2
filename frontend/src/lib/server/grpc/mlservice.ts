@@ -5,7 +5,7 @@ import {
 } from '#lib/server/grpc/proto/mlservice.js';
 import { MLSERVICE_ADDRESS } from '$app/env/private';
 
-const channel = createChannel(`http://${MLSERVICE_ADDRESS ?? 'localhost:8173'}`);
+const channel = createChannel(MLSERVICE_ADDRESS);
 const client: EncodingServiceClient = createClient(EncodingServiceDefinition, channel);
 
 export async function encodeText(input: string) {

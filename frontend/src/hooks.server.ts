@@ -17,7 +17,7 @@ import redis from '#lib/server/redis.js';
 import { Media } from '#lib/server/database.js';
 
 export const init: ServerInit = async () => {
-	await mongoose.connect(DB_CONNECTION ?? 'mongodb://localhost');
+	await mongoose.connect(DB_CONNECTION);
 	await Media.init();
 	await Media.createSearchIndexes();
 	if (!redis.isReady) {

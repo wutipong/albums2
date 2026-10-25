@@ -30,10 +30,10 @@ export const auth = betterAuth({
 		genericOAuth({
 			config: [
 				{
-					providerId: OIDC_PROVIDER_ID || 'placeholder-provider',
-					clientId: OIDC_CLIENT_ID || 'placeholder-client',
-					clientSecret: OIDC_SECRET || 'placeholder-secret',
-					discoveryUrl: OIDC_DISCOVERY_URL || 'http://placehodler-config',
+					providerId: OIDC_PROVIDER_ID,
+					clientId: OIDC_CLIENT_ID,
+					clientSecret: OIDC_SECRET,
+					discoveryUrl: OIDC_DISCOVERY_URL,
 					scopes: ['openid', 'email', 'profile']
 				}
 			]

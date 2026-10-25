@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 import { CollectionSchema, AlbumSchema, MediaSchema } from '#lib/server/schema/schema.js';
 import aggregatePaginate from 'mongoose-aggregate-paginate-v2';
 
-export const client = new MongoClient(DB_CONNECTION ?? 'mongodb://localhost');
+export const client = new MongoClient(DB_CONNECTION);
 export const db = client.db();
 
 if (import.meta.hot) {

@@ -9,7 +9,6 @@ export default defineConfig({
 		external: ['mongodb', 'bson']
 	},
 	plugins: [
-		tailwindcss(),
 		sveltekit({
 			compilerOptions: {
 				// Force runes mode for the project, except for libraries. Can be removed in svelte 6.
@@ -20,7 +19,8 @@ export default defineConfig({
 			adapter: adapter(),
 			preprocess: [mdsvex({ extensions: ['.svx', '.md'] })],
 			extensions: ['.svelte', '.svx', '.md'],
-			alias: { '$lib': 'src/lib' }
-		})
+			alias: { '#lib': 'src/lib' }
+		}),
+		tailwindcss()
 	]
 });

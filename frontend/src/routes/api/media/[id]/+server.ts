@@ -1,8 +1,8 @@
 import type { RequestHandler } from './$types';
 import { error, json } from '@sveltejs/kit';
-import { Media } from '$lib/server/database';
+import { Media } from '#lib/server/database.js';
 import * as mime from 'mime-types';
-import { notifyProcessMedia } from '$lib/server/notify';
+import { notifyProcessMedia } from '#lib/server/notify.js';
 
 export const PATCH: RequestHandler = async ({ request, params }) => {
 	const req = await request.json();

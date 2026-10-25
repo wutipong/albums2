@@ -1,5 +1,5 @@
 import type { RequestHandler } from './$types';
-import { loadAlbumMediaPage } from '$lib/server/album';
+import { loadAlbumMediaPage } from '#lib/server/album.js';
 import { json } from '@sveltejs/kit';
 
 export const GET: RequestHandler = async ({ params }) => {

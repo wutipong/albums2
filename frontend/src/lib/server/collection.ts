@@ -1,4 +1,4 @@
-import { PAGE_SIZE, SEARCH_LIMIT } from '$lib/const';
+import { PAGE_SIZE, SEARCH_LIMIT } from '#lib/const.js';
 import { ObjectId } from 'bson';
 import { Media } from './database';
 import { populateUrls } from './media';

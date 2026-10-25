@@ -1,8 +1,8 @@
-import { Media } from '$lib/server/database';
+import { Media } from '#lib/server/database.js';
 import { json } from '@sveltejs/kit';
 import { type RequestHandler } from './$types';
-import redis from '$lib/server/redis';
-import log from '$lib/log';
+import redis from '#lib/server/redis.js';
+import log from '#lib/log.js';
 import mongoose from 'mongoose';
 
 export const POST: RequestHandler = async ({ params }) => {

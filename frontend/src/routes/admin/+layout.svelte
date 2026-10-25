@@ -1,7 +1,7 @@
 <script lang="ts">
 	import NavBar from './NavBar.svelte';
 	import { mdiImage, mdiImageAlbum, mdiKeyChain, mdiTrayFull } from '@mdi/js';
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 	import { page } from '$app/state';
 
 	let { data, children } = $props();

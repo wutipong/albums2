@@ -1,13 +1,13 @@
 import { type PageServerLoad } from './$types';
-import { encodeText } from '$lib/server/grpc/mlservice';
+import { encodeText } from '#lib/server/grpc/mlservice.js';
 import { error, redirect } from '@sveltejs/kit';
-import { Media } from '$lib/server/database';
+import { Media } from '#lib/server/database.js';
 import { generateImageUrl } from '@imgproxy/imgproxy-node';
 import { env } from '$env/dynamic/private';
 import { ObjectId } from 'bson';
-import log from '$lib/log';
-import { PAGE_SIZE } from '$lib/const';
-import { searchMedia } from '$lib/server/collection.js';
+import log from '#lib/log.js';
+import { PAGE_SIZE } from '#lib/const.js';
+import { searchMedia } from '#lib/server/collection.js';
 
 export const ssr = false;
 

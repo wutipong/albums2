@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { mdiChevronLeft, mdiChevronRight, mdiClose, mdiDotsVertical } from '@mdi/js';
 	import Hammer from 'hammerjs';
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 	import '@videojs/html/video/player';
 	import '@videojs/html/video/skin';
-	import notAvailable from '$lib/assets/not-available.svg';
+	import notAvailable from '#lib/assets/not-available.svg';
 	let {
 		media,
 		show = $bindable(false),

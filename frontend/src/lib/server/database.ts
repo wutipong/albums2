@@ -1,10 +1,10 @@
-import { env } from '$env/dynamic/private';
+import { DB_CONNECTION } from '$app/env/private';
 import { MongoClient } from 'mongodb';
 import mongoose from 'mongoose';
-import { CollectionSchema, AlbumSchema, MediaSchema } from '$lib/server/schema/schema';
+import { CollectionSchema, AlbumSchema, MediaSchema } from '#lib/server/schema/schema.js';
 import aggregatePaginate from 'mongoose-aggregate-paginate-v2';
 
-export const client = new MongoClient(env.DB_CONNECTION ?? 'mongodb://localhost');
+export const client = new MongoClient(DB_CONNECTION ?? 'mongodb://localhost');
 export const db = client.db();
 
 if (import.meta.hot) {

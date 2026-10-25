@@ -12,7 +12,7 @@
 	import { enhance } from '$app/forms';
 	import { onMount } from 'svelte';
 	import { createHash } from '@better-auth/utils/hash';
-	import { authClient } from '$lib/auth';
+	import { authClient } from '#lib/auth.js';
 
 	interface UpDetails {
 		description: string;

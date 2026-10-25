@@ -1,16 +1,23 @@
-import { error, json, type Handle, type HandleServerError, type ServerInit } from '@sveltejs/kit';
-import { building } from '$app/environment';
-import { auth } from '$lib/server/auth';
+import { error, json } from '@sveltejs/kit';
+import { building } from '$app/env';
+import { auth } from '#lib/server/auth.js';
 import { svelteKitHandler } from 'better-auth/svelte-kit';
 import mongoose from 'mongoose';
-import { env } from '$env/dynamic/private';
-import { sequence } from '@sveltejs/kit/hooks';
-import log from '$lib/log';
-import redis from '$lib/server/redis';
-import { Media } from '$lib/server/database';
+import { DB_CONNECTION } from '$app/env/private';
+
+import {
+	sequence,
+	type Handle,
+	type HandleServerError,
+	type ServerInit
+} from '@sveltejs/kit/hooks';
+
+import log from '#lib/log.js';
+import redis from '#lib/server/redis.js';
+import { Media } from '#lib/server/database.js';
 
 export const init: ServerInit = async () => {
-	await mongoose.connect(env.DB_CONNECTION ?? "mongodb://localhost");
+	await mongoose.connect(DB_CONNECTION ?? 'mongodb://localhost');
 	await Media.init();
 	await Media.createSearchIndexes();
 	if (!redis.isReady) {

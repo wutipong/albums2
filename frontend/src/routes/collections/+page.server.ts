@@ -1,9 +1,9 @@
 import type { PageServerLoad } from './$types';
 import { error, fail } from '@sveltejs/kit';
-import { Collection } from '$lib/server/database';
-import log from '$lib/log';
+import { Collection } from '#lib/server/database.js';
+import log from '#lib/log.js';
 import { generateImageUrl } from '@imgproxy/imgproxy-node';
-import { env } from '$env/dynamic/private';
+import { IMGPROXY_URL, S3_BUCKET, IMGPROXY_SALT, IMGPROXY_KEY } from '$app/env/private';
 
 export const load: PageServerLoad = async ({ params }) => {
 	const collections = await Collection.find().sort({ name: 1 }).lean();
@@ -15,16 +15,11 @@ export const load: PageServerLoad = async ({ params }) => {
 		let cover_url = '';
 		if (c.cover !== undefined && c.cover !== '') {
 			cover_url = generateImageUrl({
-				endpoint: env.IMGPROXY_URL,
-				url: `s3://${env.S3_BUCKET}/${c.cover}`,
-				options: {
-					resizing_type: 'fill',
-					width: 300,
-					height: 450,
-					enlarge: 1
-				},
-				salt: env.IMGPROXY_SALT,
-				key: env.IMGPROXY_KEY
+				endpoint: IMGPROXY_URL,
+				url: `s3://${S3_BUCKET}/${c.cover}`,
+				options: { resizing_type: 'fill', width: 300, height: 450, enlarge: 1 },
+				salt: IMGPROXY_SALT,
+				key: IMGPROXY_KEY
 			});
 		}
 		collections[i] = { ...c, cover_url };
@@ -40,11 +35,8 @@ export const actions = {
 			const data = await request.formData();
 			const name = data.get('name');
 			const description = data.get('description');
+			const newCol = new Collection({ name, description });
 
-			const newCol = new Collection({
-				name: name,
-				description: description
-			});
 			await newCol.save();
 
 			return { success: true };

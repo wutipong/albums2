@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { mdiLogout, mdiAccount, mdiMenu, mdiLibraryShelves } from '@mdi/js';
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 	import { onMount } from 'svelte';
 	import { createHash } from '@better-auth/utils/hash';
-	import { authClient } from '$lib/auth';
-	//import logo from '$lib/assets/logo.svg?raw';
+	import { authClient } from '#lib/auth.js';
+	//import logo from '#lib/assets/logo.svg?raw';
 
 	let { onMenuBtn = null, user } = $props();
 	let avatarSrc = $state('');

@@ -1,5 +1,5 @@
-import redis from '$lib/server/redis';
-import log from '$lib/log';
+import redis from '#lib/server/redis.js';
+import log from '#lib/log.js';
 
 export async function notifyProcessMedia(id: string) {
 	log.debug(redis, 'redis');

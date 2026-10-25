@@ -1,7 +1,7 @@
 <script lang="ts">
-	import NavBar from '$lib/components/NavBar.svelte';
+	import NavBar from '#lib/components/NavBar.svelte';
 	import { mdiLogout, mdiLibraryShelves } from '@mdi/js';
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 	import { createHash } from '@better-auth/utils/hash';
 
 	let { data } = $props();

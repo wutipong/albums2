@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { type RequestHandler } from './$types';
-import redis from '$lib/server/redis';
+import redis from '#lib/server/redis.js';
 
 export const POST: RequestHandler = async ({ params }) => {
 	const count = await redis.LPUSH(

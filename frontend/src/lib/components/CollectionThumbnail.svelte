@@ -1,5 +1,5 @@
 <script lang="ts">
-	import notAvailableSvg from '$lib/assets/not-available.svg?raw';
+	import notAvailableSvg from '#lib/assets/not-available.svg?raw';
 
 	interface Props {
 		collection: any;

@@ -1,8 +1,6 @@
-import { env } from '$env/dynamic/private';
+import { OIDC_PROVIDER_ID } from '$app/env/private';
 import { type PageServerLoad } from './$types';
 
 export const load: PageServerLoad = ({ params }) => {
-	return {
-		oidcProviderId: env.OIDC_PROVIDER_ID
-	};
+	return { oidcProviderId: OIDC_PROVIDER_ID };
 };

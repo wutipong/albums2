@@ -1,7 +1,7 @@
 import type { RequestHandler } from './$types';
-import { searchMedia } from '$lib/server/collection';
+import { searchMedia } from '#lib/server/collection.js';
 import { json } from '@sveltejs/kit';
-import { encodeText } from '$lib/server/grpc/mlservice';
+import { encodeText } from '#lib/server/grpc/mlservice.js';
 
 export const GET: RequestHandler = async ({ params, url }) => {
 	const search = url.searchParams.get('search');

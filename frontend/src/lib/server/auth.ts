@@ -1,21 +1,26 @@
-import { env } from '$env/dynamic/private';
+import {
+	ORIGIN,
+	BETTER_AUTH_SECRET,
+	OIDC_PROVIDER_ID,
+	OIDC_CLIENT_ID,
+	OIDC_SECRET,
+	OIDC_DISCOVERY_URL
+} from '$app/env/private';
+
 import { betterAuth } from 'better-auth/minimal';
 import { sveltekitCookies } from 'better-auth/svelte-kit';
 import { getRequestEvent } from '$app/server';
 import { mongodbAdapter } from 'better-auth/adapters/mongodb';
 import { admin, genericOAuth } from 'better-auth/plugins';
 import { apiKey } from '@better-auth/api-key';
-import { client } from '$lib/server/database';
+import { client } from '#lib/server/database.js';
 
 const db = client.db();
 
 export const auth = betterAuth({
-	baseURL: env.ORIGIN,
-	secret: env.BETTER_AUTH_SECRET,
-	database: mongodbAdapter(db, {
-		client: client
-	}),
-
+	baseURL: ORIGIN,
+	secret: BETTER_AUTH_SECRET,
+	database: mongodbAdapter(db, { client }),
 	plugins: [
 		admin(),
 		apiKey({
@@ -25,10 +30,10 @@ export const auth = betterAuth({
 		genericOAuth({
 			config: [
 				{
-					providerId: env.OIDC_PROVIDER_ID || 'placeholder-provider',
-					clientId: env.OIDC_CLIENT_ID || 'placeholder-client',
-					clientSecret: env.OIDC_SECRET || 'placeholder-secret',
-					discoveryUrl: env.OIDC_DISCOVERY_URL || 'http://placehodler-config',
+					providerId: OIDC_PROVIDER_ID || 'placeholder-provider',
+					clientId: OIDC_CLIENT_ID || 'placeholder-client',
+					clientSecret: OIDC_SECRET || 'placeholder-secret',
+					discoveryUrl: OIDC_DISCOVERY_URL || 'http://placehodler-config',
 					scopes: ['openid', 'email', 'profile']
 				}
 			]

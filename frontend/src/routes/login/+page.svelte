@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { authClient } from '$lib/auth';
-	import Icon from '$lib/components/Icon.svelte';
+	import { authClient } from '#lib/auth.js';
+	import Icon from '#lib/components/Icon.svelte';
 	import { mdiLogin } from '@mdi/js';
 
 	const { data } = $props();

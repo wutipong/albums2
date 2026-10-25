@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import Icon from '$lib/components/Icon.svelte';
-	import CollectionThumbnail from '$lib/components/CollectionThumbnail.svelte';
+	import Icon from '#lib/components/Icon.svelte';
+	import CollectionThumbnail from '#lib/components/CollectionThumbnail.svelte';
 	import { mdiAlertCircle, mdiCircleOffOutline, mdiLibraryShelves, mdiSquareOff } from '@mdi/js';
-	import NavBar from '$lib/components/NavBar.svelte';
+	import NavBar from '#lib/components/NavBar.svelte';
 
 	let { data, form } = $props();
 

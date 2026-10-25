@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import AlbumInfoDialog from '$lib/components/AlbumInfoDialog.svelte';
-	import AlbumThumbnail from '$lib/components/AlbumThumbnail.svelte';
-	import CollectionInfoDialog from '$lib/components/CollectionInfoDialog.svelte';
-	import Icon from '$lib/components/Icon.svelte';
-	import NavBar from '$lib/components/NavBar.svelte';
-	import log from '$lib/log';
+	import AlbumInfoDialog from '#lib/components/AlbumInfoDialog.svelte';
+	import AlbumThumbnail from '#lib/components/AlbumThumbnail.svelte';
+	import CollectionInfoDialog from '#lib/components/CollectionInfoDialog.svelte';
+	import Icon from '#lib/components/Icon.svelte';
+	import NavBar from '#lib/components/NavBar.svelte';
+	import log from '#lib/log.js';
 	import Pagination from './Pagination.svelte';
 	import {
 		mdiBlender,

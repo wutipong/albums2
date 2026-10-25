@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 	import { mdiPageFirst, mdiPageLast, mdiDotsVertical } from '@mdi/js';
 	import { goto } from '$app/navigation';
 	import PaginationDialog from './PaginationDialog.svelte';

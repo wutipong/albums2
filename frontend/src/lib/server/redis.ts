@@ -1,10 +1,9 @@
 import { createClient } from 'redis';
-import { env } from '$env/dynamic/private';
-import log from '$lib/log';
-const client = createClient({
-	url: env.REDIS_URL
-});
+import { REDIS_URL } from '$app/env/private';
+import log from '#lib/log.js';
 
-log.info({ url: env.REDIS_URL, redis: client }, 'using Redis');
+const client = createClient({ url: REDIS_URL });
+
+log.info({ url: REDIS_URL, redis: client }, 'using Redis');
 
 export default client;

@@ -1,6 +1,6 @@
 import { type PageServerLoad } from './$types';
-import { Album, Collection } from '$lib/server/database';
-import { loadAlbumMediaPage } from '$lib/server/album';
+import { Album, Collection } from '#lib/server/database.js';
+import { loadAlbumMediaPage } from '#lib/server/album.js';
 import { redirect } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async ({ params, locals }) => {

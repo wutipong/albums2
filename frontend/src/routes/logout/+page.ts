@@ -1,4 +1,4 @@
-import { authClient } from '$lib/auth';
+import { authClient } from '#lib/auth.js';
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import Icon from '$lib/components/Icon.svelte';
-	import MediaThumbnail from '$lib/components/MediaThumbnail.svelte';
+	import Icon from '#lib/components/Icon.svelte';
+	import MediaThumbnail from '#lib/components/MediaThumbnail.svelte';
 	import {
 		mdiInformationOutline,
 		mdiImageOff,
@@ -14,13 +14,13 @@
 		mdiFeatureSearchOutline,
 		mdiBookOpenVariant
 	} from '@mdi/js';
-	import log from '$lib/log';
+	import log from '#lib/log.js';
 	import { untrack } from 'svelte';
-	import MediaViewer from '$lib/components/MediaViewer.svelte';
-	import MediaInfoDialog from '$lib/components/MediaInfoDialog.svelte';
-	import AlbumInfoDialog from '$lib/components/AlbumInfoDialog.svelte';
-	import NavBar from '$lib/components/NavBar.svelte';
-	import Toast from '$lib/components/Toast.svelte';
+	import MediaViewer from '#lib/components/MediaViewer.svelte';
+	import MediaInfoDialog from '#lib/components/MediaInfoDialog.svelte';
+	import AlbumInfoDialog from '#lib/components/AlbumInfoDialog.svelte';
+	import NavBar from '#lib/components/NavBar.svelte';
+	import Toast from '#lib/components/Toast.svelte';
 
 	const { data } = $props();
 

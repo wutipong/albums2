@@ -1,4 +1,4 @@
-import type { auth } from '$lib/server/auth';
+import type { auth } from '#lib/server/auth.js';
 
 // See https://svelte.dev/docs/kit/types#app.d.ts
 // for information about these interfaces

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import notAvailableSvg from '$lib/assets/not-available.svg?raw';
+	import notAvailableSvg from '#lib/assets/not-available.svg?raw';
 	import { mdiAlertCircle, mdiClock, mdiFilmstrip, mdiMovie } from '@mdi/js';
-	import Icon from '$lib/components/Icon.svelte';
-	import log from '$lib/log';
+	import Icon from '#lib/components/Icon.svelte';
+	import log from '#lib/log.js';
 
 	let { media, onclick = (id: string) => {} } = $props();
 

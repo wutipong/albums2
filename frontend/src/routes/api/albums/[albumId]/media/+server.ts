@@ -1,11 +1,11 @@
 import type { RequestHandler } from './$types';
 import { error, json } from '@sveltejs/kit';
-import { Album, Media } from '$lib/server/database';
-import { s3 } from '$lib/server/s3';
+import { Album, Media } from '#lib/server/database.js';
+import { s3 } from '#lib/server/s3.js';
 import * as mime from 'mime-types';
 import { randomUUIDv7 } from 'node:crypto';
 import path from 'node:path';
-import log from '$lib/log';
+import log from '#lib/log.js';
 
 export const POST: RequestHandler = async ({ request, params }) => {
 	const req = await request.json();

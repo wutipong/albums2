@@ -1,7 +1,7 @@
-import { populateUrls } from '$lib/server/media';
-import { Media } from '$lib/server/database';
+import { populateUrls } from '#lib/server/media.js';
+import { Media } from '#lib/server/database.js';
 import { ObjectId } from 'bson';
-import { PAGE_SIZE } from '$lib/const';
+import { PAGE_SIZE } from '#lib/const.js';
 
 export async function loadAlbumMediaPage(id: string, pageno: number) {
 	const page = await Media.aggregatePaginate(

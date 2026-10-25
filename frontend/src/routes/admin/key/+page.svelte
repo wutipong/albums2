@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { authClient } from '$lib/auth';
+	import { authClient } from '#lib/auth.js';
 	import { mdiAlert, mdiInformation, mdiMinus, mdiPlus } from '@mdi/js';
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 	import { onMount } from 'svelte';
 	import type { ApiKey } from '@better-auth/api-key/types';
-	import Toast from '$lib/components/Toast.svelte';
+	import Toast from '#lib/components/Toast.svelte';
 
 	let apiKeys: Omit<ApiKey, 'key'>[] = $state([]);
 	let apiKeyModal: HTMLDialogElement;

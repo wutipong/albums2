@@ -1,6 +1,6 @@
 <script lang="ts">
-	import Icon from '$lib/components/Icon.svelte';
-	import MediaThumbnail from '$lib/components/MediaThumbnail.svelte';
+	import Icon from '#lib/components/Icon.svelte';
+	import MediaThumbnail from '#lib/components/MediaThumbnail.svelte';
 	import {
 		mdiInformationOutline,
 		mdiImageOff,
@@ -10,10 +10,10 @@
 		mdiLoading
 	} from '@mdi/js';
 	import { untrack } from 'svelte';
-	import MediaViewer from '$lib/components/MediaViewer.svelte';
-	import log from '$lib/log';
-	import MediaInfoDialog from '$lib/components/MediaInfoDialog.svelte';
-	import NavBar from '$lib/components/NavBar.svelte';
+	import MediaViewer from '#lib/components/MediaViewer.svelte';
+	import log from '#lib/log.js';
+	import MediaInfoDialog from '#lib/components/MediaInfoDialog.svelte';
+	import NavBar from '#lib/components/NavBar.svelte';
 
 	const { data } = $props();
 	$inspect(data);

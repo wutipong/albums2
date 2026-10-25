@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { mdiClose, mdiLink } from '@mdi/js';
-	import Icon from '$lib/components/Icon.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 	import { ObjectId } from 'bson';
 	//import { Temporal } from 'temporal-polyfill';
 

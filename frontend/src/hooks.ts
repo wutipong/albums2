@@ -1,6 +1,7 @@
+import type { Transport } from '@sveltejs/kit/hooks';
+
 // src/hooks.ts
 import { ObjectId } from 'bson';
-import type { Transport } from '@sveltejs/kit';
 
 export const transport: Transport = {
 	MongooseObjectId: {

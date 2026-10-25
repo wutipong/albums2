@@ -5,7 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite --host 127.0.0.1",
-		"build": "vite build",
+		"build": "svelte-kit sync && bun --bun run vite build",
 		"start": "node build",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
@@ -19,7 +19,7 @@
 		"@better-auth/mongo-adapter": "^1.7.12",
 		"@eslint/js": "^10.0.1",
 		"@sveltejs/adapter-bun": "^1.0.0",
-		"@sveltejs/adapter-node": "^5",
+		"@sveltejs/adapter-node": "^6.0.0",
 		"@sveltejs/kit": "^3.1.0",
 		"@sveltejs/vite-plugin-svelte": "^7.3.1",
 		"@tailwindcss/forms": "^0.5.11",
@@ -68,5 +68,9 @@
 		"redis": "^6.3.0",
 		"swagger-ui-dist": "^5.33.1",
 		"ts-proto": "^2.18.0"
+	},
+	"imports": {
+		"#lib": "./src/lib/index.js",
+		"#lib/*": "./src/lib/*"
 	}
 }

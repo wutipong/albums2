@@ -1,5 +1,4 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { json } from '@sveltejs/kit';
 import { Collection } from '#lib/server/database.js';
 import log from '#lib/log.js';
 
@@ -8,13 +7,13 @@ export const GET: RequestHandler = async ({ request, params }) => {
 
 	const name = new URL(request.url).searchParams.get('name');
 	if (!name) {
-		return json({ message: 'Missing name query parameter' }, { status: 400 });
+		return Response.json({ message: 'Missing name query parameter' }, { status: 400 });
 	}
 
 	const collection = await Collection.findOne({ name });
 	if (!collection) {
-		return json({ existed: false });
+		return Response.json({ existed: false });
 	}
 
-	return json({ existed: true, collection });
+	return Response.json({ existed: true, collection });
 };

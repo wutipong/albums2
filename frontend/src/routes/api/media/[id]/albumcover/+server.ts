@@ -1,6 +1,5 @@
 import type { RequestHandler } from './$types';
 import redis from '#lib/server/redis.js';
-import { json } from '@sveltejs/kit';
 import log from '#lib/log.js';
 
 export const POST: RequestHandler = async ({ request, params }) => {
@@ -16,7 +15,7 @@ export const POST: RequestHandler = async ({ request, params }) => {
 		})
 	);
 
-	return json({
+	return Response.json({
 		success: true,
 		count: count
 	});

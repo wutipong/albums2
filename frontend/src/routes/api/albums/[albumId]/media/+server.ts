@@ -1,5 +1,5 @@
 import type { RequestHandler } from './$types';
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { Album, Media } from '#lib/server/database.js';
 import { s3 } from '#lib/server/s3.js';
 import * as mime from 'mime-types';
@@ -16,7 +16,7 @@ export const POST: RequestHandler = async ({ request, params }) => {
 
 	log.info({ albumId, name, contentType }, `POST ${request.url}`);
 	if (!contentType) {
-		return error(400, { message: 'unable to recognize filetype' });
+		return error(400, 'unable to recognize filetype');
 	}
 
 	const extension = mime.extension(mime.lookup(name) || '');
@@ -25,18 +25,18 @@ export const POST: RequestHandler = async ({ request, params }) => {
 	const type = contentType.substring(0, contentType.indexOf('/'));
 
 	if (type != 'image' && type != 'video') {
-		return json({ success: false, error: 'Unsupported asset type.' }, { status: 400 });
+		return Response.json({ success: false, error: 'Unsupported asset type.' }, { status: 400 });
 	}
 
 	const album = await Album.findById(albumId).where('deletedAt', null);
 
 	if (!album) {
-		return error(404, { message: 'album not found' });
+		return error(404, 'album not found');
 	}
 
 	const existing = await Media.findOne({ albumId: albumId, name: name });
 	if (existing && existing.processStatus != 'uploading' && existing.processStatus != 'failed') {
-		return error(409, { message: 'duplicate asset' });
+		return error(409, 'duplicate asset');
 	}
 
 	let asset = null;
@@ -59,10 +59,10 @@ export const POST: RequestHandler = async ({ request, params }) => {
 	}
 
 	if (!asset) {
-		return error(500, { message: 'Failed to create asset' });
+		return error(500, 'Failed to create asset');
 	}
 	if (!asset.original) {
-		return error(500, { message: 'asset.original is missing' });
+		return error(500, 'asset.original is missing');
 	}
 
 	const url = s3.presign(asset.original, {
@@ -71,17 +71,17 @@ export const POST: RequestHandler = async ({ request, params }) => {
 		type: contentType
 	});
 
-	return json({ id: asset.id, url, success: true });
+	return Response.json({ id: asset.id, url, success: true });
 };
 
 export const GET: RequestHandler = async ({ request, params }) => {
 	log.debug(params, `GET ${request.url}`);
 	const { albumId } = params;
 	if (await Album.exists({ albumId: albumId, deletedAt: null })) {
-		return error(404, { message: 'album not found' });
+		return error(404, 'album not found');
 	}
 
 	const media = await Media.find({ albumId: albumId, deletedAt: null }).lean();
 
-	return json({ media });
+	return Response.json({ media });
 };

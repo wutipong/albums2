@@ -1,5 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { Collection } from '#lib/server/database.js';
 import log from '#lib/log.js';
 import mongoose from 'mongoose';
@@ -20,5 +20,5 @@ export const GET: RequestHandler = async ({ params }) => {
 		return error(404, 'collection not found');
 	}
 
-	return json(collection);
+	return Response.json(collection);
 };

@@ -1,5 +1,5 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { Collection, Album } from '#lib/server/database.js';
 import log from '#lib/log.js';
 
@@ -10,12 +10,12 @@ export const POST: RequestHandler = async ({ request }) => {
 	const { name } = body;
 
 	if (!name || typeof name !== 'string') {
-		return error(400, { message: 'Missing or invalid name' });
+		return error(400, 'Missing or invalid name');
 	}
 
 	const collection = await Collection.create({ name });
 
-	return json(collection, { status: 201 });
+	return Response.json(collection, { status: 201 });
 };
 
 export const GET: RequestHandler = async () => {
@@ -24,5 +24,5 @@ export const GET: RequestHandler = async () => {
 
 	log.debug(collections, 'GET /api/collections result');
 
-	return json({ collections });
+	return Response.json({ collections });
 };

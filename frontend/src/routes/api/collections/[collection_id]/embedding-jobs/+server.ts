@@ -1,5 +1,4 @@
 import { Media } from '#lib/server/database.js';
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import redis from '#lib/server/redis.js';
 
@@ -19,7 +18,7 @@ export const POST: RequestHandler = async ({ params }) => {
 
 	const count = await redis.LPUSH('tasks', tasks);
 
-	return json({
+	return Response.json({
 		success: true,
 		count: count
 	});

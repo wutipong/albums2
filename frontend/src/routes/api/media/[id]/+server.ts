@@ -1,5 +1,5 @@
 import type { RequestHandler } from './$types';
-import { error, json } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { Media } from '#lib/server/database.js';
 import * as mime from 'mime-types';
 import { notifyProcessMedia } from '#lib/server/notify.js';
@@ -11,7 +11,7 @@ export const PATCH: RequestHandler = async ({ request, params }) => {
 
 	const asset = await Media.findById(id).where({ deletedAt: null });
 	if (!asset) {
-		return error(500, { message: 'media data does not existed.' });
+		return error(500, 'media data does not existed.');
 	}
 
 	if (success) {
@@ -19,7 +19,7 @@ export const PATCH: RequestHandler = async ({ request, params }) => {
 
 		const mimetype = mime.lookup(asset.name ?? '');
 		if (!mimetype) {
-			return json({ success: false, error: 'invalid content type' }, { status: 400 });
+			return Response.json({ success: false, error: 'invalid content type' }, { status: 400 });
 		}
 
 		if (mimetype.startsWith('image/')) {
@@ -37,9 +37,12 @@ export const PATCH: RequestHandler = async ({ request, params }) => {
 		try {
 			await notifyProcessMedia(asset.id);
 		} catch (error) {
-			return json({ success: false, error: 'Failed to notify asset processing' }, { status: 500 });
+			return Response.json(
+				{ success: false, error: 'Failed to notify asset processing' },
+				{ status: 500 }
+			);
 		}
 	}
 
-	return json({ asset: asset, success: true });
+	return Response.json({ asset: asset, success: true });
 };

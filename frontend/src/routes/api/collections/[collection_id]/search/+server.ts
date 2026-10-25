@@ -1,6 +1,5 @@
 import type { RequestHandler } from './$types';
 import { searchMedia } from '#lib/server/collection.js';
-import { json } from '@sveltejs/kit';
 import { encodeText } from '#lib/server/grpc/mlservice.js';
 
 export const GET: RequestHandler = async ({ params, url }) => {
@@ -10,5 +9,5 @@ export const GET: RequestHandler = async ({ params, url }) => {
 	const embedding = await encodeText(search ?? '');
 	const resp = await searchMedia(params.collection_id, embedding.embedding, page);
 
-	return json(resp);
+	return Response.json(resp);
 };

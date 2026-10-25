@@ -31,7 +31,7 @@
 						<h3>Administrator</h3>
 					{/if}
 					<p><a href={`mailto:${data.user.email}`}>{data.user.email}</a></p>
-					<a class="btn btn-soft" href="/logout" data-sveltekit-preload-data="off">
+					<a class="btn btn-soft" href="/logout" data-sveltekit-preload-data="false">
 						<Icon path={mdiLogout} />Logout
 					</a>
 				</div>

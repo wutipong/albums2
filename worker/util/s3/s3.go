@@ -19,6 +19,13 @@ var (
 )
 
 func Init(endpoint string, accessKeyId string, secret string, bucketName string) error {
+	slog.Info("using S3 credential",
+		"endpoint", endpoint,
+		"accessKeyId", accessKeyId,
+		"secret", secret,
+		"bucketName", bucketName,
+	)
+
 	endpoint, secure, err := GetMinioEndpoint(endpoint)
 	if err != nil {
 		slog.Error("unable to parse endpoint", "error", err)

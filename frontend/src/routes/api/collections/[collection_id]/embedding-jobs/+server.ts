@@ -1,6 +1,6 @@
 import { Media } from '#lib/server/database.js';
 import { json } from '@sveltejs/kit';
-import { type RequestHandler } from './$types';
+import type { RequestHandler } from './$types';
 import redis from '#lib/server/redis.js';
 
 export const POST: RequestHandler = async ({ params }) => {

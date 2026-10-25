@@ -5,7 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite --host 127.0.0.1",
-		"build": "svelte-kit sync && bun --bun run vite build",
+		"build": "svelte-kit sync && vite build",
 		"start": "node build",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",

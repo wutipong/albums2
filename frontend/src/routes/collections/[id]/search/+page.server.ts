@@ -1,4 +1,4 @@
-import { type PageServerLoad } from './$types';
+import type { PageServerLoad } from './$types';
 import { encodeText } from '#lib/server/grpc/mlservice.js';
 import { error, redirect } from '@sveltejs/kit';
 import { Media } from '#lib/server/database.js';

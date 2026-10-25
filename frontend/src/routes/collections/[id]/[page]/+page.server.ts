@@ -1,4 +1,4 @@
-import { type PageServerLoad } from './$types';
+import type { PageServerLoad } from './$types';
 import { Collection, Album } from '#lib/server/database.js';
 import { IMGPROXY_URL, S3_BUCKET, IMGPROXY_SALT, IMGPROXY_KEY } from '$app/env/private';
 import log from '#lib/log.js';

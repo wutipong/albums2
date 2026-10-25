@@ -1,4 +1,4 @@
-import { type RequestHandler } from './$types';
+import type { RequestHandler } from './$types';
 import redis from '#lib/server/redis.js';
 import { json } from '@sveltejs/kit';
 import log from '#lib/log.js';

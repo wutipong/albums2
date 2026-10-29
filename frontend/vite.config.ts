@@ -19,7 +19,6 @@ export default defineConfig({
 			adapter: adapter(),
 			preprocess: [mdsvex({ extensions: ['.svx', '.md'] })],
 			extensions: ['.svelte', '.svx', '.md'],
-			alias: { '#lib': 'src/lib' }
 		}),
 		tailwindcss()
 	]

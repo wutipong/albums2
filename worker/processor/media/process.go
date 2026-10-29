@@ -107,6 +107,18 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 		return fmt.Errorf("process media fails: %w", processErr)
 	}
 
+	embeddingTask, err := json.Marshal(processor.TaskRequest{
+		Type:    "embedding",
+		Payload: req.Payload,
+	})
+	if err != nil {
+		return fmt.Errorf("unable to marshal embedding task: %w", err)
+	}
+
+	if err = db.Redis().LPush(ctx, "tasks", string(embeddingTask)).Err(); err != nil {
+		return fmt.Errorf("unable to queue embedding task: %w", err)
+	}
+
 	/// TODO: remove object after processed.
 	/*
 		if media.Original != media.View &&

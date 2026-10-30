@@ -192,6 +192,7 @@ func populatePreview(
 	if err != nil {
 		return fmt.Errorf("unable to create copy image: %w", err)
 	}
+	defer preview.Close()
 
 	err = view.ThumbnailImage(1_000_000, &vips.ThumbnailImageOptions{
 		Height: THUMBNAIL_HEIGHT,

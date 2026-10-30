@@ -266,6 +266,7 @@ func (p *Processor) ProcessVideo(
 	if err != nil {
 		return fmt.Errorf("unable to read image file with vips: %w", err)
 	}
+	defer image.Close()
 
 	options := vips.DefaultThumbnailImageOptions()
 	options.Height = COVER_HEIGHT

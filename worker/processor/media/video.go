@@ -215,6 +215,7 @@ func processVideoThumbnail(
 	if err != nil {
 		return fmt.Errorf("unable to read image file with vips: %w", err)
 	}
+	defer image.Close()
 
 	media.ThumbnailHeight = THUMBNAIL_HEIGHT
 	media.ThumbnailWidth = int32((THUMBNAIL_HEIGHT * image.Width()) / image.Height())

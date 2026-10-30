@@ -91,6 +91,7 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 	if err != nil {
 		return fmt.Errorf("failed to open thumbnail image: %w", err)
 	}
+	defer img.Close()
 
 	err = img.ThumbnailImage(int(spec.GetWidth()), &vips.ThumbnailImageOptions{
 		Height: int(spec.GetHeight()),

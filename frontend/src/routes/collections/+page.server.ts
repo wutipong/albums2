@@ -42,11 +42,11 @@ export const actions = {
 
 			return { success: true };
 		} catch (e: any) {
-			log.error(e, "error creating collection")
+			log.error(e, 'error creating collection');
 			if (e instanceof MongooseError) {
 				return fail(400, { message: e.message });
 			} else {
-				return fail(400, { message: "unknown error" })
+				return fail(400, { message: 'unknown error' });
 			}
 		}
 	}

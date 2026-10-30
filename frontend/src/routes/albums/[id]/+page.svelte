@@ -155,6 +155,10 @@
 	let toast: Toast;
 </script>
 
+<svelte:head>
+	<title>Albums2: {album.name}</title>
+</svelte:head>
+
 {#snippet menu()}
 	<li>
 		<button onclick={() => albumInfoDlg.show(current, data.collection)}>
@@ -162,7 +166,7 @@
 			Album information
 		</button>
 	</li>
-	{#if data.user.role == 'admin'}
+	{#if data.user?.role == 'admin'}
 		<li></li>
 		<li class="menu-item">Administration actions</li>
 		<li>
@@ -263,7 +267,7 @@
 			<Icon path={mdiDownload} /> Download
 		</a>
 	</li-->
-	{#if data.user.role == 'admin'}
+	{#if data.user?.role == 'admin'}
 		<li></li>
 		<li class="menu-item">Administration actions</li>
 		<li>

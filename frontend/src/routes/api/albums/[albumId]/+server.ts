@@ -6,13 +6,13 @@ import log from '#lib/log.js';
 
 export const GET: RequestHandler = async ({ params }) => {
 	log.debug(params, 'GET album params');
-	const { album_id } = params;
+	const { albumId } = params;
 
-	if (!album_id) {
+	if (!albumId) {
 		return error(400, 'album id is required.');
 	}
 
-	const album = await Album.findById(album_id).where('deletedAt', null).lean();
+	const album = await Album.findById(albumId).where('deletedAt', null).lean();
 	if (!album) {
 		return error(404, 'album not found');
 	}
@@ -20,13 +20,13 @@ export const GET: RequestHandler = async ({ params }) => {
 };
 
 export const DELETE: RequestHandler = async ({ params }) => {
-	const { album_id } = params;
+	const { albumId } = params;
 
-	if (!album_id) {
+	if (!albumId) {
 		return error(400, 'album id is required.');
 	}
 
-	// await deleteAlbum(album_id);
+	// await deleteAlbum(albumId);
 
 	return Response.json({ success: true });
 };

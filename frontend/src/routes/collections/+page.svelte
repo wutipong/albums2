@@ -10,6 +10,10 @@
 	$inspect(data);
 </script>
 
+<svelte:head>
+	<title>Albums2: Collections</title>
+</svelte:head>
+
 <NavBar />
 
 <div class="mx-4 overflow-auto pt-4 pb-20">

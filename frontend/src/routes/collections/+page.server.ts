@@ -4,6 +4,7 @@ import { Collection } from '#lib/server/database.js';
 import log from '#lib/log.js';
 import { generateImageUrl } from '@imgproxy/imgproxy-node';
 import { IMGPROXY_URL, S3_BUCKET, IMGPROXY_SALT, IMGPROXY_KEY } from '$app/env/private';
+import { MongooseError } from 'mongoose';
 
 export const load: PageServerLoad = async ({ params }) => {
 	const collections = await Collection.find().sort({ name: 1 }).lean();
@@ -40,9 +41,13 @@ export const actions = {
 			await newCol.save();
 
 			return { success: true };
-		} catch (e) {
-			console.log(e);
-			return fail(400, { code: e.code, message: e.errmsg });
+		} catch (e: any) {
+			log.error(e, "error creating collection")
+			if (e instanceof MongooseError) {
+				return fail(400, { message: e.message });
+			} else {
+				return fail(400, { message: "unknown error" })
+			}
 		}
 	}
 };

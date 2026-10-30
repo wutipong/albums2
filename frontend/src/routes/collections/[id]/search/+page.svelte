@@ -95,6 +95,10 @@
 	let mediaInfoDlg: MediaInfoDialog;
 </script>
 
+<svelte:head>
+	<title>Albums2: Search - {data.search}</title>
+</svelte:head>
+
 <div class="relative flex h-screen w-screen flex-col">
 	<NavBar
 		up={{ description: 'Albums', icon: mdiBookshelf, url: `/collections/${data.collectionId}` }}

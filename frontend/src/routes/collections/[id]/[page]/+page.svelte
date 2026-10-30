@@ -47,6 +47,10 @@
 	let collectionInfoDlg: CollectionInfoDialog;
 </script>
 
+<svelte:head>
+	<title>Albums2: {data.collection.name}</title>
+</svelte:head>
+
 {#snippet menu()}
 	<li>
 		<button onclick={() => collectionInfoDlg.show(data.collection)}>

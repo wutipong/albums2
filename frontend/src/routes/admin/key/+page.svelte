@@ -54,7 +54,7 @@
 </script>
 
 <svelte:head>
-	<title>Albums: User</title>
+	<title>Albums2: API Keys</title>
 </svelte:head>
 
 <div class="w-full p-4 pt-8">

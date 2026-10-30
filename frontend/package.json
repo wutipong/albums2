@@ -46,7 +46,7 @@
 		"svelte-check": "^4.7.7",
 		"sveltekit-openapi-generator": "^0.1.6",
 		"tailwindcss": "^4.3.0",
-		"typescript": "^6.0.3",
+		"typescript": "^7.0.2",
 		"typescript-eslint": "^8.60.1",
 		"vite": "^8.0.16"
 	},

@@ -14,7 +14,7 @@
 	<title>Albums2: Collections</title>
 </svelte:head>
 
-<NavBar />
+<NavBar user={data.user} />
 
 <div class="mx-4 overflow-auto pt-4 pb-20">
 	{#if data.collections.length === 0}
@@ -31,7 +31,7 @@
 	{/if}
 </div>
 
-{#if data.user.role === 'admin'}
+{#if data.user?.role === 'admin'}
 	<div class="divider">Or! Create a new collection.</div>
 
 	<div

@@ -57,7 +57,7 @@
 			<Icon path={mdiInformationOutline} />Collection information
 		</button>
 	</li>
-	{#if data.user.role == 'admin'}
+	{#if data.user?.role == 'admin'}
 		<li></li>
 		<li class="menu-item">Administration actions</li>
 		<li>
@@ -75,6 +75,7 @@
 {/snippet}
 
 <NavBar
+	user={data.user}
 	up={{ description: 'Collections', icon: mdiLibraryShelves, url: '/collections' }}
 	collectionId={data.collection._id.toString()}
 	{menu}

@@ -12,7 +12,7 @@ export const load: PageServerLoad = async ({ params }) => {
 	const collection = await Collection.findById(id).lean();
 	const albums = await Album.aggregatePaginate(
 		Album.aggregate([{ $match: { collectionId: new ObjectId(id) } }]),
-		{ page: parseInt(page), limit: PAGE_SIZE },
+		{ page: parseInt(page), limit: PAGE_SIZE }
 	);
 
 	log.debug(albums, 'albums response');

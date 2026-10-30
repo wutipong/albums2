@@ -12,7 +12,6 @@
 	import { enhance } from '$app/forms';
 	import { onMount } from 'svelte';
 	import { createHash } from '@better-auth/utils/hash';
-	import { authClient } from '#lib/auth.js';
 
 	interface UpDetails {
 		description: string;
@@ -24,6 +23,7 @@
 		up?: UpDetails;
 		collectionId?: string;
 		menu?: any;
+		user: any;
 	}
 
 	const { up, collectionId, menu }: Props = $props();
@@ -31,11 +31,7 @@
 	let user = $state({ user: '<placeholder>', email: 'placeholder@example.com', role: 'user' });
 
 	onMount(async () => {
-		const session = await authClient.getSession();
-		user = session.data.user;
-
 		const hashVal = await createHash('SHA-256', 'hex').digest(user.email);
-
 		avatarSrc = `https://gravatar.com/avatar/${hashVal} `;
 	});
 

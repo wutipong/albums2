@@ -161,7 +161,7 @@
 
 {#snippet menu()}
 	<li>
-		<button onclick={() => albumInfoDlg.show(current, data.collection)}>
+		<button onclick={() => albumInfoDlg.show()}>
 			<Icon path={mdiInformationOutline} />
 			Album information
 		</button>
@@ -240,7 +240,7 @@
 </div>
 
 <MediaInfoDialog bind:this={mediaInfoDlg} />
-<AlbumInfoDialog bind:this={albumInfoDlg} />
+<AlbumInfoDialog album={album} collection={data.collection} bind:this={albumInfoDlg} />
 <Toast bind:this={toast} />
 {#snippet viewMenu()}
 	<li>

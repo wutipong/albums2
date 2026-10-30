@@ -16,21 +16,9 @@
 		name: string;
 	}
 
-	let album: Album = $state({
-		_id: new ObjectId(),
-		name: '<placeholder>',
-		createdAt: new Date(),
-		modifiedAt: new Date()
-	});
+	let { album, collection }: { album: Album; collection: Collection } = $props();
 
-	let collection: Collection = $state({
-		_id: new ObjectId(),
-		name: '<placeholder>'
-	});
-
-	export function show(a: Album, c: Collection) {
-		album = a;
-		collection = c;
+	export function show() {
 		dialog.showModal();
 	}
 

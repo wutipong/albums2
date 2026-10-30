@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
-	import AlbumInfoDialog from '#lib/components/AlbumInfoDialog.svelte';
 	import AlbumThumbnail from '#lib/components/AlbumThumbnail.svelte';
 	import CollectionInfoDialog from '#lib/components/CollectionInfoDialog.svelte';
 	import Icon from '#lib/components/Icon.svelte';

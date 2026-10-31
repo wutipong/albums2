@@ -4,6 +4,7 @@
 	import CollectionThumbnail from '#lib/components/CollectionThumbnail.svelte';
 	import { mdiAlertCircle, mdiCircleOffOutline, mdiLibraryShelves, mdiSquareOff } from '@mdi/js';
 	import NavBar from '#lib/components/NavBar.svelte';
+	import log from '#lib/log.js';
 
 	let { data, form } = $props();
 
@@ -30,6 +31,8 @@
 		</div>
 	{/if}
 </div>
+
+{log.debug(data.user?.role)}
 
 {#if data.user?.role === 'admin'}
 	<div class="divider">Or! Create a new collection.</div>

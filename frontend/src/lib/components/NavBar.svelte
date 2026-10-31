@@ -12,6 +12,7 @@
 	import { enhance } from '$app/forms';
 	import { onMount } from 'svelte';
 	import { createHash } from '@better-auth/utils/hash';
+	import log from '#lib/log.ts';
 
 	interface UpDetails {
 		description: string;
@@ -23,15 +24,14 @@
 		up?: UpDetails;
 		collectionId?: string;
 		menu?: any;
-		user: any;
+		user?: { name: string; email: string; role?: string | null }| null;
 	}
 
-	const { up, collectionId, menu }: Props = $props();
+	const { up, collectionId, menu, user }: Props = $props();
 	let avatarSrc = $state('');
-	let user = $state({ user: '<placeholder>', email: 'placeholder@example.com', role: 'user' });
 
 	onMount(async () => {
-		const hashVal = await createHash('SHA-256', 'hex').digest(user.email);
+		const hashVal = await createHash('SHA-256', 'hex').digest(user?.email ?? '');
 		avatarSrc = `https://gravatar.com/avatar/${hashVal} `;
 	});
 
@@ -100,7 +100,7 @@
 		<div class="dropdown dropdown-end">
 			<div tabindex="0" role="button" class="btn avatar btn-circle btn-ghost">
 				<div class="w-10 rounded-full">
-					<img alt={user.email} src={avatarSrc} />
+					<img alt={user?.email} src={avatarSrc} />
 				</div>
 			</div>
 
@@ -108,7 +108,7 @@
 				tabindex="-1"
 				class="menu dropdown-content z-1 mt-3 w-52 menu-sm rounded-box bg-base-100 p-2 shadow"
 			>
-				{#if user.role === 'admin'}
+				{#if user?.role == 'admin'}
 					<li>
 						<a href="/admin"><Icon path={mdiShieldCrown} />Administrator</a>
 					</li>

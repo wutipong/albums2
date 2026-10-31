@@ -21,6 +21,17 @@ export const auth = betterAuth({
 	baseURL: ORIGIN,
 	secret: BETTER_AUTH_SECRET,
 	database: mongodbAdapter(db, { client }),
+	databaseHooks: {
+		user: {
+			create: {
+				before: async (user) => {
+					if ((await db.collection('user').countDocuments()) === 0) {
+						return { data: { ...user, role: 'admin' } };
+					}
+				}
+			}
+		}
+	},
 	plugins: [
 		admin(),
 		apiKey({

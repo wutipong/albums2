@@ -3,7 +3,7 @@ import { error } from '@sveltejs/kit';
 import { Album, Media } from '#lib/server/database.js';
 import { s3 } from '#lib/server/s3.js';
 import * as mime from 'mime-types';
-import { randomUUIDv4 } from 'node:crypto';
+import { randomUUID } from 'node:crypto';
 import path from 'node:path';
 import log from '#lib/log.js';
 
@@ -20,7 +20,7 @@ export const POST: RequestHandler = async ({ request, params }) => {
 	}
 
 	const extension = mime.extension(mime.lookup(name) || '');
-	const id = randomUUIDv4().toString().replace(/-/g, "");
+	const id = randomUUID().toString().replace(/-/g, "");
 	const tier1 = id.substring(0, 2)
 	const tier2 = id.substring(2, 4)
 

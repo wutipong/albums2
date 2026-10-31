@@ -70,8 +70,13 @@ func GetMinioEndpoint(input string) (endpoint string, secure bool, err error) {
 }
 
 func CreateAssetKey(extension string) string {
-	u := uuid.NewV7()
-	return fmt.Sprintf("public/%s.%s", u.String(), extension)
+	u := uuid.NewV4()
+
+	keyStr := strings.ReplaceAll(u.String(), "-", "")
+	tier1 := keyStr[0:2]
+	tier2 := keyStr[2:4]
+
+	return fmt.Sprintf("%s/%s/%s.%s", tier1, tier2, keyStr, extension)
 }
 
 func PutObject(

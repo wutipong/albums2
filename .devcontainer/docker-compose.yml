@@ -49,16 +49,16 @@ services:
     depends_on:
       - mongo
 
-  s3proxy:
-    image: andrewgaul/s3proxy:latest
+  versitygw:
+    image: ghcr.io/versity/versitygw:latest
     environment:
-      S3PROXY_ENDPOINT: http://0.0.0.0:9090
-      S3PROXY_IDENTITY: ${AWS_ACCESS_KEY_ID}
-      S3PROXY_CREDENTIAL: ${AWS_SECRET_ACCESS_KEY}
-      JCLOUDS_PROVIDER: filesystem
-      JCLOUDS_FILESYSTEM_BASEDIR: /data
+      ROOT_ACCESS_KEY: ${AWS_ACCESS_KEY_ID}
+      ROOT_SECRET_KEY: ${AWS_SECRET_ACCESS_KEY}
+      VGW_PORT: ":9090"
+      VGW_BACKEND: posix
+      VGW_BACKEND_ARGS: /data
     volumes:
-      - ./s3proxy:/data
+      - ./versitygw:/data
 
   imgproxy:
     image: darthsim/imgproxy:v3

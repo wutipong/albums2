@@ -44,7 +44,7 @@
     "imgproxy:8080",
     "mongo-express:8081",
     "redis-insight:5540",
-    "s3proxy:9090"
+    "versitygw:9090"
   ],
   // Configure tool-specific properties.
   "customizations": {

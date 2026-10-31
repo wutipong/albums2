@@ -4,4 +4,5 @@ mlservice/__pycache__/
 mlservice/.venv
 albums2cli/albums2cli
 worker/worker
-.devcontainer/s3proxy
+.devcontainer/
+devcontainer/s3proxy

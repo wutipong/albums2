@@ -11,7 +11,10 @@
 		mdiInformationOutline,
 		mdiLibraryShelves,
 		mdiBookshelf,
-		mdiSquareOff
+		mdiSquareOff,
+
+		mdiSync
+
 	} from '@mdi/js';
 
 	const { data } = $props();
@@ -19,6 +22,17 @@
 	const albums = $derived(data.albums);
 
 	$inspect(data);
+
+	async function createSyncJobs() {
+		log.debug('request sync jobs.');
+		const resp = await fetch(`/api/${data.collection._id}/sync-jobs`, {
+			method: 'POST'
+		});
+
+		const obj = await resp.json();
+
+		return true;
+	}
 
 	async function createRenditionJobs() {
 		log.debug('request renditions.');
@@ -58,6 +72,11 @@
 	{#if data.user?.role == 'admin'}
 		<li></li>
 		<li class="menu-item">Administration actions</li>
+		<li>
+			<button onclick={createSyncJobs}>
+				<Icon path={mdiSync} /> Synchronize current collection
+			</button>
+		</li>
 		<li>
 			<button onclick={createRenditionJobs}>
 				<Icon path={mdiBlender} /> Process media

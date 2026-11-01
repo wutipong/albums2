@@ -325,19 +325,19 @@ func processDirectoryAlbumArchiveObj(ctx context.Context, obj minio.ObjectInfo, 
 	ex.Extract(ctx, o, func(ctx context.Context, f archives.FileInfo) error {
 		slog.Info("found file in archive", "name", f.Name(), "size", f.Size())
 
+		path := obj.Key + ":" + charset.Decode(f.NameInArchive)
+
 		if archives.PathIsArchive(f.Name()) {
 			slog.Debug("found archive file in archive", "name", f.Name())
-			return processDirectoryAlbumArchive(ctx, obj.Key, f, collection, album)
+			return processDirectoryAlbumArchive(ctx, path, f, collection, album)
 		}
 
-		if IsMediaFile(f.Name()) {
-			slog.Debug("found media file", "name", f.Name())
-		} else {
+		if !IsMediaFile(f.Name()) {
 			slog.Debug("skipping non-media file", "name", f.Name())
 			return nil
 		}
 
-		path := album.ObjectKey + ":" + charset.Decode(f.NameInArchive)
+		slog.Debug("found media file", "name", f.Name())
 
 		opts := options.Count().SetLimit(1)
 		count, err := db.MongoDB().Collection("media").
@@ -369,7 +369,7 @@ func processDirectoryAlbumArchiveObj(ctx context.Context, obj minio.ObjectInfo, 
 		})
 
 		media := types.Media{
-			Name:          charset.Decode(f.NameInArchive),
+			Name:          path[len(album.ObjectKey):],
 			CollectionID:  collection.ID,
 			AlbumID:       album.ID,
 			Original:      assetKey,
@@ -426,18 +426,17 @@ func processDirectoryAlbumArchive(ctx context.Context, path string, f archives.F
 			return processDirectoryAlbumArchive(ctx, path, f, collection, album)
 		}
 
-		if IsMediaFile(f.Name()) {
-			slog.Debug("found media file", "name", f.Name())
-		} else {
+		if !IsMediaFile(f.Name()) {
 			slog.Debug("skipping non-media file", "name", f.Name())
 			return nil
 		}
 
-		path := album.ObjectKey + ":" + f.Name()
+		slog.Debug("found media file", "name", f.Name())
+		objPath := path + ":" + charset.Decode(f.NameInArchive)
 
 		opts := options.Count().SetLimit(1)
 		count, err := db.MongoDB().Collection("media").
-			CountDocuments(ctx, bson.D{{Key: "path", Value: path}}, opts)
+			CountDocuments(ctx, bson.D{{Key: "path", Value: objPath}}, opts)
 
 		if err != nil {
 			slog.Error("unable to count media", "error", err)
@@ -465,11 +464,11 @@ func processDirectoryAlbumArchive(ctx context.Context, path string, f archives.F
 		})
 
 		media := types.Media{
-			Name:          charset.Decode(f.NameInArchive),
+			Name:          objPath[len(album.ObjectKey):],
 			CollectionID:  collection.ID,
 			AlbumID:       album.ID,
 			Original:      assetKey,
-			Path:          path,
+			Path:          objPath,
 			CreatedAt:     time.Now(),
 			UpdatedAt:     time.Now(),
 			Type:          mt[:strings.Index(mt, "/")],
@@ -517,12 +516,14 @@ func processArchiveAlbum(ctx context.Context, collection types.Collection, album
 		if archives.PathIsArchive(f.Name()) {
 			slog.Debug("found archive file in archive", "name", f.Name())
 			return processDirectoryAlbumArchive(ctx, album.ObjectKey, f, collection, album)
-		} else if IsMediaFile(f.Name()) {
-			slog.Debug("found media file", "name", f.Name())
-		} else {
+		}
+
+		if !IsMediaFile(f.Name()) {
 			slog.Debug("skipping non-media file", "name", f.Name())
 			return nil
 		}
+
+		slog.Debug("found media file", "name", f.Name())
 
 		path := album.ObjectKey + ":" + f.Name()
 
@@ -556,7 +557,7 @@ func processArchiveAlbum(ctx context.Context, collection types.Collection, album
 		})
 
 		media := types.Media{
-			Name:          charset.Decode(f.NameInArchive),
+			Name:          path[len(album.ObjectKey):], // remove album prefix
 			CollectionID:  collection.ID,
 			AlbumID:       album.ID,
 			Original:      assetKey,

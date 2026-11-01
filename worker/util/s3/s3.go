@@ -85,7 +85,7 @@ func CreateAssetKey(extension string) string {
 	tier1 := keyStr[0:2]
 	tier2 := keyStr[2:4]
 
-	return fmt.Sprintf("_cache/%s/%s/%s.%s", tier1, tier2, keyStr, extension)
+	return fmt.Sprintf("_cache/%s/%s/%s%s", tier1, tier2, keyStr, extension)
 }
 
 func PutObject(

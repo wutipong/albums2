@@ -230,6 +230,7 @@ func processDirectoryAlbum(ctx context.Context, s3Client *minio.Client, bucket s
 			CollectionID:  collection.ID,
 			AlbumID:       album.ID,
 			Original:      obj.Key,
+			Path:          obj.Key,
 			CreatedAt:     time.Now(),
 			UpdatedAt:     time.Now(),
 			Type:          mt[:strings.Index(mt, "/")],
@@ -247,6 +248,89 @@ func processDirectoryAlbum(ctx context.Context, s3Client *minio.Client, bucket s
 
 func processArchiveAlbum(ctx context.Context, s3Client *minio.Client, bucket string, collection types.Collection, album types.Album) error {
 	slog.Info("processing archive album", "name", album.Name, "collectionId", collection.ID.Hex())
+
+	obj, err := s3Client.GetObject(ctx, bucket, album.ObjectKey, minio.GetObjectOptions{})
+	if err != nil {
+		slog.Error("unable to get object from S3", "error", err)
+		return fmt.Errorf("unable to get object from S3: %w", err)
+	}
+	defer obj.Close()
+
+	format, _, err := archives.Identify(ctx, album.ObjectKey, obj)
+	if err != nil {
+		slog.Error("unable to identify archive", "error", err)
+		return fmt.Errorf("unable to identify archive: %w", err)
+	}
+
+	ex, ok := format.(archives.Extractor)
+	if !ok {
+		slog.Error("unable to extract archive", "error", err)
+		return fmt.Errorf("unable to extract archive: %w", err)
+	}
+
+	slog.Info("found archive", "format", format.MediaType())
+
+	ex.Extract(ctx, obj, func(ctx context.Context, f archives.FileInfo) error {
+		slog.Info("found file in archive", "name", f.Name(), "size", f.Size())
+
+		if IsMediaFile(f.Name()) {
+			slog.Debug("found media file", "name", f.Name())
+		} else {
+			slog.Debug("skipping non-media file", "name", f.Name())
+			return nil
+		}
+
+		path := album.ObjectKey + ":" + f.Name()
+
+		opts := options.Count().SetLimit(1)
+		count, err := db.MongoDB().Collection("media").
+			CountDocuments(ctx, bson.D{{Key: "path", Value: path}}, opts)
+
+		if err != nil {
+			slog.Error("unable to count media", "error", err)
+			return nil
+		}
+
+		if count > 0 {
+			slog.Debug("media already exists, skipping", "name", f.Name)
+			return nil
+		}
+
+		mt := mime.TypeByExtension(filepath.Ext(f.Name()))
+		file, err := f.Open()
+		if err != nil {
+			slog.Error("unable to open file in archive", "error", err)
+			return nil
+		}
+		defer file.Close()
+
+		assetKey := s3.CreateAssetKey(filepath.Ext(f.Name()))
+
+		slog.Info("putting object to S3", "key", assetKey, "name", f.Name())
+		s3.PutObject(ctx, assetKey, file, f.Size(), minio.PutObjectOptions{
+			ContentType: mt,
+		})
+
+		media := types.Media{
+			Name:          f.Name(),
+			CollectionID:  collection.ID,
+			AlbumID:       album.ID,
+			Original:      assetKey,
+			Path:          path,
+			CreatedAt:     time.Now(),
+			UpdatedAt:     time.Now(),
+			Type:          mt[:strings.Index(mt, "/")],
+			ProcessStatus: "pending",
+		}
+		_, err = db.MongoDB().Collection("media").InsertOne(ctx, media)
+		if err != nil {
+			slog.Error("unable to insert media", "error", err)
+			return nil
+		}
+
+		return nil
+	})
+
 	return nil
 }
 

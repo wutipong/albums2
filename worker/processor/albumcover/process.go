@@ -162,7 +162,7 @@ func (p *Processor) ProcessImage(
 	}
 
 	if album.Cover == "" {
-		album.Cover = s3.CreateAssetKey("webp")
+		album.Cover = s3.CreateAssetKey(".webp")
 	}
 
 	_, err = s3.PutObject(
@@ -286,7 +286,7 @@ func (p *Processor) ProcessVideo(
 	}
 
 	if album.Cover != "" {
-		album.Cover = s3.CreateAssetKey("webp")
+		album.Cover = s3.CreateAssetKey(".webp")
 	}
 	_, err = s3.PutObject(
 		ctx,

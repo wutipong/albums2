@@ -27,6 +27,7 @@ type Media struct {
 	AlbumID         bson.ObjectID `json:"albumId" bson:"albumId"`
 	CollectionID    bson.ObjectID `json:"collectionId" bson:"collectionId"`
 	Name            string        `json:"name" bson:"name"`
+	Path            string        `json:"path" bson:"path"`
 	Original        string        `json:"original" bson:"original"`
 	View            string        `json:"view" bson:"view"`
 	ViewWidth       int32         `json:"viewWidth" bson:"viewWidth"`

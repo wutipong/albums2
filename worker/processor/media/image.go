@@ -150,7 +150,7 @@ func populateView(
 	}
 
 	if media.View == "" || media.View == media.Original {
-		media.View = s3.CreateAssetKey("webp")
+		media.View = s3.CreateAssetKey(".webp")
 	}
 
 	_, err = s3.PutObject(
@@ -213,7 +213,7 @@ func populatePreview(
 	}
 
 	if media.Preview == "" || media.Preview == media.View {
-		media.Preview = s3.CreateAssetKey("webp")
+		media.Preview = s3.CreateAssetKey(".webp")
 	}
 
 	_, err = s3.PutObject(
@@ -273,7 +273,7 @@ func populateThumbnail(
 	}
 
 	if media.Thumbnail == "" || media.Thumbnail == media.Original {
-		media.Thumbnail = s3.CreateAssetKey("webp")
+		media.Thumbnail = s3.CreateAssetKey(".webp")
 	}
 
 	_, err = s3.PutObject(

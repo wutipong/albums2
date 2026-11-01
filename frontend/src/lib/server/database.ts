@@ -31,6 +31,7 @@ export interface Media {
 	name?: string;
 	collectionId?: ObjectId;
 	albumId?: ObjectId;
+	path?: string;
 	original?: string;
 	type?: 'image' | 'video';
 	processStatus?: 'processed' | 'failed' | 'pending';
@@ -83,6 +84,7 @@ export const MediaSchema = new mongoose.Schema<Media>(
 		name: String,
 		collectionId: ObjectId,
 		albumId: ObjectId,
+		path: String,
 		original: String,
 		type: {
 			type: String,
@@ -149,9 +151,11 @@ MediaSchema.plugin(aggregatePaginate);
 export const Collection =
 	(mongoose.models.Collection as mongoose.AggregatePaginateModel<any> | undefined) ??
 	mongoose.model<any, mongoose.AggregatePaginateModel<any>>('Collection', CollectionSchema);
+
 export const Album =
 	(mongoose.models.Album as mongoose.AggregatePaginateModel<any> | undefined) ??
 	mongoose.model<any, mongoose.AggregatePaginateModel<any>>('Album', AlbumSchema);
+	
 export const Media =
 	(mongoose.models.Media as mongoose.AggregatePaginateModel<any> | undefined) ??
 	mongoose.model<any, mongoose.AggregatePaginateModel<any>>('Media', MediaSchema);

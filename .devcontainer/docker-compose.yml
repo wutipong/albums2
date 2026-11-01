@@ -51,15 +51,16 @@ services:
 
   versitygw:
     image: ghcr.io/versity/versitygw:latest
-    entrypoint: ["/bin/sh", "-c", "mkdir -p /data/albums && exec /usr/local/bin/docker-entrypoint.sh"]
     environment:
       ROOT_ACCESS_KEY: ${AWS_ACCESS_KEY_ID}
       ROOT_SECRET_KEY: ${AWS_SECRET_ACCESS_KEY}
       VGW_PORT: ":9090"
       VGW_BACKEND: posix
       VGW_BACKEND_ARGS: /data
+      VGW_META_SIDECAR: /meta/sidecar
     volumes:
-      - versitygw-data:/data
+      - ./s3-data:/data
+      - ./s3-meta:/meta
 
   imgproxy:
     image: darthsim/imgproxy:v3

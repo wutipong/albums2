@@ -46,7 +46,7 @@ export const actions = {
 			}
 
 			if (!prefix.endsWith('/')) {
-				return fail(400, { message: 'Collection prefix must end with a slash (/)' });
+				return fail(400, { message: 'Collection path prefix must end with a slash (/)' });
 			}
 			const newCol = new Collection({ name, description, prefix });
 

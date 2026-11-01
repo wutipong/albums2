@@ -40,6 +40,14 @@ export const actions = {
 			const name = data.get('name');
 			const description = data.get('description');
 			const prefix = data.get('prefix');
+
+			if (!prefix || typeof prefix !== 'string' || prefix.trim() === '') {
+				return fail(400, { message: 'Collection prefix is required' });
+			}
+
+			if (!prefix.endsWith('/')) {
+				return fail(400, { message: 'Collection prefix must end with a slash (/)' });
+			}
 			const newCol = new Collection({ name, description, prefix });
 
 			await newCol.save();

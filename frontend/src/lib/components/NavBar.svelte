@@ -24,7 +24,7 @@
 		up?: UpDetails;
 		collectionId?: string;
 		menu?: any;
-		user?: { name: string; email: string; role?: string | null }| null;
+		user?: { name: string; email: string; role?: string | null } | null;
 	}
 
 	const { up, collectionId, menu, user }: Props = $props();

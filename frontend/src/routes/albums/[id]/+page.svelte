@@ -240,7 +240,7 @@
 </div>
 
 <MediaInfoDialog bind:this={mediaInfoDlg} />
-<AlbumInfoDialog album={album} collection={data.collection} bind:this={albumInfoDlg} />
+<AlbumInfoDialog {album} collection={data.collection} bind:this={albumInfoDlg} />
 <Toast bind:this={toast} />
 {#snippet viewMenu()}
 	<li>

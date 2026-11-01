@@ -56,7 +56,7 @@
 		}
 
 		isLoading = true;
-		const resp = await fetch(`/api/albums/${album._id}/${currentPage.page + 1}`);
+		const resp = await fetch(`/api/albums/${album._id}/${(currentPage.page ?? 0) + 1}`);
 		currentPage = await resp.json();
 		log.debug(currentPage);
 

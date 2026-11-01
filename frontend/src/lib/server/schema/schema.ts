@@ -1,24 +1,66 @@
 import mongoose from 'mongoose';
 import { Int32, ObjectId } from 'mongodb';
 
-export const CollectionSchema = new mongoose.Schema(
+export interface Collection {
+	name?: string;
+	description?: string;
+	cover?: string;
+	s3Prefix: string;
+	createdAt?: Date;
+	modifiedAt?: Date;
+	updatedAt?: Date;
+	deletedAt?: Date;
+}
+
+export interface Album {
+	name?: string;
+	collectionId?: ObjectId;
+	cover?: string;
+	createdAt?: Date;
+	modifiedAt?: Date;
+	updatedAt?: Date;
+	deletedAt?: Date;
+}
+
+export interface Media {
+	name?: string;
+	collectionId?: ObjectId;
+	albumId?: ObjectId;
+	original?: string;
+	type?: 'image' | 'video';
+	processStatus?: 'uploading' | 'failed' | 'pending';
+	view?: string;
+	viewWidth?: number;
+	viewHeight?: number;
+	videoDuration?: number;
+	thumbnail?: string;
+	thumbnailWidth?: number;
+	thumbnailHeight?: number;
+	preview?: string;
+	imageFrames?: number;
+	embedding?: number[];
+	createdAt?: Date;
+	modifiedAt?: Date;
+	updatedAt?: Date;
+	deletedAt?: Date;
+}
+
+export const CollectionSchema = new mongoose.Schema<Collection>(
 	{
 		name: { type: String, index: true, unique: true },
 		description: String,
 		cover: String,
+		s3Prefix: { type: String, required: true },
 		createdAt: { type: Date, default: Date.now },
 		modifiedAt: { type: Date, default: Date.now },
 		deletedAt: Date
 	},
 	{
-		timestamps: true,
-		query: {
-			timestamps: true
-		}
+		timestamps: true
 	}
 );
 
-export const AlbumSchema = new mongoose.Schema(
+export const AlbumSchema = new mongoose.Schema<Album>(
 	{
 		name: String,
 		collectionId: ObjectId,
@@ -28,14 +70,11 @@ export const AlbumSchema = new mongoose.Schema(
 		deletedAt: Date
 	},
 	{
-		timestamps: true,
-		query: {
-			timestamps: true
-		}
+		timestamps: true
 	}
 );
 
-export const MediaSchema = new mongoose.Schema(
+export const MediaSchema = new mongoose.Schema<Media>(
 	{
 		name: String,
 		collectionId: ObjectId,
@@ -66,10 +105,7 @@ export const MediaSchema = new mongoose.Schema(
 		deletedAt: Date
 	},
 	{
-		timestamps: true,
-		query: {
-			timestamps: true
-		}
+		timestamps: true
 	}
 );
 

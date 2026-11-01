@@ -21,6 +21,11 @@ AlbumSchema.plugin(aggregatePaginate);
 MediaSchema.plugin(aggregatePaginate);
 
 export const Collection =
-	mongoose.models.Collection || mongoose.model('Collection', CollectionSchema);
-export const Album = mongoose.models.Album || mongoose.model('Album', AlbumSchema);
-export const Media = mongoose.models.Media || mongoose.model('Media', MediaSchema);
+	(mongoose.models.Collection as mongoose.AggregatePaginateModel<any> | undefined) ??
+	mongoose.model<any, mongoose.AggregatePaginateModel<any>>('Collection', CollectionSchema);
+export const Album =
+	(mongoose.models.Album as mongoose.AggregatePaginateModel<any> | undefined) ??
+	mongoose.model<any, mongoose.AggregatePaginateModel<any>>('Album', AlbumSchema);
+export const Media =
+	(mongoose.models.Media as mongoose.AggregatePaginateModel<any> | undefined) ??
+	mongoose.model<any, mongoose.AggregatePaginateModel<any>>('Media', MediaSchema);

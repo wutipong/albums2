@@ -8,8 +8,7 @@ export async function loadAlbumMediaPage(id: string, pageno: number) {
 		Media.aggregate([{ $match: { albumId: new ObjectId(id) } }]),
 		{
 			page: pageno,
-			limit: PAGE_SIZE,
-			lean: true
+			limit: PAGE_SIZE
 		}
 	);
 

@@ -40,7 +40,7 @@
 
 <div class="navbar bg-base-100 shadow-sm">
 	<div class="flex-1">
-		<a class="btn btn-ghost text-xl">albums2</a>
+		<a class="btn btn-ghost text-xl" href="/about">albums2</a>
 	</div>
 	<div class="flex gap-2">
 		{#if up}

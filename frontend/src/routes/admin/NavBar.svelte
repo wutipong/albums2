@@ -26,7 +26,7 @@
 			<Icon path={mdiMenu} />
 		</button>
 
-		<a class="btn btn-ghost text-xl">albums2</a>
+		<a class="btn btn-ghost text-xl" href="/about">albums2</a>
 	</div>
 	<a class="btn rounded-full btn-ghost max-lg:btn-circle" href="/collections">
 		<Icon path={mdiLibraryShelves}></Icon>

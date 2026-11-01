@@ -57,7 +57,7 @@ services:
       VGW_PORT: ":9090"
       VGW_BACKEND: posix
       VGW_BACKEND_ARGS: /data
-      VGW_META_SIDECAR: /meta/sidecar
+      VGW_META_SIDECAR: /meta/metadata
     volumes:
       - ./s3-data:/data
       - ./s3-meta:/meta

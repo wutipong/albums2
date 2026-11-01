@@ -25,7 +25,7 @@
 
 	async function createSyncJobs() {
 		log.debug('request sync jobs.');
-		const resp = await fetch(`/api/${data.collection._id}/sync-jobs`, {
+		const resp = await fetch(`/api/collections/${data.collection._id}/sync-jobs`, {
 			method: 'POST'
 		});
 

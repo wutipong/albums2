@@ -9,7 +9,7 @@ export const POST: RequestHandler = async ({ request, params }) => {
         JSON.stringify({
             type: 'collection.sync',
             payload: {
-                collectionId: params.collection_id
+                id: params.collection_id
             }
         })
     );

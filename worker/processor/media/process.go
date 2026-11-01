@@ -7,8 +7,8 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/wutipong/albums2/gopkg/types"
 	"github.com/wutipong/albums2/worker/processor"
+	"github.com/wutipong/albums2/worker/types"
 	"github.com/wutipong/albums2/worker/util/db"
 	"go.mongodb.org/mongo-driver/v2/bson"
 )

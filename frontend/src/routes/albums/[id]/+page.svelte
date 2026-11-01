@@ -187,7 +187,7 @@
 <div class="relative flex h-screen w-screen flex-col">
 	<NavBar
 		user={data.user}
-		up={{ description: 'Albums', icon: mdiBookshelf, url: `/collections/${album.collectionId}` }}
+		up={{ description: 'Albums', icon: mdiBookshelf, url: `/${album.collectionId}` }}
 		collectionId={album.collectionId}
 		{menu}
 	/>

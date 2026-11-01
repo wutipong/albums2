@@ -48,7 +48,7 @@
 					<tr>
 						<th>Collection</th>
 						<td
-							><a class="flex link gap-1" href="/collections/{collection._id.toHexString()}">
+							><a class="flex link gap-1" href="/{collection._id.toHexString()}">
 								{collection.name}
 								<Icon path={mdiLink} />
 							</a></td

@@ -32,6 +32,6 @@ export const actions = {
 
 		const query = new URLSearchParams({ search: text?.toString() ?? '' });
 
-		redirect(303, `/collections/${collectionId}/search?${query.toString()}`);
+		redirect(303, `/${collectionId}/search?${query.toString()}`);
 	}
 };

@@ -11,7 +11,7 @@
 <div class="block rounded-xl p-4 hover:bg-base-content/20 hover:shadow-xl" id={collection.id}>
 	<div class="w-[300px] overflow-clip rounded-xl border-1 border-base-content/20">
 		<figure class="block h-[450px] w-[300px]">
-			<a href="/collections/{collection._id}/" class="block h-full w-full">
+			<a href="/{collection._id}/" class="block h-full w-full">
 				<div class="relative h-[450px] w-[300px]">
 					{#if collection.cover_url == ''}
 						{@html notAvailableSvg}

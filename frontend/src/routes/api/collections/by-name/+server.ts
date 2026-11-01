@@ -3,7 +3,7 @@ import { Collection } from '#lib/server/database.js';
 import log from '#lib/log.js';
 
 export const GET: RequestHandler = async ({ request, params }) => {
-	log.debug(params, 'GET /api/collections/by-name');
+	log.debug(params, 'GET /api/by-name');
 
 	const name = new URL(request.url).searchParams.get('name');
 	if (!name) {

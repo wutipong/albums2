@@ -67,7 +67,7 @@
 
 		isLoading = true;
 		const resp = await fetch(
-			`/api/collections/${data.collectionId}/search?search=${data.search}&page=${currentPage.page + 1}`
+			`/api/${data.collectionId}/search?search=${data.search}&page=${currentPage.page + 1}`
 		);
 		currentPage = await resp.json();
 		log.debug(currentPage);
@@ -102,7 +102,7 @@
 <div class="relative flex h-screen w-screen flex-col">
 	<NavBar
 		user={data.user}
-		up={{ description: 'Albums', icon: mdiBookshelf, url: `/collections/${data.collectionId}` }}
+		up={{ description: 'Albums', icon: mdiBookshelf, url: `/${data.collectionId}` }}
 		collectionId={data.collectionId}
 	/>
 	<div class="flex h-12 w-full flex-row gap-1 bg-base-300 p-3">

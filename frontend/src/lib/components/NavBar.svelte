@@ -56,7 +56,7 @@
 			<form
 				class="join max-lg:hidden"
 				method="POST"
-				action="/collections/{collectionId}/search?/search"
+				action="/{collectionId}/search?/search"
 				use:enhance
 			>
 				<input type="hidden" name="collectionId" value={collectionId} />
@@ -128,7 +128,7 @@
 <dialog class="modal modal-bottom sm:modal-middle" bind:this={searchDlg}>
 	<div class="modal-box">
 		<h3 class="text-lg font-bold">Search</h3>
-		<form method="POST" action="/collections/{collectionId}/search?/search" use:enhance>
+		<form method="POST" action="/{collectionId}/search?/search" use:enhance>
 			<input type="text" placeholder="Search" required name="text" class="input w-full" />
 			<input type="hidden" name="collectionId" value={collectionId} />
 			<div class="modal-action justify-end gap-2">

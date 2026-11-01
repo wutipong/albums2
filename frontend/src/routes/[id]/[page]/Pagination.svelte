@@ -30,7 +30,7 @@
 			page: String(p)
 		};
 
-		return resolve('/collections/[id]/[page]', params);
+		return resolve('/[id]/[page]', params);
 	}
 </script>
 

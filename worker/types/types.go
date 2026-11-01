@@ -17,6 +17,7 @@ type Album struct {
 	CollectionID bson.ObjectID `json:"collectionId" bson:"collectionId"`
 	Name         string        `json:"name" bson:"name"`
 	Cover        string        `json:"cover" bson:"cover"`
+	ObjectKey    string        `json:"objectKey" bson:"objectKey"`
 }
 
 type Media struct {

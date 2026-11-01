@@ -21,6 +21,7 @@ export interface Collection {
 export interface Album {
 	name?: string;
 	collectionId?: ObjectId;
+	objectKey: string;
 	cover?: string;
 	createdAt?: Date;
 	modifiedAt?: Date;

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"strings"
 
 	"github.com/minio/minio-go/v7"
 	"github.com/wutipong/albums2/worker/processor"
@@ -12,6 +13,7 @@ import (
 	"github.com/wutipong/albums2/worker/util/db"
 	"github.com/wutipong/albums2/worker/util/s3"
 	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 const (
@@ -67,11 +69,45 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 	s3Client := s3.Client()
 	bucket := s3.Bucket()
 
-	for obj := range s3Client.ListObjects(ctx, bucket, minio.ListObjectsOptions{
-		Prefix: collection.Prefix + "/",
-	}) {
+	albumsCollection := db.MongoDB().Collection("albums")
 
-		slog.Debug("found object in S3", "key", obj.Key)
+	for obj := range s3Client.ListObjects(ctx, bucket, minio.ListObjectsOptions{
+		Prefix: collection.Prefix,
+	}) {
+		slog.Info("found object in S3", "key", obj.Key)
+		objectKey := obj.Key
+
+		name := strings.TrimPrefix(obj.Key, collection.Prefix)
+		if strings.HasPrefix(name, ".") {
+			slog.Debug("skipping hidden file", "key", obj.Key)
+			continue
+		}
+
+		filter := bson.M{"name": name, "collectionId": collection.ID}
+
+		update := bson.M{
+			"$set": bson.M{
+				"name":         name,
+				"collectionId": collection.ID,
+				"objectKey":    objectKey,
+			},
+		}
+
+		opts := options.UpdateOne().SetUpsert(true)
+
+		results, err := albumsCollection.UpdateOne(ctx, filter, update, opts)
+		if err != nil {
+			return fmt.Errorf("unable to upsert album: %w", err)
+		}
+
+		slog.Debug("upsert result",
+			"acknowledged", results.Acknowledged,
+			"matchedCount", results.MatchedCount,
+			"modifiedCount", results.ModifiedCount,
+			"upsertedCount", results.UpsertedCount,
+			"upsertedID", results.UpsertedID,
+		)
+
 	}
 
 	return nil

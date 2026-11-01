@@ -26,7 +26,7 @@ type Processor struct {
 }
 
 func (p *Processor) GetType() string {
-	return "media"
+	return "media.process"
 }
 
 func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) error {

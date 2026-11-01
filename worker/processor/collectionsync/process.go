@@ -14,6 +14,7 @@ import (
 	"github.com/mholt/archives"
 	"github.com/minio/minio-go/v7"
 	"github.com/wutipong/albums2/worker/processor"
+	"github.com/wutipong/albums2/worker/processor/media"
 	"github.com/wutipong/albums2/worker/types"
 	"github.com/wutipong/albums2/worker/util/db"
 	"github.com/wutipong/albums2/worker/util/s3"
@@ -79,11 +80,63 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 		return fmt.Errorf("unable to populate albums: %w", err)
 	}
 
-	err = populateAlbumsMedia(ctx, s3Client, bucket, collection)
+	err = populateAlbumsMedia(ctx, collection)
 	if err != nil {
 		return fmt.Errorf("unable to populate albums media: %w", err)
 	}
 
+	/*err = processMedia(ctx, collection)
+	if err != nil {
+		return fmt.Errorf("unable to process media: %w", err)
+	}*/
+
+	slog.Info("collection sync completed", "collection", payload.ID)
+
+	return nil
+}
+
+type mediaProcessRequest struct {
+	Type    string        `json:"type"`
+	Payload media.Payload `json:"payload"`
+}
+
+func processMedia(ctx context.Context, collection types.Collection) error {
+	cursor, err := db.MongoDB().Collection("media").
+		Find(ctx, bson.M{
+			"processStatus": "pending",
+			"collectionId":  collection.ID,
+		})
+
+	if err != nil {
+		return fmt.Errorf("unable to get media: %w", err)
+	}
+
+	request := []string{}
+	// Process the media items
+	for cursor.Next(ctx) {
+		m := types.Media{}
+		err := cursor.Decode(&m)
+		if err != nil {
+			slog.Error("unable to decode media", "error", err)
+			continue
+		}
+
+		slog.Info("processing media", "name", m.Name, "collectionId", collection.ID.Hex())
+		r, err := json.Marshal(mediaProcessRequest{
+			Type: "media.process",
+			Payload: media.Payload{
+				ID: m.ID.Hex(),
+			},
+		})
+		if err != nil {
+			slog.Error("unable to marshal media process request", "error", err)
+			continue
+		}
+		// Process each media item
+		request = append(request, string(r))
+	}
+
+	db.Redis().LPush(ctx, "'tasks'", request)
 	return nil
 }
 
@@ -149,7 +202,7 @@ func populateAlbums(
 	return nil
 }
 
-func populateAlbumsMedia(ctx context.Context, s3Client *minio.Client, bucket string, collection types.Collection) error {
+func populateAlbumsMedia(ctx context.Context, collection types.Collection) error {
 	cursor, err := db.MongoDB().Collection("albums").
 		Find(ctx, bson.D{{Key: "collectionId", Value: collection.ID}})
 
@@ -167,7 +220,7 @@ func populateAlbumsMedia(ctx context.Context, s3Client *minio.Client, bucket str
 			continue
 		}
 
-		err = processAlbumMedia(ctx, s3Client, bucket, collection, album)
+		err = processAlbumMedia(ctx, collection, album)
 		if err != nil {
 			slog.Error("unable to process album media",
 				"name", album.Name,
@@ -179,22 +232,22 @@ func populateAlbumsMedia(ctx context.Context, s3Client *minio.Client, bucket str
 	return nil
 }
 
-func processAlbumMedia(ctx context.Context, s3Client *minio.Client, bucket string, collection types.Collection, album types.Album) error {
+func processAlbumMedia(ctx context.Context, collection types.Collection, album types.Album) error {
 	slog.Info("processing album media", "name", album.Name, "collectionId", collection.ID.Hex())
 
 	if strings.HasSuffix(album.ObjectKey, "/") {
-		processDirectoryAlbum(ctx, s3Client, bucket, collection, album)
+		processDirectoryAlbum(ctx, collection, album)
 		return nil
 	} else {
-		processArchiveAlbum(ctx, s3Client, bucket, collection, album)
+		processArchiveAlbum(ctx, collection, album)
 	}
 	return nil
 }
 
-func processDirectoryAlbum(ctx context.Context, s3Client *minio.Client, bucket string, collection types.Collection, album types.Album) error {
+func processDirectoryAlbum(ctx context.Context, collection types.Collection, album types.Album) error {
 	slog.Info("processing directory album", "name", album.Name, "collectionId", collection.ID.Hex())
 
-	for obj := range s3Client.ListObjects(ctx, bucket, minio.ListObjectsOptions{
+	for obj := range s3.Client().ListObjects(ctx, s3.Bucket(), minio.ListObjectsOptions{
 		Prefix:    album.ObjectKey,
 		Recursive: true,
 	}) {
@@ -246,10 +299,105 @@ func processDirectoryAlbum(ctx context.Context, s3Client *minio.Client, bucket s
 	return nil
 }
 
-func processArchiveAlbum(ctx context.Context, s3Client *minio.Client, bucket string, collection types.Collection, album types.Album) error {
+func processDirectoryAlbumArchive(ctx context.Context, path string, f archives.FileInfo, collection types.Collection, album types.Album) error {
+	slog.Info("processing directory album archive", "name", album.Name, "collectionId", collection.ID.Hex())
+
+	path = strings.Join([]string{path, f.NameInArchive}, ":")
+
+	reader, err := f.Open()
+	if err != nil {
+		slog.Error("unable to open file in archive", "error", err)
+		return fmt.Errorf("unable to open file in archive: %w", err)
+	}
+	defer reader.Close()
+
+	format, _, err := archives.Identify(ctx, f.Name(), reader)
+	if err != nil {
+		slog.Error("unable to identify archive", "error", err)
+		return fmt.Errorf("unable to identify archive: %w", err)
+	}
+
+	ex, ok := format.(archives.Extractor)
+	if !ok {
+		slog.Error("unable to extract archive", "error", err)
+		return fmt.Errorf("unable to extract archive: %w", err)
+	}
+
+	slog.Info("found archive", "format", format.MediaType())
+
+	ex.Extract(ctx, reader, func(ctx context.Context, f archives.FileInfo) error {
+		slog.Info("found file in archive", "name", f.Name(), "size", f.Size())
+
+		if archives.PathIsArchive(f.Name()) {
+			slog.Debug("found archive file in archive", "name", f.Name())
+			return processDirectoryAlbumArchive(ctx, path, f, collection, album)
+		}
+
+		if IsMediaFile(f.Name()) {
+			slog.Debug("found media file", "name", f.Name())
+		} else {
+			slog.Debug("skipping non-media file", "name", f.Name())
+			return nil
+		}
+
+		path := album.ObjectKey + ":" + f.Name()
+
+		opts := options.Count().SetLimit(1)
+		count, err := db.MongoDB().Collection("media").
+			CountDocuments(ctx, bson.D{{Key: "path", Value: path}}, opts)
+
+		if err != nil {
+			slog.Error("unable to count media", "error", err)
+			return nil
+		}
+
+		if count > 0 {
+			slog.Debug("media already exists, skipping", "name", f.Name)
+			return nil
+		}
+
+		mt := mime.TypeByExtension(filepath.Ext(f.Name()))
+		file, err := f.Open()
+		if err != nil {
+			slog.Error("unable to open file in archive", "error", err)
+			return nil
+		}
+		defer file.Close()
+
+		assetKey := s3.CreateAssetKey(filepath.Ext(f.Name()))
+
+		slog.Info("putting object to S3", "key", assetKey, "name", f.Name())
+		s3.PutObject(ctx, assetKey, file, f.Size(), minio.PutObjectOptions{
+			ContentType: mt,
+		})
+
+		media := types.Media{
+			Name:          f.Name(),
+			CollectionID:  collection.ID,
+			AlbumID:       album.ID,
+			Original:      assetKey,
+			Path:          path,
+			CreatedAt:     time.Now(),
+			UpdatedAt:     time.Now(),
+			Type:          mt[:strings.Index(mt, "/")],
+			ProcessStatus: "pending",
+		}
+		_, err = db.MongoDB().Collection("media").InsertOne(ctx, media)
+		if err != nil {
+			slog.Error("unable to insert media", "error", err)
+			return nil
+		}
+
+		return nil
+	})
+
+	return nil
+}
+
+func processArchiveAlbum(ctx context.Context, collection types.Collection, album types.Album) error {
 	slog.Info("processing archive album", "name", album.Name, "collectionId", collection.ID.Hex())
 
-	obj, err := s3Client.GetObject(ctx, bucket, album.ObjectKey, minio.GetObjectOptions{})
+	obj, err := s3.Client().GetObject(ctx, s3.Bucket(), album.ObjectKey, minio.GetObjectOptions{})
 	if err != nil {
 		slog.Error("unable to get object from S3", "error", err)
 		return fmt.Errorf("unable to get object from S3: %w", err)
@@ -273,7 +421,10 @@ func processArchiveAlbum(ctx context.Context, s3Client *minio.Client, bucket str
 	ex.Extract(ctx, obj, func(ctx context.Context, f archives.FileInfo) error {
 		slog.Info("found file in archive", "name", f.Name(), "size", f.Size())
 
-		if IsMediaFile(f.Name()) {
+		if archives.PathIsArchive(f.Name()) {
+			slog.Debug("found archive file in archive", "name", f.Name())
+			return processDirectoryAlbumArchive(ctx, album.ObjectKey, f, collection, album)
+		} else if IsMediaFile(f.Name()) {
 			slog.Debug("found media file", "name", f.Name())
 		} else {
 			slog.Debug("skipping non-media file", "name", f.Name())

@@ -13,7 +13,6 @@ export interface Collection {
 	cover?: string;
 	prefix: string;
 	createdAt?: Date;
-	modifiedAt?: Date;
 	updatedAt?: Date;
 	deletedAt?: Date;
 }
@@ -24,7 +23,6 @@ export interface Album {
 	objectKey: string;
 	cover?: string;
 	createdAt?: Date;
-	modifiedAt?: Date;
 	updatedAt?: Date;
 	deletedAt?: Date;
 }
@@ -47,7 +45,6 @@ export interface Media {
 	imageFrames?: number;
 	embedding?: number[];
 	createdAt?: Date;
-	modifiedAt?: Date;
 	updatedAt?: Date;
 	deletedAt?: Date;
 }
@@ -59,7 +56,7 @@ export const CollectionSchema = new mongoose.Schema<Collection>(
 		cover: String,
 		prefix: { type: String, required: true },
 		createdAt: { type: Date, default: Date.now },
-		modifiedAt: { type: Date, default: Date.now },
+		updatedAt: { type: Date, default: Date.now },
 		deletedAt: Date
 	},
 	{
@@ -73,7 +70,7 @@ export const AlbumSchema = new mongoose.Schema<Album>(
 		collectionId: ObjectId,
 		cover: String,
 		createdAt: { type: Date, default: Date.now },
-		modifiedAt: { type: Date, default: Date.now },
+		updatedAt: { type: Date, default: Date.now },
 		deletedAt: Date
 	},
 	{
@@ -108,7 +105,7 @@ export const MediaSchema = new mongoose.Schema<Media>(
 			type: [Number]
 		},
 		createdAt: { type: Date, default: Date.now },
-		modifiedAt: { type: Date, default: Date.now },
+		updatedAt: { type: Date, default: Date.now },
 		deletedAt: Date
 	},
 	{

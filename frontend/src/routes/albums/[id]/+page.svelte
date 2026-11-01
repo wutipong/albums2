@@ -228,18 +228,21 @@
 		</button>
 	</div>
 
-	<MediaViewer
-		media={current}
-		bind:show={showViewer}
-		{next}
-		{previous}
-		hasNext={index != mediaItems.length - 1}
-		hasPrevious={index != 0}
-		menu={viewMenu}
-	/>
+	{#if current}
+		<MediaViewer
+			media={current}
+			bind:show={showViewer}
+			{next}
+			{previous}
+			hasNext={index != mediaItems.length - 1}
+			hasPrevious={index != 0}
+			menu={viewMenu}
+		/>
+	{/if}
 </div>
 
 <MediaInfoDialog bind:this={mediaInfoDlg} />
+{log.debug('album info', album)}
 <AlbumInfoDialog {album} collection={data.collection} bind:this={albumInfoDlg} />
 <Toast bind:this={toast} />
 {#snippet viewMenu()}

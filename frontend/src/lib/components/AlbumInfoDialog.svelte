@@ -8,7 +8,7 @@
 		_id: ObjectId;
 		name: string;
 		createdAt: Date;
-		modifiedAt: Date;
+		updatedAt: Date;
 	}
 
 	interface Collection {
@@ -60,7 +60,7 @@
 					</tr>
 					<tr>
 						<th>Modified At</th>
-						<td>{album.modifiedAt.toLocaleString()}</td>
+						<td>{album.updatedAt.toLocaleString()}</td>
 					</tr>
 				</tbody>
 			</table>

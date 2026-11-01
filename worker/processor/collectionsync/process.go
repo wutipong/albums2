@@ -6,13 +6,16 @@ import (
 	"fmt"
 	"log/slog"
 	"strings"
+	"time"
 
+	"github.com/mholt/archives"
 	"github.com/minio/minio-go/v7"
 	"github.com/wutipong/albums2/worker/processor"
 	"github.com/wutipong/albums2/worker/types"
 	"github.com/wutipong/albums2/worker/util/db"
 	"github.com/wutipong/albums2/worker/util/s3"
 	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
@@ -71,6 +74,15 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 
 	albumsCollection := db.MongoDB().Collection("albums")
 
+	err1 := populateAlbums(ctx, s3Client, bucket, collection, albumsCollection)
+	if err1 != nil {
+		return err1
+	}
+
+	return nil
+}
+
+func populateAlbums(ctx context.Context, s3Client *minio.Client, bucket string, collection types.Collection, albumsCollection *mongo.Collection) error {
 	for obj := range s3Client.ListObjects(ctx, bucket, minio.ListObjectsOptions{
 		Prefix: collection.Prefix,
 	}) {
@@ -83,6 +95,14 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 			continue
 		}
 
+		if strings.HasSuffix(name, "/") {
+			slog.Debug("found directory", "key", obj.Key)
+			name = name[:len(name)-1] // remove trailing slash
+		} else if _, _, err := archives.Identify(ctx, obj.Key, nil); err != nil {
+			slog.Debug("archive not found, skipping", "key", obj.Key)
+			continue
+		}
+
 		filter := bson.M{"name": name, "collectionId": collection.ID}
 
 		update := bson.M{
@@ -90,6 +110,8 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 				"name":         name,
 				"collectionId": collection.ID,
 				"objectKey":    objectKey,
+				"createdAt":    time.Now(),
+				"updatedAt":    time.Now(),
 			},
 		}
 
@@ -109,6 +131,5 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 		)
 
 	}
-
 	return nil
 }

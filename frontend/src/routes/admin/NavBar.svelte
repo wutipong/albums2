@@ -28,7 +28,7 @@
 
 		<a class="btn btn-ghost text-xl" href="/about">albums2</a>
 	</div>
-	<a class="btn rounded-full btn-ghost max-lg:btn-circle" href="/collections">
+	<a class="btn rounded-full btn-ghost max-lg:btn-circle" href="/">
 		<Icon path={mdiLibraryShelves}></Icon>
 		<span class="hidden lg:block">Collections</span>
 	</a>

@@ -7,8 +7,8 @@ import { IMGPROXY_URL, S3_BUCKET, IMGPROXY_SALT, IMGPROXY_KEY } from '$app/env/p
 import { MongooseError } from 'mongoose';
 
 export const load: PageServerLoad = async ({ locals }: PageServerLoadEvent) => {
-	if (locals.session) {
-		redirect(302, '/collections');
+	if (!locals.session) {
+		redirect(302, '/login');
 	}
 	const collections = await Collection.find().sort({ name: 1 }).lean();
 
@@ -39,7 +39,8 @@ export const actions = {
 			const data = await request.formData();
 			const name = data.get('name');
 			const description = data.get('description');
-			const newCol = new Collection({ name, description });
+			const prefix = data.get('prefix');
+			const newCol = new Collection({ name, description, prefix });
 
 			await newCol.save();
 

@@ -59,8 +59,18 @@
 					name="name"
 					placeholder="collection name"
 				/>
-				<textarea class="textarea h-24 w-full" name="description" placeholder="description"
-				></textarea>
+				<textarea
+					class="textarea h-24 w-full"
+					name="description"
+					placeholder="description"></textarea>
+
+				<input
+					type="text"
+					class="input w-full"
+					name="prefix"
+					required
+					placeholder="S3 Object Prefix"
+				/>
 
 				<button class="btn btn-neutral">Add</button>
 			</fieldset>

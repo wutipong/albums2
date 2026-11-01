@@ -74,7 +74,7 @@
 
 <NavBar
 	user={data.user}
-	up={{ description: 'Collections', icon: mdiLibraryShelves, url: '/collections' }}
+	up={{ description: 'Collections', icon: mdiLibraryShelves, url: '/' }}
 	collectionId={data.collection._id.toString()}
 	{menu}
 />

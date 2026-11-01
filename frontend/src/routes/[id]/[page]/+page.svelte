@@ -36,7 +36,7 @@
 
 	async function createRenditionJobs() {
 		log.debug('request renditions.');
-		const resp = await fetch(`/api/${data.collection._id}/rendition-jobs`, {
+		const resp = await fetch(`/api/collections/${data.collection._id}/rendition-jobs`, {
 			method: 'POST'
 		});
 
@@ -47,7 +47,7 @@
 
 	async function createEmbeddingJobs() {
 		log.debug('request renditions.');
-		const resp = await fetch(`/api/${data.collection._id}/embedding-jobs`, {
+		const resp = await fetch(`/api/collections/${data.collection._id}/embedding-jobs`, {
 			method: 'POST'
 		});
 

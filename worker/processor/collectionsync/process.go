@@ -16,6 +16,7 @@ import (
 	"github.com/wutipong/albums2/worker/processor"
 	"github.com/wutipong/albums2/worker/processor/media"
 	"github.com/wutipong/albums2/worker/types"
+	"github.com/wutipong/albums2/worker/util/charset"
 	"github.com/wutipong/albums2/worker/util/db"
 	"github.com/wutipong/albums2/worker/util/s3"
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -254,6 +255,9 @@ func processDirectoryAlbum(ctx context.Context, collection types.Collection, alb
 		slog.Info("found object in S3", "key", obj.Key)
 		if _, _, err := archives.Identify(ctx, obj.Key, nil); err == nil {
 			slog.Debug("skipping archive file", "key", obj.Key)
+			if err := processDirectoryAlbumArchiveObj(ctx, obj, collection, album); err != nil {
+				slog.Error("unable to process archive object", "key", obj.Key, "error", err)
+			}
 			continue
 		} else if IsMediaFile(obj.Key) {
 			slog.Debug("found media file", "key", obj.Key)
@@ -299,10 +303,99 @@ func processDirectoryAlbum(ctx context.Context, collection types.Collection, alb
 	return nil
 }
 
+func processDirectoryAlbumArchiveObj(ctx context.Context, obj minio.ObjectInfo, collection types.Collection, album types.Album) error {
+	o, err := s3.GetObject(ctx, obj.Key, minio.GetObjectOptions{})
+	if err != nil {
+		return fmt.Errorf("unable to get object from S3: %w", err)
+	}
+	defer o.Close()
+
+	format, _, err := archives.Identify(ctx, obj.Key, o)
+	if err != nil {
+		return fmt.Errorf("unable to identify archive: %w", err)
+	}
+
+	ex, ok := format.(archives.Extractor)
+	if !ok {
+		return fmt.Errorf("unable to extract archive: %w", err)
+	}
+
+	slog.Info("found archive", "format", format.MediaType())
+
+	ex.Extract(ctx, o, func(ctx context.Context, f archives.FileInfo) error {
+		slog.Info("found file in archive", "name", f.Name(), "size", f.Size())
+
+		if archives.PathIsArchive(f.Name()) {
+			slog.Debug("found archive file in archive", "name", f.Name())
+			return processDirectoryAlbumArchive(ctx, obj.Key, f, collection, album)
+		}
+
+		if IsMediaFile(f.Name()) {
+			slog.Debug("found media file", "name", f.Name())
+		} else {
+			slog.Debug("skipping non-media file", "name", f.Name())
+			return nil
+		}
+
+		path := album.ObjectKey + ":" + charset.Decode(f.NameInArchive)
+
+		opts := options.Count().SetLimit(1)
+		count, err := db.MongoDB().Collection("media").
+			CountDocuments(ctx, bson.D{{Key: "path", Value: path}}, opts)
+
+		if err != nil {
+			slog.Error("unable to count media", "error", err)
+			return nil
+		}
+
+		if count > 0 {
+			slog.Debug("media already exists, skipping", "name", charset.Decode(f.NameInArchive))
+			return nil
+		}
+
+		mt := mime.TypeByExtension(filepath.Ext(charset.Decode(f.NameInArchive)))
+		file, err := f.Open()
+		if err != nil {
+			slog.Error("unable to open file in archive", "error", err)
+			return nil
+		}
+		defer file.Close()
+
+		assetKey := s3.CreateAssetKey(filepath.Ext(f.Name()))
+
+		slog.Info("putting object to S3", "key", assetKey, "name", f.Name())
+		s3.PutObject(ctx, assetKey, file, f.Size(), minio.PutObjectOptions{
+			ContentType: mt,
+		})
+
+		media := types.Media{
+			Name:          charset.Decode(f.NameInArchive),
+			CollectionID:  collection.ID,
+			AlbumID:       album.ID,
+			Original:      assetKey,
+			Path:          path,
+			CreatedAt:     time.Now(),
+			UpdatedAt:     time.Now(),
+			Type:          mt[:strings.Index(mt, "/")],
+			ProcessStatus: "pending",
+		}
+		_, err = db.MongoDB().Collection("media").InsertOne(ctx, media)
+		if err != nil {
+			slog.Error("unable to insert media", "error", err)
+			return nil
+		}
+
+		return nil
+	})
+
+	return nil
+
+}
+
 func processDirectoryAlbumArchive(ctx context.Context, path string, f archives.FileInfo, collection types.Collection, album types.Album) error {
 	slog.Info("processing directory album archive", "name", album.Name, "collectionId", collection.ID.Hex())
 
-	path = strings.Join([]string{path, f.NameInArchive}, ":")
+	path = strings.Join([]string{path, charset.Decode(f.NameInArchive)}, ":")
 
 	reader, err := f.Open()
 	if err != nil {
@@ -372,7 +465,7 @@ func processDirectoryAlbumArchive(ctx context.Context, path string, f archives.F
 		})
 
 		media := types.Media{
-			Name:          f.Name(),
+			Name:          charset.Decode(f.NameInArchive),
 			CollectionID:  collection.ID,
 			AlbumID:       album.ID,
 			Original:      assetKey,
@@ -463,7 +556,7 @@ func processArchiveAlbum(ctx context.Context, collection types.Collection, album
 		})
 
 		media := types.Media{
-			Name:          f.Name(),
+			Name:          charset.Decode(f.NameInArchive),
 			CollectionID:  collection.ID,
 			AlbumID:       album.ID,
 			Original:      assetKey,

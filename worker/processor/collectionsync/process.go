@@ -5,6 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"mime"
+	"path/filepath"
+	"slices"
 	"strings"
 	"time"
 
@@ -15,7 +18,6 @@ import (
 	"github.com/wutipong/albums2/worker/util/db"
 	"github.com/wutipong/albums2/worker/util/s3"
 	"go.mongodb.org/mongo-driver/v2/bson"
-	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
@@ -72,17 +74,27 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 	s3Client := s3.Client()
 	bucket := s3.Bucket()
 
-	albumsCollection := db.MongoDB().Collection("albums")
+	err = populateAlbums(ctx, s3Client, bucket, collection)
+	if err != nil {
+		return fmt.Errorf("unable to populate albums: %w", err)
+	}
 
-	err1 := populateAlbums(ctx, s3Client, bucket, collection, albumsCollection)
-	if err1 != nil {
-		return err1
+	err = populateAlbumsMedia(ctx, s3Client, bucket, collection)
+	if err != nil {
+		return fmt.Errorf("unable to populate albums media: %w", err)
 	}
 
 	return nil
 }
 
-func populateAlbums(ctx context.Context, s3Client *minio.Client, bucket string, collection types.Collection, albumsCollection *mongo.Collection) error {
+func populateAlbums(
+	ctx context.Context,
+	s3Client *minio.Client,
+	bucket string,
+	collection types.Collection,
+) error {
+	albumsCollection := db.MongoDB().Collection("albums")
+
 	for obj := range s3Client.ListObjects(ctx, bucket, minio.ListObjectsOptions{
 		Prefix: collection.Prefix,
 	}) {
@@ -119,17 +131,144 @@ func populateAlbums(ctx context.Context, s3Client *minio.Client, bucket string, 
 
 		results, err := albumsCollection.UpdateOne(ctx, filter, update, opts)
 		if err != nil {
-			return fmt.Errorf("unable to upsert album: %w", err)
+			slog.Error("upsert album",
+				"name", name,
+				"collectionId", collection.ID.Hex(),
+				"error", err)
+		} else {
+
+			slog.Debug("upsert result",
+				"acknowledged", results.Acknowledged,
+				"matchedCount", results.MatchedCount,
+				"modifiedCount", results.ModifiedCount,
+				"upsertedCount", results.UpsertedCount,
+				"upsertedID", results.UpsertedID,
+			)
 		}
-
-		slog.Debug("upsert result",
-			"acknowledged", results.Acknowledged,
-			"matchedCount", results.MatchedCount,
-			"modifiedCount", results.ModifiedCount,
-			"upsertedCount", results.UpsertedCount,
-			"upsertedID", results.UpsertedID,
-		)
-
 	}
 	return nil
+}
+
+func populateAlbumsMedia(ctx context.Context, s3Client *minio.Client, bucket string, collection types.Collection) error {
+	cursor, err := db.MongoDB().Collection("albums").
+		Find(ctx, bson.D{{Key: "collectionId", Value: collection.ID}})
+
+	if err != nil {
+		return fmt.Errorf("unable to get albums: %w", err)
+	}
+
+	defer cursor.Close(ctx)
+
+	for cursor.Next(ctx) {
+		album := types.Album{}
+		err := cursor.Decode(&album)
+		if err != nil {
+			slog.Error("unable to decode album", "error", err)
+			continue
+		}
+
+		err = processAlbumMedia(ctx, s3Client, bucket, collection, album)
+		if err != nil {
+			slog.Error("unable to process album media",
+				"name", album.Name,
+				"collectionId", collection.ID.Hex(),
+				"error", err)
+			continue
+		}
+	}
+	return nil
+}
+
+func processAlbumMedia(ctx context.Context, s3Client *minio.Client, bucket string, collection types.Collection, album types.Album) error {
+	slog.Info("processing album media", "name", album.Name, "collectionId", collection.ID.Hex())
+
+	if strings.HasSuffix(album.ObjectKey, "/") {
+		processDirectoryAlbum(ctx, s3Client, bucket, collection, album)
+		return nil
+	} else {
+		processArchiveAlbum(ctx, s3Client, bucket, collection, album)
+	}
+	return nil
+}
+
+func processDirectoryAlbum(ctx context.Context, s3Client *minio.Client, bucket string, collection types.Collection, album types.Album) error {
+	slog.Info("processing directory album", "name", album.Name, "collectionId", collection.ID.Hex())
+
+	for obj := range s3Client.ListObjects(ctx, bucket, minio.ListObjectsOptions{
+		Prefix:    album.ObjectKey,
+		Recursive: true,
+	}) {
+		slog.Info("found object in S3", "key", obj.Key)
+		if _, _, err := archives.Identify(ctx, obj.Key, nil); err == nil {
+			slog.Debug("skipping archive file", "key", obj.Key)
+			continue
+		} else if IsMediaFile(obj.Key) {
+			slog.Debug("found media file", "key", obj.Key)
+		} else {
+			slog.Debug("skipping non-media file", "key", obj.Key)
+			continue
+		}
+
+		opts := options.Count().SetLimit(1)
+		count, err := db.MongoDB().Collection("media").
+			CountDocuments(ctx, bson.D{{Key: "objectKey", Value: obj.Key}}, opts)
+
+		if err != nil {
+			slog.Error("unable to count media", "error", err)
+			continue
+		}
+
+		if count > 0 {
+			slog.Debug("media already exists, skipping", "key", obj.Key)
+			continue
+		}
+
+		mt := mime.TypeByExtension(filepath.Ext(obj.Key))
+
+		media := types.Media{
+			Name:          obj.Key[len(album.ObjectKey):], // remove album prefix
+			CollectionID:  collection.ID,
+			AlbumID:       album.ID,
+			Original:      obj.Key,
+			CreatedAt:     time.Now(),
+			UpdatedAt:     time.Now(),
+			Type:          mt[:strings.Index(mt, "/")],
+			ProcessStatus: "pending",
+		}
+		_, err = db.MongoDB().Collection("media").InsertOne(ctx, media)
+		if err != nil {
+			slog.Error("unable to insert media", "error", err)
+			continue
+		}
+	}
+
+	return nil
+}
+
+func processArchiveAlbum(ctx context.Context, s3Client *minio.Client, bucket string, collection types.Collection, album types.Album) error {
+	slog.Info("processing archive album", "name", album.Name, "collectionId", collection.ID.Hex())
+	return nil
+}
+
+var mediaExtensions = []string{
+	".jpg",
+	".jpeg",
+	".png",
+	".gif",
+	".svg",
+	".tiff",
+	".webp",
+
+	// movie
+	".3gp",
+	".avi",
+	".m4v",
+	".mkv",
+	".mov",
+	".mp4",
+	".webm",
+}
+
+func IsMediaFile(path string) bool {
+	return slices.Contains(mediaExtensions, strings.ToLower(filepath.Ext(path)))
 }

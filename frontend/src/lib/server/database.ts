@@ -33,7 +33,7 @@ export interface Media {
 	albumId?: ObjectId;
 	original?: string;
 	type?: 'image' | 'video';
-	processStatus?: 'uploading' | 'failed' | 'pending';
+	processStatus?: 'processed' | 'failed' | 'pending';
 	view?: string;
 	viewWidth?: number;
 	viewHeight?: number;
@@ -90,7 +90,7 @@ export const MediaSchema = new mongoose.Schema<Media>(
 		},
 		processStatus: {
 			type: String,
-			enum: ['uploading', 'failed', 'pending']
+			enum: ['processed', 'failed', 'pending']
 		},
 		view: String,
 		viewWidth: Int32,

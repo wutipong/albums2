@@ -1,6 +1,8 @@
 package types
 
 import (
+	"time"
+
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
@@ -23,6 +25,7 @@ type Album struct {
 type Media struct {
 	ID              bson.ObjectID `json:"_id" bson:"_id,omitempty"`
 	AlbumID         bson.ObjectID `json:"albumId" bson:"albumId"`
+	CollectionID    bson.ObjectID `json:"collectionId" bson:"collectionId"`
 	Name            string        `json:"name" bson:"name"`
 	Original        string        `json:"original" bson:"original"`
 	View            string        `json:"view" bson:"view"`
@@ -37,18 +40,12 @@ type Media struct {
 	ProcessStatus   string        `json:"processStatus" bson:"processStatus"`
 	ImageFrames     int32         `json:"imageFrames" bson:"imageFrames"`
 	Embedding       []float32     `json:"embedding" bson:"embedding"`
+	CreatedAt       time.Time     `json:"createdAt" bson:"createdAt"`
+	UpdatedAt       time.Time     `json:"updatedAt" bson:"updatedAt"`
 }
 
 type User struct {
 	ID    string `json:"id"`
 	Email string `json:"email"`
 	Name  string `json:"name"`
-}
-
-type Session struct {
-	ID string `json:"id"`
-	// expiresAt: Date;
-
-	// createdAt: Date;
-	// updatedAt: Date;
 }

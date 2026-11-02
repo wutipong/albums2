@@ -73,7 +73,7 @@
 
 		const obj = await resp.json();
 
-		toast.add(`rendition job of ${obj.count} media have been added.`, 'info');
+		toast.add(`Media processing started for ${obj.count} media.`, 'info');
 		return true;
 	}
 
@@ -84,7 +84,7 @@
 
 		const obj = await resp.json();
 
-		toast.add(`rendition job of a media has been added.`, 'info');
+		toast.add('Media processing started.', 'info');
 		return true;
 	}
 
@@ -95,7 +95,7 @@
 
 		const obj = await resp.json();
 
-		toast.add(`embedding job of ${obj.count} media have been added.`, 'info');
+		toast.add(`Search metadata generation started for ${obj.count} media.`, 'info');
 		return true;
 	}
 
@@ -106,7 +106,7 @@
 
 		const obj = await resp.json();
 
-		toast.add(`embedding job of a media has been added.`, 'info');
+		toast.add('Search metadata generation started.', 'info');
 		return true;
 	}
 
@@ -117,7 +117,7 @@
 
 		const obj = await resp.json();
 
-		toast.add(`album cover job have been added.`, 'info');
+		toast.add('Album cover generation started.', 'info');
 
 		return true;
 	}
@@ -128,7 +128,7 @@
 		});
 
 		const obj = await resp.json();
-		toast.add(`collection cover job of the collection have been added.`, 'info');
+		toast.add('Collection cover generation started.', 'info');
 
 		return true;
 	}

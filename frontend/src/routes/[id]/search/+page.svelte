@@ -14,6 +14,7 @@
 	import log from '#lib/log.js';
 	import MediaInfoDialog from '#lib/components/MediaInfoDialog.svelte';
 	import NavBar from '#lib/components/NavBar.svelte';
+	import Toast from '#lib/components/Toast.svelte';
 
 	const { data } = $props();
 	$inspect(data);
@@ -57,6 +58,7 @@
 
 		const obj = await resp.json();
 
+		toast.add('Collection cover generation started.', 'info');
 		return true;
 	}
 
@@ -93,6 +95,7 @@
 		};
 	}
 	let mediaInfoDlg: MediaInfoDialog;
+	let toast: Toast;
 </script>
 
 <svelte:head>
@@ -155,6 +158,7 @@
 </div>
 
 <MediaInfoDialog bind:this={mediaInfoDlg} />
+<Toast bind:this={toast} />
 
 {#snippet viewMenu()}
 	<li>

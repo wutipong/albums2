@@ -3,6 +3,7 @@
 	import CollectionInfoDialog from '#lib/components/CollectionInfoDialog.svelte';
 	import Icon from '#lib/components/Icon.svelte';
 	import NavBar from '#lib/components/NavBar.svelte';
+	import Toast from '#lib/components/Toast.svelte';
 	import log from '#lib/log.js';
 	import Pagination from './Pagination.svelte';
 	import {
@@ -31,6 +32,7 @@
 
 		const obj = await resp.json();
 
+		toast.add('Collection synchronization started.', 'info');
 		return true;
 	}
 
@@ -42,6 +44,7 @@
 
 		const obj = await resp.json();
 
+		toast.add('Media processing started.', 'info');
 		return true;
 	}
 
@@ -53,10 +56,12 @@
 
 		const obj = await resp.json();
 
+		toast.add('Media search metadata generation started.', 'info');
 		return true;
 	}
 
 	let collectionInfoDlg: CollectionInfoDialog;
+	let toast: Toast;
 </script>
 
 <svelte:head>
@@ -119,5 +124,6 @@
 </div>
 
 <CollectionInfoDialog bind:this={collectionInfoDlg} />
+<Toast bind:this={toast} />
 
 <Pagination currentPage={albums.page} totalPage={albums.totalPages} />

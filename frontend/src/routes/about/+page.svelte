@@ -18,7 +18,12 @@
 		<h1>About Albums2</h1>
 		<p>Version {version}</p>
 		<p>
-			<a href="https://github.com/wutipong/albums2" target="_blank" rel="noreferrer" class='btn btn-link'>
+			<a
+				href="https://github.com/wutipong/albums2"
+				target="_blank"
+				rel="noreferrer"
+				class="btn btn-link"
+			>
 				<Icon path={mdiGithub}></Icon>GitHub
 			</a>
 		</p>

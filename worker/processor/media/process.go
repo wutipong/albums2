@@ -4,9 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log/slog"
 	"time"
 
+	zlog "github.com/rs/zerolog/log"
 	"github.com/wutipong/albums2/worker/processor"
 	"github.com/wutipong/albums2/worker/types"
 	"github.com/wutipong/albums2/worker/util/db"
@@ -42,7 +42,7 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 		return fmt.Errorf("invalid media id: %w", err)
 	}
 
-	slog.Info("processing asset", "id", objID.String())
+	zlog.Info().Str("id", objID.String()).Msg("processing asset")
 
 	result := db.MongoDB().
 		Collection("media").
@@ -59,12 +59,7 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 		return fmt.Errorf("unable to decode media information: %w", err)
 	}
 
-	slog.Info("Media information",
-		"id", media.ID,
-		"name", media.Name,
-		"type", media.Type,
-		"original", media.Original,
-	)
+	zlog.Info().Str("id", media.ID.Hex()).Str("name", media.Name).Str("type", media.Type).Str("original", media.Original).Msg("Media information")
 
 	var processErr error
 	switch media.Type {
@@ -119,7 +114,7 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 		return fmt.Errorf("unable to queue embedding task: %w", err)
 	}
 
-	slog.Info("process asset complete", "id", objID.String())
+	zlog.Info().Str("id", objID.String()).Msg("process asset complete")
 
 	return nil
 }

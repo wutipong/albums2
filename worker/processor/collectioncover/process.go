@@ -6,13 +6,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log/slog"
 	"os"
 	"path/filepath"
 	"strconv"
 	"time"
 
 	"github.com/minio/minio-go/v7"
+	zlog "github.com/rs/zerolog/log"
 	ffmpeg "github.com/u2takey/ffmpeg-go"
 	"github.com/wutipong/albums2/worker/processor"
 	"github.com/wutipong/albums2/worker/types"
@@ -65,7 +65,10 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 		return fmt.Errorf("unable to parse album information: %w", err)
 	}
 
-	slog.Info("cover media", "media", media)
+	zlog.Info().
+		Str("id", media.ID.Hex()).
+		Str("path", media.Path).
+		Msg("using cover from media")
 
 	albumId := media.AlbumID
 
@@ -82,7 +85,10 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 		return fmt.Errorf("unable to parse album information: %w", err)
 	}
 
-	slog.Info("target album", "album", album)
+	zlog.Info().
+		Str("id", album.ID.Hex()).
+		Str("name", album.Name).
+		Msg("target album")
 
 	collection := types.Collection{}
 	r = db.MongoDB().
@@ -97,7 +103,10 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 		return fmt.Errorf("unable to parse collection information: %w", err)
 	}
 
-	slog.Info("target collection", "collection", collection)
+	zlog.Info().
+		Str("id", collection.ID.Hex()).
+		Str("name", collection.Name).
+		Msg("target collection")
 
 	switch media.Type {
 	case "image":
@@ -131,7 +140,7 @@ func (p *Processor) ProcessImage(
 	media *types.Media,
 	c *types.Collection,
 ) error {
-	slog.Info("populating collection cover", slog.String("id", media.ID.String()))
+	zlog.Info().Str("id", media.ID.String()).Msg("populating collection cover")
 
 	err := ctx.Err()
 	if err != nil {
@@ -150,7 +159,7 @@ func (p *Processor) ProcessImage(
 	source := vips.NewSource(object)
 	defer source.Close()
 
-	slog.Info("read original image file.")
+	zlog.Info().Msg("read original image file.")
 
 	original, err := vips.NewImageFromSource(source, nil)
 	if err != nil {
@@ -200,7 +209,7 @@ func (p *Processor) ProcessImage(
 func (p *Processor) ProcessVideo(
 	ctx context.Context, media *types.Media, c *types.Collection,
 ) error {
-	slog.Info("process video collection thumbnail", slog.Any("id", media.ID))
+	zlog.Info().Str("id", media.ID.Hex()).Msg("process video collection thumbnail")
 	err := ctx.Err()
 	if err != nil {
 		return fmt.Errorf("context cancelled: %w", err)
@@ -217,7 +226,7 @@ func (p *Processor) ProcessVideo(
 	defer func() {
 		err = os.Remove(originalFile.Name())
 		if err != nil {
-			slog.Error("error deleting temporary source file", "error", err)
+			zlog.Error().Err(err).Msg("error deleting temporary source file")
 		}
 	}()
 
@@ -233,7 +242,7 @@ func (p *Processor) ProcessVideo(
 	defer func() {
 		err = object.Close()
 		if err != nil {
-			slog.Error("error closing S3 object", "error", err)
+			zlog.Error().Err(err).Msg("error closing S3 object")
 		}
 	}()
 
@@ -256,7 +265,7 @@ func (p *Processor) ProcessVideo(
 	defer func() {
 		err = os.Remove(outputFile.Name())
 		if err != nil {
-			slog.Error("error deleting temporary source file", "error", err)
+			zlog.Error().Err(err).Msg("error deleting temporary source file")
 		}
 	}()
 

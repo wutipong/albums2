@@ -4,13 +4,13 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"log/slog"
 	"os"
 	"path/filepath"
 	"strconv"
 	"time"
 
 	"github.com/minio/minio-go/v7"
+	zlog "github.com/rs/zerolog/log"
 	ffmpeg "github.com/u2takey/ffmpeg-go"
 	"github.com/wutipong/albums2/worker/types"
 	"github.com/wutipong/albums2/worker/util/s3"
@@ -22,11 +22,11 @@ const VIDEO_WIDTH = 1280
 const VIDEO_HEIGHT = 720
 
 func ProcessVideoMedia(ctx context.Context, media *types.Media) error {
-	slog.Info("process video asset", slog.Any("id", media.ID))
+	zlog.Info().Str("id", media.ID.Hex()).Msg("process video asset")
 
 	err := ctx.Err()
 	if err != nil {
-		slog.Info("context.", slog.String("error", err.Error()))
+		zlog.Info().Str("error", err.Error()).Msg("context.")
 		return fmt.Errorf("context cancelled: %w", err)
 	}
 
@@ -42,7 +42,7 @@ func ProcessVideoMedia(ctx context.Context, media *types.Media) error {
 	defer func() {
 		err = s3Obj.Close()
 		if err != nil {
-			slog.Error("error closing S3 object", "error", err)
+			zlog.Error().Err(err).Msg("error closing S3 object")
 		}
 	}()
 
@@ -57,7 +57,7 @@ func ProcessVideoMedia(ctx context.Context, media *types.Media) error {
 	defer func() {
 		err = os.Remove(originalFile.Name())
 		if err != nil {
-			slog.Error("error removing temporary source file: %w", "error", err)
+			zlog.Error().Err(err).Msg("error removing temporary source file: %w")
 		}
 	}()
 
@@ -93,7 +93,7 @@ func processVideoView(
 	ctx context.Context, media *types.Media,
 	originalFile *os.File,
 ) error {
-	slog.Info("process video asset view media", slog.Any("id", media.ID))
+	zlog.Info().Str("id", media.ID.Hex()).Msg("process video asset view media")
 	err := ctx.Err()
 	if err != nil {
 		return fmt.Errorf("context cancelled: %w", err)
@@ -110,7 +110,7 @@ func processVideoView(
 	defer func() {
 		err = os.Remove(outputFile.Name())
 		if err != nil {
-			slog.Error("error deleting temprary source file", "error", err)
+			zlog.Error().Err(err).Msg("error deleting temprary source file")
 		}
 	}()
 
@@ -169,7 +169,7 @@ func processVideoView(
 func processVideoThumbnail(
 	ctx context.Context, media *types.Media, originalFile *os.File, info video.Probe,
 ) error {
-	slog.Info("process video asset thumbnail", slog.Any("id", media.ID))
+	zlog.Info().Str("id", media.ID.Hex()).Msg("process video asset thumbnail")
 	err := ctx.Err()
 	if err != nil {
 		return fmt.Errorf("context cancelled: %w", err)
@@ -188,7 +188,7 @@ func processVideoThumbnail(
 	defer func() {
 		err = os.Remove(outputFile.Name())
 		if err != nil {
-			slog.Error("error deleting temporary output file", "error", err)
+			zlog.Error().Err(err).Msg("error deleting temporary output file")
 		}
 	}()
 
@@ -245,7 +245,7 @@ func processVideoPreview(
 	ctx context.Context, media *types.Media,
 	originalFile *os.File, info video.Probe,
 ) error {
-	slog.Info("process video preview", slog.Any("id", media.ID))
+	zlog.Info().Str("id", media.ID.Hex()).Msg("process video preview")
 	err := ctx.Err()
 	if err != nil {
 		return fmt.Errorf("context cancelled: %w", err)
@@ -257,7 +257,7 @@ func processVideoPreview(
 	defer func() {
 		err = os.Remove(outputFile.Name())
 		if err != nil {
-			slog.Error("error deleting temporary output file", "error", err)
+			zlog.Error().Err(err).Msg("error deleting temporary output file")
 		}
 	}()
 

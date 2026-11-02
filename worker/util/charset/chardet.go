@@ -2,8 +2,8 @@ package charset
 
 import (
 	"fmt"
-	"log/slog"
 
+	zlog "github.com/rs/zerolog/log"
 	"github.com/saintfish/chardet"
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/encoding/ianaindex"
@@ -19,11 +19,7 @@ func DetectCharSet(str string) (encoding encoding.Encoding, charset string, err 
 	chardetResult, err := detector.DetectBest([]byte(str))
 	if err != nil {
 		err = fmt.Errorf("failed to detect charset: %w", err)
-		slog.Warn(
-			"failed to detect encoding.",
-			slog.String("text", str),
-			slog.String("error", err.Error()),
-		)
+		zlog.Warn().Str("text", str).Str("error", err.Error()).Msg("failed to detect encoding.")
 
 		return
 	}
@@ -41,11 +37,7 @@ func DecodeString(str string, enc encoding.Encoding) (string, error) {
 	decodedStr, err := decoder.String(str)
 	if err != nil {
 		err = fmt.Errorf("failed to decode string: %w", err)
-		slog.Warn(
-			"failed to decode string.",
-			slog.String("text", str),
-			slog.String("error", err.Error()),
-		)
+		zlog.Warn().Str("text", str).Str("error", err.Error()).Msg("failed to decode string.")
 		return str, err
 	}
 
@@ -55,13 +47,13 @@ func DecodeString(str string, enc encoding.Encoding) (string, error) {
 func Decode(str string) string {
 	enc, _, err := DetectCharSet(str)
 	if err != nil {
-		slog.Warn("unable to detect encoding", slog.String("error", err.Error()))
+		zlog.Warn().Str("error", err.Error()).Msg("unable to detect encoding")
 		return str
 	}
 
 	decodedStr, err := DecodeString(str, enc)
 	if err != nil {
-		slog.Warn("unable to decode the string", slog.String("error", err.Error()))
+		zlog.Warn().Str("error", err.Error()).Msg("unable to decode the string")
 		return str
 	}
 

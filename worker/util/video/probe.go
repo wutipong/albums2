@@ -3,9 +3,9 @@ package video
 import (
 	"encoding/json"
 	"fmt"
-	"log/slog"
 	"slices"
 
+	zlog "github.com/rs/zerolog/log"
 	ffmpeg "github.com/u2takey/ffmpeg-go"
 )
 
@@ -46,7 +46,7 @@ func ReadProbe(path string) (info Probe, err error) {
 }
 
 func (info Probe) Video() (s Stream, err error) {
-	slog.Debug("probe", "info", info)
+	zlog.Debug().Interface("info", info).Msg("probe")
 	idx := slices.IndexFunc(info.Streams, func(s Stream) bool {
 		return s.CodecType == "video"
 	})
@@ -61,7 +61,7 @@ func (info Probe) Video() (s Stream, err error) {
 }
 
 func (info Probe) Audio() (s Stream, err error) {
-	slog.Debug("probe", "info", info)
+	zlog.Debug().Interface("info", info).Msg("probe")
 	idx := slices.IndexFunc(info.Streams, func(s Stream) bool {
 		return s.CodecType == "audio"
 	})

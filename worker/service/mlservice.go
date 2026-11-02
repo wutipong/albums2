@@ -3,9 +3,9 @@ package service
 import (
 	"context"
 	"fmt"
-	"log/slog"
 	"os"
 
+	zlog "github.com/rs/zerolog/log"
 	"github.com/wutipong/albums2/worker/service/pb"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -26,7 +26,7 @@ func GetImageSpec(ctx context.Context) (
 	defer func() {
 		err := conn.Close()
 		if err != nil {
-			slog.Error("error closing connection.", "error", err)
+			zlog.Error().Err(err).Msg("error closing connection.")
 		}
 	}()
 
@@ -55,7 +55,7 @@ func EncodeText(ctx context.Context, input string) (
 	defer func() {
 		err := conn.Close()
 		if err != nil {
-			slog.Error("error on closing connection.", "error", err)
+			zlog.Error().Err(err).Msg("error on closing connection.")
 		}
 	}()
 
@@ -86,7 +86,7 @@ func EncodeImage(ctx context.Context, input []byte) (
 	defer func() {
 		err := conn.Close()
 		if err != nil {
-			slog.Error("error closing connection", "error", err)
+			zlog.Error().Err(err).Msg("error closing connection")
 		}
 	}()
 

@@ -7,15 +7,15 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"github.com/Marlliton/slogpretty"
 	"github.com/kouhin/envflag"
 	"github.com/redis/go-redis/v9"
+	"github.com/rs/zerolog"
+	zlog "github.com/rs/zerolog/log"
 	"github.com/wutipong/albums2/worker/processor"
 	"github.com/wutipong/albums2/worker/processor/albumcover"
 	"github.com/wutipong/albums2/worker/processor/collectioncover"
@@ -54,167 +54,166 @@ func main() {
 
 	err := envflag.Parse()
 	if err != nil {
-		slog.Error("Error parsing parameters", "error", err)
+		zlog.Error().Err(err).Msg("Error parsing parameters")
 		os.Exit(-1)
 	}
 
-	var level slog.Level
+	var level zerolog.Level
 	invalidLogLevel := false
 	switch *logLevel {
 	case "debug":
-		level = slog.LevelDebug
+		level = zerolog.DebugLevel
 	case "info":
-		level = slog.LevelInfo
+		level = zerolog.InfoLevel
 	case "warn":
-		level = slog.LevelWarn
+		level = zerolog.WarnLevel
 	case "error":
-		level = slog.LevelError
+		level = zerolog.ErrorLevel
 	default:
 		invalidLogLevel = true
-		level = slog.LevelInfo
+		level = zerolog.InfoLevel
 	}
 
-	slog.SetDefault(slog.New(newLogHandler(os.Stdout, dev != nil && *dev, level)))
-	slog.SetLogLoggerLevel(level)
+	zlog.Logger = newLogger(os.Stdout, dev != nil && *dev, level)
 	if invalidLogLevel {
-		slog.Error("Invalid log level. Using 'info' as default.")
+		zlog.Error().Msg("Invalid log level. Using 'info' as default.")
 	}
 	if dev != nil && *dev {
-		slog.Debug("Development mode enabled")
+		zlog.Debug().Msg("Development mode enabled")
 	}
 
 	if dbUri == nil {
-		slog.Error("database connection string is not set.")
+		zlog.Error().Msg("database connection string is not set.")
 		os.Exit(1)
 	}
 
 	cs, err := connstring.Parse(*dbUri)
 	if err != nil {
-		slog.Error("Error parsing MongoDB connection string", "error", err)
+		zlog.Error().Err(err).Msg("Error parsing MongoDB connection string")
 		return
 	}
 
 	client, err := mongo.Connect(options.Client().
 		ApplyURI(*dbUri))
 	if err != nil {
-		slog.Error("Failed to connect to MongoDB", "error", err)
+		zlog.Error().Err(err).Msg("Failed to connect to MongoDB")
 		os.Exit(1)
 	}
 
-	slog.Info("Connected to MongoDB", "hosts", cs.Hosts, "database", cs.Database)
+	zlog.Info().
+		Interface("hosts", cs.Hosts).
+		Str("database", cs.Database).
+		Msg("Connected to MongoDB")
 	defer func() {
 		if err = client.Disconnect(ctx); err != nil {
-			slog.Error("Error disconnecting from MongoDB", "error", err)
+			zlog.Error().Err(err).Msg("Error disconnecting from MongoDB")
 		}
 	}()
 
 	if redisUrl == nil || *redisUrl == "" {
-		slog.Error("Redis URL is not set.")
+		zlog.Error().Msg("Redis URL is not set.")
 		os.Exit(1)
 	}
 
 	redisOptions, err := redis.ParseURL(*redisUrl)
 	if err != nil {
-		slog.Error("Failed to parse Redis URL", "error", err)
+		zlog.Error().Err(err).Msg("Failed to parse Redis URL")
 		os.Exit(1)
 	}
 	redisClient := redis.NewClient(redisOptions)
 
 	if redisClient == nil {
-		slog.Error("Failed to create Redis client")
+		zlog.Error().Msg("Failed to create Redis client")
 		os.Exit(1)
 	}
 
 	_, err = redisClient.Ping(ctx).Result()
 	if err != nil {
-		slog.Error("Failed to connect to Redis", "error", err)
+		zlog.Error().Err(err).Msg("Failed to connect to Redis")
 		os.Exit(1)
 	}
 
 	defer func() {
 		if err = redisClient.Close(); err != nil {
-			slog.Error("Error disconnecting from Redis", "error", err)
+			zlog.Error().Err(err).Msg("Error disconnecting from Redis")
 		}
 	}()
 
-	slog.Info("Connected to Redis", slog.String("url", *redisUrl))
+	zlog.Info().Str("url", *redisUrl).Msg("Connected to Redis")
 
 	processingList := fmt.Sprintf("processing_%d", *workerId)
 
-	slog.Info("Worker", "id", *workerId)
+	zlog.Info().Int("id", *workerId).Msg("Worker")
 
 	db.Init(client, cs.Database, redisClient)
 
 	err = processor.RegisterProcessor(&media.Processor{})
 	if err != nil {
-		slog.Error("failed to register media processor", "error", err)
+		zlog.Error().Err(err).Msg("failed to register media processor")
 		os.Exit(-1)
 	}
 	err = processor.RegisterProcessor(&albumcover.Processor{})
 	if err != nil {
-		slog.Error("failed to register album cover processor", "error", err)
+		zlog.Error().Err(err).Msg("failed to register album cover processor")
 		os.Exit(-1)
 	}
 	err = processor.RegisterProcessor(&collectioncover.Processor{})
 	if err != nil {
-		slog.Error("failed to register collection cover processor", "error", err)
+		zlog.Error().Err(err).Msg("failed to register collection cover processor")
 		os.Exit(-1)
 	}
 
 	err = processor.RegisterProcessor(&collectionsync.Processor{})
 	if err != nil {
-		slog.Error("failed to register collection sync processor", "error", err)
+		zlog.Error().Err(err).Msg("failed to register collection sync processor")
 		os.Exit(-1)
 	}
 	err = processor.RegisterProcessor(&embedding.Processor{})
 	if err != nil {
-		slog.Error("failed to register embedding processor", "error", err)
+		zlog.Error().Err(err).Msg("failed to register embedding processor")
 		os.Exit(-1)
 	}
 
 	util.Init(util.UtilOptions{
-		S3Bucket: *s3Bucket,
-
+		S3Bucket:      *s3Bucket,
 		MongoDatabase: cs.Database,
 	})
 
 	err = s3.Init(*awsEndpoint, *accessKeyId, *secret, *s3Bucket, *awsRegion)
 	if err != nil {
-		slog.Error("S3 client initialization fails", "error", err)
+		zlog.Error().Err(err).Msg("S3 client initialization fails")
 		return
 	}
 
-	slog.Info("Draing worker list")
+	zlog.Info().Msg("Draing worker list")
 	err = DrainExistings(ctx, redisClient, processingList)
 	if err != nil {
-		slog.Error("draining existing items fails", "error", err)
+		zlog.Error().Err(err).Msg("draining existing items fails")
 		return
 	}
 
-	slog.Info("Start taking new jobs")
+	zlog.Info().Msg("Start taking new jobs")
 
 	err = ProcessTasks(ctx, redisClient, processingList)
 	if err != nil {
-		slog.Error("processing taks fails", "error", err)
+		zlog.Error().Err(err).Msg("processing taks fails")
 	}
-	slog.Info("Process Loop terminated")
+	zlog.Info().Msg("Process Loop terminated")
 }
 
-func newLogHandler(out io.Writer, devMode bool, level slog.Level) slog.Handler {
+func newLogger(out io.Writer, devMode bool, level zerolog.Level) zerolog.Logger {
 	if devMode {
-		options := slogpretty.DefaultOptions()
-		options.Level = level
-		return slogpretty.New(out, options)
+		out = zerolog.ConsoleWriter{Out: out, TimeFormat: time.RFC3339}
 	}
 
-	return slog.NewJSONHandler(out, &slog.HandlerOptions{Level: level})
+	return zerolog.New(out).Level(level).With().Timestamp().Logger()
 }
 
 func ProcessTasks(ctx context.Context, redisClient *redis.Client, processingList string) error {
 	for {
 		select {
 		case <-ctx.Done():
-			slog.Info("Shutting down gracefully...")
+			zlog.Info().Msg("Shutting down gracefully...")
 			return nil
 
 		default:
@@ -231,7 +230,7 @@ func ProcessTasks(ctx context.Context, redisClient *redis.Client, processingList
 
 				err = Process(ctx, redisClient, processingList, str)
 				if err != nil {
-					slog.Error("Task process error", "error", err)
+					zlog.Error().Err(err).Msg("Task process error")
 					redisClient.LMove(ctx, processingList, "errors", "LEFT", "RIGHT")
 					continue
 				}
@@ -245,7 +244,7 @@ func DrainExistings(ctx context.Context, redisClient *redis.Client, processingLi
 	for {
 		select {
 		case <-ctx.Done():
-			slog.Info("Shutting down gracefully")
+			zlog.Info().Msg("Shutting down gracefully")
 			return ErrDrainingInterrupted
 		default:
 			{
@@ -260,7 +259,7 @@ func DrainExistings(ctx context.Context, redisClient *redis.Client, processingLi
 
 				err = Process(ctx, redisClient, processingList, str)
 				if err != nil {
-					slog.Error("Task process error", "error", err)
+					zlog.Error().Err(err).Msg("Task process error")
 					redisClient.LPush(ctx, "errors", str)
 					continue
 				}

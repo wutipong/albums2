@@ -4,13 +4,13 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"log/slog"
 	"net/url"
 	"strings"
 	"uuid"
 
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
+	zlog "github.com/rs/zerolog/log"
 )
 
 var (
@@ -19,17 +19,17 @@ var (
 )
 
 func Init(endpoint string, accessKeyId string, secret string, bucketName string, region string) error {
-	slog.Info("using S3 credential",
-		"endpoint", endpoint,
-		"accessKeyId", accessKeyId,
-		"secret", secret,
-		"bucketName", bucketName,
-		"region", region,
-	)
+	zlog.Info().
+		Str("endpoint", endpoint).
+		Str("accessKeyId", accessKeyId).
+		Str("secret", secret[:2]+strings.Repeat("*", len(secret)-2)).
+		Str("bucketName", bucketName).
+		Str("region", region).
+		Msg("using S3 credential")
 
 	endpoint, secure, err := GetMinioEndpoint(endpoint)
 	if err != nil {
-		slog.Error("unable to parse endpoint", "error", err)
+		zlog.Error().Err(err).Msg("unable to parse endpoint")
 		return fmt.Errorf("unable to parse endpoint")
 	}
 
@@ -49,7 +49,7 @@ func Init(endpoint string, accessKeyId string, secret string, bucketName string,
 	}
 
 	for _, b := range buckets {
-		slog.Debug("found bucket", "name", b.Name, "created", b.CreationDate)
+		zlog.Debug().Str("name", b.Name).Time("created", b.CreationDate).Msg("found bucket")
 	}
 
 	bucket = bucketName
@@ -95,7 +95,7 @@ func PutObject(
 	length int64,
 	options minio.PutObjectOptions,
 ) (info minio.UploadInfo, err error) {
-	slog.Info("put object to S3", "key", key)
+	zlog.Info().Str("key", key).Msg("put object to S3")
 	return client.PutObject(
 		ctx, bucket,
 		key,
@@ -109,7 +109,7 @@ func GetObject(ctx context.Context,
 	key string,
 	options minio.GetObjectOptions,
 ) (object *minio.Object, err error) {
-	slog.Info("get object from S3", "key", key)
+	zlog.Info().Str("key", key).Msg("get object from S3")
 
 	return client.GetObject(
 		ctx,
@@ -120,7 +120,7 @@ func GetObject(ctx context.Context,
 }
 
 func RemoveObject(ctx context.Context, key string, options minio.RemoveObjectOptions) error {
-	slog.Info("remove object from S3", "key", key)
+	zlog.Info().Str("key", key).Msg("remove object from S3")
 	return client.RemoveObject(ctx,
 		bucket,
 		key,

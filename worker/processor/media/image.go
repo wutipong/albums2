@@ -4,11 +4,11 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"log/slog"
 	"mime"
 	"path/filepath"
 
 	"github.com/minio/minio-go/v7"
+	zlog "github.com/rs/zerolog/log"
 	"github.com/wutipong/albums2/worker/filetypes"
 	"github.com/wutipong/albums2/worker/types"
 	"github.com/wutipong/albums2/worker/util/s3"
@@ -23,15 +23,15 @@ func calculateThumbnailSize(w, h int32) (width, height int32) {
 }
 
 func ProcessImageMedia(ctx context.Context, media *types.Media) error {
-	slog.Info("processing image media", slog.String("id", media.ID.String()))
+	zlog.Info().Str("id", media.ID.String()).Msg("processing image media")
 
 	err := ctx.Err()
 	if err != nil {
-		slog.Info("context.", slog.String("error", err.Error()))
+		zlog.Info().Str("error", err.Error()).Msg("context.")
 		return fmt.Errorf("context cancelled: %w", err)
 	}
 
-	slog.Info("getting object from S3.", slog.String("id", media.Original))
+	zlog.Info().Str("id", media.Original).Msg("getting object from S3.")
 	object, err := s3.GetObject(
 		ctx,
 		media.Original,
@@ -45,14 +45,14 @@ func ProcessImageMedia(ctx context.Context, media *types.Media) error {
 	defer func() {
 		err = object.Close()
 		if err != nil {
-			slog.Error("error closing S3 object", "error", err)
+			zlog.Error().Err(err).Msg("error closing S3 object")
 		}
 	}()
 
 	source := vips.NewSource(object)
 	defer source.Close()
 
-	slog.Info("read original image file.")
+	zlog.Info().Msg("read original image file.")
 
 	params := vips.DefaultLoadOptions()
 	if filetypes.HasAnimationExt(filepath.Ext(media.Name)) {
@@ -112,7 +112,7 @@ func populateView(
 	media *types.Media,
 	original *vips.Image,
 ) (view *vips.Image, err error) {
-	slog.Info("populating view media for media", slog.String("id", media.ID.String()))
+	zlog.Info().Str("id", media.ID.String()).Msg("populating view media for media")
 
 	err = ctx.Err()
 	if err != nil {
@@ -176,10 +176,7 @@ func populatePreview(
 	media *types.Media,
 	view *vips.Image,
 ) error {
-	slog.Info(
-		"populating preview media for media",
-		slog.String("id", media.ID.String()),
-	)
+	zlog.Info().Str("id", media.ID.String()).Msg("populating preview media for media")
 
 	err := ctx.Err()
 	if err != nil {
@@ -238,7 +235,7 @@ func populateThumbnail(
 	media *types.Media,
 	source *vips.Source,
 ) error {
-	slog.Info("populating thumbnail media for media", slog.String("id", media.ID.String()))
+	zlog.Info().Str("id", media.ID.String()).Msg("populating thumbnail media for media")
 
 	err := ctx.Err()
 	if err != nil {

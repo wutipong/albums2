@@ -4,9 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log/slog"
 
 	"github.com/minio/minio-go/v7"
+	zlog "github.com/rs/zerolog/log"
 	"github.com/wutipong/albums2/worker/processor"
 	"github.com/wutipong/albums2/worker/service"
 	"github.com/wutipong/albums2/worker/types"
@@ -40,7 +40,7 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 		return fmt.Errorf("invalid media id: %w", err)
 	}
 
-	slog.Info("populating embedding", "id", objID.String())
+	zlog.Info().Str("id", objID.String()).Msg("populating embedding")
 
 	result := db.MongoDB().
 		Collection("media").
@@ -57,12 +57,7 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 		return fmt.Errorf("unable to decode media information: %w", err)
 	}
 
-	slog.Info("Media information",
-		"id", media.ID,
-		"name", media.Name,
-		"type", media.Type,
-		"original", media.Original,
-	)
+	zlog.Info().Str("id", media.ID.Hex()).Str("name", media.Name).Str("type", media.Type).Str("original", media.Original).Msg("Media information")
 
 	if media.ProcessStatus != "processed" {
 		return fmt.Errorf("unable to populate embedding for unprocessed media")
@@ -80,7 +75,7 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 	defer func() {
 		err = object.Close()
 		if err != nil {
-			slog.Error("error closing S3 object", "error", err)
+			zlog.Error().Err(err).Msg("error closing S3 object")
 		}
 	}()
 
@@ -136,7 +131,7 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 		}
 	*/
 
-	slog.Info("process media embedding complete", "id", objID.String())
+	zlog.Info().Str("id", objID.String()).Msg("process media embedding complete")
 
 	return nil
 }

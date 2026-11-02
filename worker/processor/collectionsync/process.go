@@ -88,10 +88,10 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 		return fmt.Errorf("unable to populate albums media: %w", err)
 	}
 
-	/*err = processMedia(ctx, collection)
+	err = processMedia(ctx, collection)
 	if err != nil {
 		return fmt.Errorf("unable to process media: %w", err)
-	}*/
+	}
 
 	slog.Info("collection sync completed", "collection", payload.ID)
 
@@ -257,7 +257,7 @@ func processDirectoryAlbum(ctx context.Context, collection types.Collection, alb
 		slog.Info("found object in S3", "key", obj.Key)
 		if _, _, err := archives.Identify(ctx, obj.Key, nil); err == nil {
 			slog.Debug("skipping archive file", "key", obj.Key)
-			if err := processDirectoryAlbumArchiveObj(ctx, obj, collection, album); err != nil {
+			if err := processArchiveInDirectory(ctx, obj, collection, album); err != nil {
 				slog.Error("unable to process archive object", "key", obj.Key, "error", err)
 			}
 			continue
@@ -283,9 +283,13 @@ func processDirectoryAlbum(ctx context.Context, collection types.Collection, alb
 		}
 
 		mt := mime.TypeByExtension(filepath.Ext(obj.Key))
+		name := obj.Key[len(album.ObjectKey):] // remove album prefix
+		if name[0] == ':' {
+			name = name[1:] // remove leading colon
+		}
 
 		media := types.Media{
-			Name:          obj.Key[len(album.ObjectKey):], // remove album prefix
+			Name:          name,
 			CollectionID:  collection.ID,
 			AlbumID:       album.ID,
 			Original:      obj.Key,
@@ -305,7 +309,12 @@ func processDirectoryAlbum(ctx context.Context, collection types.Collection, alb
 	return nil
 }
 
-func processDirectoryAlbumArchiveObj(ctx context.Context, obj minio.ObjectInfo, collection types.Collection, album types.Album) error {
+func processArchiveInDirectory(
+	ctx context.Context,
+	obj minio.ObjectInfo,
+	collection types.Collection,
+	album types.Album,
+) error {
 	o, err := s3.GetObject(ctx, obj.Key, minio.GetObjectOptions{})
 	if err != nil {
 		return fmt.Errorf("unable to get object from S3: %w", err)
@@ -370,8 +379,13 @@ func processDirectoryAlbumArchiveObj(ctx context.Context, obj minio.ObjectInfo, 
 			ContentType: mt,
 		})
 
+		name := path[len(album.ObjectKey):] // remove album prefix
+		if name[0] == ':' {
+			name = name[1:] // remove leading colon
+		}
+
 		media := types.Media{
-			Name:          path[len(album.ObjectKey):],
+			Name:          name,
 			CollectionID:  collection.ID,
 			AlbumID:       album.ID,
 			Original:      assetKey,
@@ -486,8 +500,13 @@ func processArchiveInArchive(ctx context.Context, path string, f archives.FileIn
 			ContentType: mt,
 		})
 
+		name := objPath[len(album.ObjectKey):] // remove album prefix
+		if name[0] == ':' {
+			name = name[1:] // remove leading colon
+		}
+
 		media := types.Media{
-			Name:          objPath[len(album.ObjectKey):],
+			Name:          name,
 			CollectionID:  collection.ID,
 			AlbumID:       album.ID,
 			Original:      assetKey,
@@ -584,8 +603,13 @@ func processArchiveAlbum(ctx context.Context, collection types.Collection, album
 			ContentType: mt,
 		})
 
+		name := path[len(album.ObjectKey):] // remove album prefix
+		if name[0] == ':' {
+			name = name[1:] // remove leading colon
+		}
+
 		media := types.Media{
-			Name:          path[len(album.ObjectKey):], // remove album prefix
+			Name:          name,
 			CollectionID:  collection.ID,
 			AlbumID:       album.ID,
 			Original:      assetKey,

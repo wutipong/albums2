@@ -20,6 +20,7 @@ type Album struct {
 	Name         string        `json:"name" bson:"name"`
 	Cover        string        `json:"cover" bson:"cover"`
 	ObjectKey    string        `json:"objectKey" bson:"objectKey"`
+	Existed      bool          `json:"string" bson:"string"`
 }
 
 type Media struct {

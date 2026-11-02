@@ -149,7 +149,19 @@ func populateAlbums(
 	bucket string,
 	collection types.Collection,
 ) error {
-	albumsCollection := db.MongoDB().Collection("albums")
+	albumsCol := db.MongoDB().Collection("albums")
+
+	_, err := albumsCol.UpdateMany(ctx,
+		bson.M{"collectionId": collection.ID},
+		bson.M{
+			"$set": bson.M{
+				"existed": false,
+			},
+		})
+
+	if err != nil {
+		return fmt.Errorf("unable to reset existed flags: %w", err)
+	}
 
 	for obj := range s3Client.ListObjects(ctx, bucket, minio.ListObjectsOptions{
 		Prefix: collection.Prefix,
@@ -174,18 +186,21 @@ func populateAlbums(
 		filter := bson.M{"name": name, "collectionId": collection.ID}
 
 		update := bson.M{
-			"$set": bson.M{
+			"$setOnInsert": bson.M{
 				"name":         name,
 				"collectionId": collection.ID,
 				"objectKey":    objectKey,
 				"createdAt":    time.Now(),
-				"updatedAt":    time.Now(),
+			},
+			"$set": bson.M{
+				"existed":   true,
+				"updatedAt": time.Now(),
 			},
 		}
 
 		opts := options.UpdateOne().SetUpsert(true)
 
-		results, err := albumsCollection.UpdateOne(ctx, filter, update, opts)
+		results, err := albumsCol.UpdateOne(ctx, filter, update, opts)
 		if err != nil {
 			slog.Error("upsert album",
 				"name", name,
@@ -202,6 +217,9 @@ func populateAlbums(
 			)
 		}
 	}
+
+	//TODO: Create tasks for removing non-existance albums.
+
 	return nil
 }
 
@@ -428,6 +446,8 @@ func processArchiveInArchive(ctx context.Context, path string, f archives.FileIn
 		return fmt.Errorf("unable to create temporary file: %w", err)
 	}
 	defer file.Close()
+
+	slog.Info("Creating a temp file", "name", file.Name(), "source", f.NameInArchive)
 
 	_, err = io.Copy(file, reader)
 	if err != nil {

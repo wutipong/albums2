@@ -34,8 +34,8 @@ import (
 //go:generate vipsgen -out ./vips
 
 var (
+	appEnv      = flag.String("app-env", "production", "application environment (production, develpment)")
 	logLevel    = flag.String("log-level", "info", "Set log level (debug, info, warn, error)")
-	dev         = flag.Bool("dev", false, "Enable development mode")
 	dbUri       = flag.String("db-connection", "mongodb://localhost:27017", "MongoDB connection URI")
 	redisUrl    = flag.String("redis-url", "redis://localhost:6379", "Redis server URL")
 	workerId    = flag.Int("worker-id", 0, "Worker ID, this must be unique if there are multiple workers")
@@ -74,11 +74,13 @@ func main() {
 		level = zerolog.InfoLevel
 	}
 
-	zlog.Logger = newLogger(os.Stdout, dev != nil && *dev, level)
+	dev := *appEnv == "development"
+
+	zlog.Logger = newLogger(os.Stdout, dev, level)
 	if invalidLogLevel {
 		zlog.Error().Msg("Invalid log level. Using 'info' as default.")
 	}
-	if dev != nil && *dev {
+	if dev {
 		zlog.Debug().Msg("Development mode enabled")
 	}
 

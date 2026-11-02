@@ -34,11 +34,15 @@ import (
 //go:generate vipsgen -out ./vips
 
 var (
-	appEnv      = flag.String("app-env", "production", "application environment (production, develpment)")
-	logLevel    = flag.String("log-level", "info", "Set log level (debug, info, warn, error)")
-	dbUri       = flag.String("db-connection", "mongodb://localhost:27017", "MongoDB connection URI")
-	redisUrl    = flag.String("redis-url", "redis://localhost:6379", "Redis server URL")
-	workerId    = flag.Int("worker-id", 0, "Worker ID, this must be unique if there are multiple workers")
+	appEnv = flag.String(
+		"app-env", "production", "application environment (production, develpment)",
+	)
+	logLevel = flag.String("log-level", "info", "Set log level (debug, info, warn, error)")
+	dbUri    = flag.String("db-connection", "mongodb://localhost:27017", "MongoDB connection URI")
+	redisUrl = flag.String("redis-url", "redis://localhost:6379", "Redis server URL")
+	workerId = flag.Int(
+		"worker-id", 0, "Worker ID, this must be unique if there are multiple workers",
+	)
 	accessKeyId = flag.String("aws-access-key-id", "", "AWS/S3 Access Key ID")
 	secret      = flag.String("aws-secret-access-key", "", "AWS/S3 Secret Key")
 	awsEndpoint = flag.String("aws-endpoint-url", "", "AWS/S3 Endpoint URL")
@@ -271,7 +275,12 @@ func DrainExistings(ctx context.Context, redisClient *redis.Client, processingLi
 	}
 }
 
-func Process(ctx context.Context, redisClient *redis.Client, processingList string, str string) (err error) {
+func Process(
+	ctx context.Context,
+	redisClient *redis.Client,
+	processingList string,
+	str string,
+) (err error) {
 	req := processor.TaskRequest{}
 	err = json.Unmarshal([]byte(str), &req)
 	if err != nil {

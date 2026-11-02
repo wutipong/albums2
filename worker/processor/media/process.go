@@ -59,7 +59,12 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 		return fmt.Errorf("unable to decode media information: %w", err)
 	}
 
-	zlog.Info().Str("id", media.ID.Hex()).Str("name", media.Name).Str("type", media.Type).Str("original", media.Original).Msg("Media information")
+	zlog.Info().
+		Str("id", media.ID.Hex()).
+		Str("name", media.Name).
+		Str("type", media.Type).
+		Str("original", media.Original).
+		Msg("Media information")
 
 	var processErr error
 	switch media.Type {

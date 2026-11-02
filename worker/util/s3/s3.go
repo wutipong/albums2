@@ -18,7 +18,13 @@ var (
 	client *minio.Client = nil
 )
 
-func Init(endpoint string, accessKeyId string, secret string, bucketName string, region string) error {
+func Init(
+	endpoint string,
+	accessKeyId string,
+	secret string,
+	bucketName string,
+	region string,
+) error {
 	zlog.Info().
 		Str("endpoint", endpoint).
 		Str("accessKeyId", accessKeyId).

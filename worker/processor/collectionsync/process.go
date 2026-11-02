@@ -207,9 +207,19 @@ func populateAlbums(
 
 		results, err := albumsCol.UpdateOne(ctx, filter, update, opts)
 		if err != nil {
-			zlog.Error().Str("name", name).Str("collectionId", collection.ID.Hex()).Err(err).Msg("upsert album")
+			zlog.Error().
+				Str("name", name).
+				Str("collectionId", collection.ID.Hex()).
+				Err(err).
+				Msg("upsert album")
 		} else {
-			zlog.Debug().Interface("acknowledged", results.Acknowledged).Interface("matchedCount", results.MatchedCount).Interface("modifiedCount", results.ModifiedCount).Any("upsertedCount", results.UpsertedCount).Any("upsertedID", results.UpsertedID).Msg("upsert result")
+			zlog.Debug().
+				Interface("acknowledged", results.Acknowledged).
+				Interface("matchedCount", results.MatchedCount).
+				Interface("modifiedCount", results.ModifiedCount).
+				Interface("upsertedCount", results.UpsertedCount).
+				Interface("upsertedID", results.UpsertedID).
+				Msg("upsert result")
 		}
 	}
 
@@ -238,7 +248,11 @@ func populateAlbumsMedia(ctx context.Context, collection types.Collection) error
 
 		err = processAlbumMedia(ctx, collection, album)
 		if err != nil {
-			zlog.Error().Str("name", album.Name).Str("collectionId", collection.ID.Hex()).Err(err).Msg("unable to process album media")
+			zlog.Error().
+				Str("name", album.Name).
+				Str("collectionId", collection.ID.Hex()).
+				Err(err).
+				Msg("unable to process album media")
 			continue
 		}
 	}
@@ -246,7 +260,10 @@ func populateAlbumsMedia(ctx context.Context, collection types.Collection) error
 }
 
 func processAlbumMedia(ctx context.Context, collection types.Collection, album types.Album) error {
-	zlog.Info().Str("name", album.Name).Str("collectionId", collection.ID.Hex()).Msg("processing album media")
+	zlog.Info().
+		Str("name", album.Name).
+		Str("collectionId", collection.ID.Hex()).
+		Msg("processing album media")
 
 	if strings.HasSuffix(album.ObjectKey, "/") {
 		processDirectoryAlbum(ctx, collection, album)
@@ -257,8 +274,15 @@ func processAlbumMedia(ctx context.Context, collection types.Collection, album t
 	return nil
 }
 
-func processDirectoryAlbum(ctx context.Context, collection types.Collection, album types.Album) error {
-	zlog.Info().Str("name", album.Name).Str("collectionId", collection.ID.Hex()).Msg("processing directory album")
+func processDirectoryAlbum(
+	ctx context.Context,
+	collection types.Collection,
+	album types.Album,
+) error {
+	zlog.Info().
+		Str("name", album.Name).
+		Str("collectionId", collection.ID.Hex()).
+		Msg("processing directory album")
 
 	for obj := range s3.Client().ListObjects(ctx, s3.Bucket(), minio.ListObjectsOptions{
 		Prefix:    album.ObjectKey,
@@ -417,8 +441,17 @@ func processArchiveInDirectory(
 
 }
 
-func processArchiveInArchive(ctx context.Context, path string, f archives.FileInfo, collection types.Collection, album types.Album) error {
-	zlog.Info().Str("name", charset.Decode(f.NameInArchive)).Str("collectionId", collection.ID.Hex()).Msg("processing directory album archive")
+func processArchiveInArchive(
+	ctx context.Context,
+	path string,
+	f archives.FileInfo,
+	collection types.Collection,
+	album types.Album,
+) error {
+	zlog.Info().
+		Str("name", charset.Decode(f.NameInArchive)).
+		Str("collectionId", collection.ID.Hex()).
+		Msg("processing directory album archive")
 
 	path = strings.Join([]string{path, charset.Decode(f.NameInArchive)}, ":")
 
@@ -541,8 +574,15 @@ func processArchiveInArchive(ctx context.Context, path string, f archives.FileIn
 	return nil
 }
 
-func processArchiveAlbum(ctx context.Context, collection types.Collection, album types.Album) error {
-	zlog.Info().Str("name", album.Name).Str("collectionId", collection.ID.Hex()).Msg("processing archive album")
+func processArchiveAlbum(
+	ctx context.Context,
+	collection types.Collection,
+	album types.Album,
+) error {
+	zlog.Info().
+		Str("name", album.Name).
+		Str("collectionId", collection.ID.Hex()).
+		Msg("processing archive album")
 
 	obj, err := s3.Client().GetObject(ctx, s3.Bucket(), album.ObjectKey, minio.GetObjectOptions{})
 	if err != nil {

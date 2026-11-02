@@ -59,10 +59,8 @@
 					name="name"
 					placeholder="collection name"
 				/>
-				<textarea
-					class="textarea h-24 w-full"
-					name="description"
-					placeholder="description"></textarea>
+				<textarea class="textarea h-24 w-full" name="description" placeholder="description"
+				></textarea>
 
 				<input
 					type="text"

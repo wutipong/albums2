@@ -13,9 +13,7 @@
 		mdiLibraryShelves,
 		mdiBookshelf,
 		mdiSquareOff,
-
 		mdiSync
-
 	} from '@mdi/js';
 
 	const { data } = $props();

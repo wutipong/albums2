@@ -136,7 +136,6 @@ MediaSchema.searchIndex({
 	}
 });
 
-
 if (import.meta.hot) {
 	import.meta.hot.accept((newModule) => {
 		// Delete the model from mongoose so the next execution compiles it fresh
@@ -157,7 +156,7 @@ export const Collection =
 export const Album =
 	(mongoose.models.Album as mongoose.AggregatePaginateModel<any> | undefined) ??
 	mongoose.model<any, mongoose.AggregatePaginateModel<any>>('Album', AlbumSchema);
-	
+
 export const Media =
 	(mongoose.models.Media as mongoose.AggregatePaginateModel<any> | undefined) ??
 	mongoose.model<any, mongoose.AggregatePaginateModel<any>>('Media', MediaSchema);

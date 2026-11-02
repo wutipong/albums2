@@ -4,8 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log/slog"
 	"mime"
+	"os"
 	"path/filepath"
 	"slices"
 	"strings"
@@ -327,9 +329,9 @@ func processDirectoryAlbumArchiveObj(ctx context.Context, obj minio.ObjectInfo, 
 
 		path := obj.Key + ":" + charset.Decode(f.NameInArchive)
 
-		if archives.PathIsArchive(f.Name()) {
+		if _, _, err := archives.Identify(ctx, f.Name(), nil); err == nil {
 			slog.Debug("found archive file in archive", "name", f.Name())
-			return processDirectoryAlbumArchive(ctx, path, f, collection, album)
+			return processArchiveInArchive(ctx, path, f, collection, album)
 		}
 
 		if !IsMediaFile(f.Name()) {
@@ -392,8 +394,10 @@ func processDirectoryAlbumArchiveObj(ctx context.Context, obj minio.ObjectInfo, 
 
 }
 
-func processDirectoryAlbumArchive(ctx context.Context, path string, f archives.FileInfo, collection types.Collection, album types.Album) error {
-	slog.Info("processing directory album archive", "name", album.Name, "collectionId", collection.ID.Hex())
+func processArchiveInArchive(ctx context.Context, path string, f archives.FileInfo, collection types.Collection, album types.Album) error {
+	slog.Info("processing directory album archive",
+		"name", charset.Decode(f.NameInArchive),
+		"collectionId", collection.ID.Hex())
 
 	path = strings.Join([]string{path, charset.Decode(f.NameInArchive)}, ":")
 
@@ -404,7 +408,26 @@ func processDirectoryAlbumArchive(ctx context.Context, path string, f archives.F
 	}
 	defer reader.Close()
 
-	format, _, err := archives.Identify(ctx, f.Name(), reader)
+	file, err := os.CreateTemp("", fmt.Sprintf("album_archive_*%s", filepath.Ext(f.NameInArchive)))
+	if err != nil {
+		slog.Error("unable to create temporary file", "error", err)
+		return fmt.Errorf("unable to create temporary file: %w", err)
+	}
+	defer file.Close()
+
+	_, err = io.Copy(file, reader)
+	if err != nil {
+		slog.Error("unable to copy file to temporary file", "error", err)
+		return fmt.Errorf("unable to copy file to temporary file: %w", err)
+	}
+
+	_, err = file.Seek(0, io.SeekStart)
+	if err != nil {
+		slog.Error("unable to seek temporary file", "error", err)
+		return fmt.Errorf("unable to seek temporary file: %w", err)
+	}
+
+	format, _, err := archives.Identify(ctx, f.Name(), file)
 	if err != nil {
 		slog.Error("unable to identify archive", "error", err)
 		return fmt.Errorf("unable to identify archive: %w", err)
@@ -418,12 +441,12 @@ func processDirectoryAlbumArchive(ctx context.Context, path string, f archives.F
 
 	slog.Info("found archive", "format", format.MediaType())
 
-	ex.Extract(ctx, reader, func(ctx context.Context, f archives.FileInfo) error {
+	err = ex.Extract(ctx, file, func(ctx context.Context, f archives.FileInfo) error {
 		slog.Info("found file in archive", "name", f.Name(), "size", f.Size())
 
-		if archives.PathIsArchive(f.Name()) {
+		if _, _, err := archives.Identify(ctx, f.Name(), nil); err == nil {
 			slog.Debug("found archive file in archive", "name", f.Name())
-			return processDirectoryAlbumArchive(ctx, path, f, collection, album)
+			return processArchiveInArchive(ctx, path, f, collection, album)
 		}
 
 		if !IsMediaFile(f.Name()) {
@@ -483,6 +506,11 @@ func processDirectoryAlbumArchive(ctx context.Context, path string, f archives.F
 		return nil
 	})
 
+	if err != nil {
+		slog.Error("unable to extract archive", "error", err)
+		return fmt.Errorf("unable to extract archive: %w", err)
+	}
+
 	return nil
 }
 
@@ -513,9 +541,9 @@ func processArchiveAlbum(ctx context.Context, collection types.Collection, album
 	ex.Extract(ctx, obj, func(ctx context.Context, f archives.FileInfo) error {
 		slog.Info("found file in archive", "name", f.Name(), "size", f.Size())
 
-		if archives.PathIsArchive(f.Name()) {
+		if _, _, err := archives.Identify(ctx, f.Name(), nil); err == nil {
 			slog.Debug("found archive file in archive", "name", f.Name())
-			return processDirectoryAlbumArchive(ctx, album.ObjectKey, f, collection, album)
+			return processArchiveInArchive(ctx, album.ObjectKey, f, collection, album)
 		}
 
 		if !IsMediaFile(f.Name()) {

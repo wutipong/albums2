@@ -119,19 +119,6 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 		return fmt.Errorf("unable to queue embedding task: %w", err)
 	}
 
-	/// TODO: remove object after processed.
-	/*
-		if media.Original != media.View &&
-			media.Original != media.Preview &&
-			media.Original != media.Thumbnail {
-
-			err = s3.RemoveObject(ctx,
-				media.Original,
-				minio.RemoveObjectOptions{},
-			)
-		}
-	*/
-
 	slog.Info("process asset complete", "id", objID.String())
 
 	return nil

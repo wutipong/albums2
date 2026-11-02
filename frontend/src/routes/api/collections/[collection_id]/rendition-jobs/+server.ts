@@ -11,7 +11,7 @@ export const POST: RequestHandler = async ({ request, params }) => {
 	for (const m of media) {
 		tasks.push(
 			JSON.stringify({
-				type: 'media',
+				type: 'media.process',
 				payload: {
 					id: m._id
 				}

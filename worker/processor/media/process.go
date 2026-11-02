@@ -7,8 +7,8 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/wutipong/albums2/gopkg/types"
 	"github.com/wutipong/albums2/worker/processor"
+	"github.com/wutipong/albums2/worker/types"
 	"github.com/wutipong/albums2/worker/util/db"
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
@@ -26,7 +26,7 @@ type Processor struct {
 }
 
 func (p *Processor) GetType() string {
-	return "media"
+	return "media.process"
 }
 
 func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) error {
@@ -118,19 +118,6 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 	if err = db.Redis().LPush(ctx, "tasks", string(embeddingTask)).Err(); err != nil {
 		return fmt.Errorf("unable to queue embedding task: %w", err)
 	}
-
-	/// TODO: remove object after processed.
-	/*
-		if media.Original != media.View &&
-			media.Original != media.Preview &&
-			media.Original != media.Thumbnail {
-
-			err = s3.RemoveObject(ctx,
-				media.Original,
-				minio.RemoveObjectOptions{},
-			)
-		}
-	*/
 
 	slog.Info("process asset complete", "id", objID.String())
 

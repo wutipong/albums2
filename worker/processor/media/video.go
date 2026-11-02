@@ -12,10 +12,10 @@ import (
 
 	"github.com/minio/minio-go/v7"
 	ffmpeg "github.com/u2takey/ffmpeg-go"
-	"github.com/wutipong/albums2/gopkg/types"
-	"github.com/wutipong/albums2/gopkg/vips"
+	"github.com/wutipong/albums2/worker/types"
 	"github.com/wutipong/albums2/worker/util/s3"
 	"github.com/wutipong/albums2/worker/util/video"
+	"github.com/wutipong/albums2/worker/vips"
 )
 
 const VIDEO_WIDTH = 1280
@@ -100,7 +100,7 @@ func processVideoView(
 	}
 
 	if media.View == "" || media.View == media.Original {
-		media.View = s3.CreateAssetKey("mp4")
+		media.View = s3.CreateAssetKey(".mp4")
 	}
 	outputFile, err := os.CreateTemp("", "*view.mp4")
 	if err != nil {
@@ -221,7 +221,7 @@ func processVideoThumbnail(
 	media.ThumbnailWidth = int32((THUMBNAIL_HEIGHT * image.Width()) / image.Height())
 
 	if media.Thumbnail == "" || media.Thumbnail == media.Original {
-		media.Thumbnail = s3.CreateAssetKey("webp")
+		media.Thumbnail = s3.CreateAssetKey(".webp")
 	}
 
 	_, err = s3.PutObject(
@@ -281,7 +281,7 @@ func processVideoPreview(
 	}
 
 	if media.Preview == "" || media.Preview == media.Original {
-		media.Preview = s3.CreateAssetKey("webp")
+		media.Preview = s3.CreateAssetKey(".webp")
 	}
 	_, err = s3.PutObject(
 		ctx,

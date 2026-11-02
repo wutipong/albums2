@@ -5,7 +5,7 @@ export async function notifyProcessMedia(id: string) {
 	log.debug(redis, 'redis');
 	try {
 		const taskRequest = {
-			type: 'media',
+			type: 'media.process',
 			payload: {
 				id: id
 			}

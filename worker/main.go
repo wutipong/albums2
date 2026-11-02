@@ -6,6 +6,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -18,6 +19,7 @@ import (
 	"github.com/wutipong/albums2/worker/processor"
 	"github.com/wutipong/albums2/worker/processor/albumcover"
 	"github.com/wutipong/albums2/worker/processor/collectioncover"
+	"github.com/wutipong/albums2/worker/processor/collectionsync"
 	"github.com/wutipong/albums2/worker/processor/embedding"
 	"github.com/wutipong/albums2/worker/processor/media"
 	"github.com/wutipong/albums2/worker/util"
@@ -29,6 +31,7 @@ import (
 )
 
 //go:generate protoc --go_out=. --go-grpc_out=. -I/workspaces/grpc mlservice.proto
+//go:generate vipsgen -out ./vips
 
 var (
 	logLevel    = flag.String("log-level", "info", "Set log level (debug, info, warn, error)")
@@ -55,16 +58,8 @@ func main() {
 		os.Exit(-1)
 	}
 
-	if dev != nil && *dev {
-		handler := slogpretty.New(os.Stdout, nil)
-		slog.SetDefault(slog.New(handler))
-		slog.Debug("Development mode enabled")
-	} else {
-		handler := slog.NewJSONHandler(os.Stdout, nil)
-		slog.SetDefault(slog.New(handler))
-	}
-
 	var level slog.Level
+	invalidLogLevel := false
 	switch *logLevel {
 	case "debug":
 		level = slog.LevelDebug
@@ -75,11 +70,18 @@ func main() {
 	case "error":
 		level = slog.LevelError
 	default:
-		slog.Error("Invalid log level. Using 'info' as default.")
+		invalidLogLevel = true
 		level = slog.LevelInfo
 	}
 
+	slog.SetDefault(slog.New(newLogHandler(os.Stdout, dev != nil && *dev, level)))
 	slog.SetLogLoggerLevel(level)
+	if invalidLogLevel {
+		slog.Error("Invalid log level. Using 'info' as default.")
+	}
+	if dev != nil && *dev {
+		slog.Debug("Development mode enabled")
+	}
 
 	if dbUri == nil {
 		slog.Error("database connection string is not set.")
@@ -158,6 +160,12 @@ func main() {
 		slog.Error("failed to register collection cover processor", "error", err)
 		os.Exit(-1)
 	}
+
+	err = processor.RegisterProcessor(&collectionsync.Processor{})
+	if err != nil {
+		slog.Error("failed to register collection sync processor", "error", err)
+		os.Exit(-1)
+	}
 	err = processor.RegisterProcessor(&embedding.Processor{})
 	if err != nil {
 		slog.Error("failed to register embedding processor", "error", err)
@@ -190,6 +198,16 @@ func main() {
 		slog.Error("processing taks fails", "error", err)
 	}
 	slog.Info("Process Loop terminated")
+}
+
+func newLogHandler(out io.Writer, devMode bool, level slog.Level) slog.Handler {
+	if devMode {
+		options := slogpretty.DefaultOptions()
+		options.Level = level
+		return slogpretty.New(out, options)
+	}
+
+	return slog.NewJSONHandler(out, &slog.HandlerOptions{Level: level})
 }
 
 func ProcessTasks(ctx context.Context, redisClient *redis.Client, processingList string) error {

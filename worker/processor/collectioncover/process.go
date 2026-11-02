@@ -14,12 +14,12 @@ import (
 
 	"github.com/minio/minio-go/v7"
 	ffmpeg "github.com/u2takey/ffmpeg-go"
-	"github.com/wutipong/albums2/gopkg/types"
-	"github.com/wutipong/albums2/gopkg/vips"
 	"github.com/wutipong/albums2/worker/processor"
+	"github.com/wutipong/albums2/worker/types"
 	"github.com/wutipong/albums2/worker/util/db"
 	"github.com/wutipong/albums2/worker/util/s3"
 	"github.com/wutipong/albums2/worker/util/video"
+	"github.com/wutipong/albums2/worker/vips"
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
@@ -177,7 +177,7 @@ func (p *Processor) ProcessImage(
 	}
 
 	if c.Cover == "" {
-		c.Cover = s3.CreateAssetKey("webp")
+		c.Cover = s3.CreateAssetKey(".webp")
 	}
 
 	_, err = s3.PutObject(
@@ -303,7 +303,7 @@ func (p *Processor) ProcessVideo(
 	}
 
 	if c.Cover != "" {
-		c.Cover = s3.CreateAssetKey("webp")
+		c.Cover = s3.CreateAssetKey(".webp")
 	}
 	_, err = s3.PutObject(
 		ctx,

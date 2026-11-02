@@ -43,6 +43,15 @@ func Init(endpoint string, accessKeyId string, secret string, bucketName string,
 		return fmt.Errorf("unable to create minio client: %w", err)
 	}
 
+	buckets, err := client.ListBuckets(context.Background())
+	if err != nil {
+		return fmt.Errorf("unable to list buckets: %w", err)
+	}
+
+	for _, b := range buckets {
+		slog.Debug("found bucket", "name", b.Name, "created", b.CreationDate)
+	}
+
 	bucket = bucketName
 
 	return nil
@@ -76,7 +85,7 @@ func CreateAssetKey(extension string) string {
 	tier1 := keyStr[0:2]
 	tier2 := keyStr[2:4]
 
-	return fmt.Sprintf("%s/%s/%s.%s", tier1, tier2, keyStr, extension)
+	return fmt.Sprintf("_cache/%s/%s/%s%s", tier1, tier2, keyStr, extension)
 }
 
 func PutObject(
@@ -117,4 +126,12 @@ func RemoveObject(ctx context.Context, key string, options minio.RemoveObjectOpt
 		key,
 		options,
 	)
+}
+
+func Client() *minio.Client {
+	return client
+}
+
+func Bucket() string {
+	return bucket
 }

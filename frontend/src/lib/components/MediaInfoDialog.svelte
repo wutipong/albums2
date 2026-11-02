@@ -78,7 +78,7 @@
 					<tr>
 						<th>Collection</th>
 						<td
-							><a class="flex link gap-1" href="/collections/{media.collectionId.toHexString()}">
+							><a class="flex link gap-1" href="/{media.collectionId.toHexString()}">
 								{media.collectionName}
 								<Icon path={mdiLink} />
 							</a></td

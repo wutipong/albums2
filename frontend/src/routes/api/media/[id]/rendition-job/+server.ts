@@ -8,7 +8,7 @@ export const POST: RequestHandler = async ({ request, params }) => {
 	const count = await redis.LPUSH(
 		'tasks',
 		JSON.stringify({
-			type: 'media',
+			type: 'media.process',
 			payload: {
 				id: params.id
 			}

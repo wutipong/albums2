@@ -9,10 +9,10 @@ import (
 	"path/filepath"
 
 	"github.com/minio/minio-go/v7"
-	"github.com/wutipong/albums2/gopkg/filetypes"
-	"github.com/wutipong/albums2/gopkg/types"
-	"github.com/wutipong/albums2/gopkg/vips"
+	"github.com/wutipong/albums2/worker/filetypes"
+	"github.com/wutipong/albums2/worker/types"
 	"github.com/wutipong/albums2/worker/util/s3"
+	"github.com/wutipong/albums2/worker/vips"
 )
 
 func calculateThumbnailSize(w, h int32) (width, height int32) {
@@ -150,7 +150,7 @@ func populateView(
 	}
 
 	if media.View == "" || media.View == media.Original {
-		media.View = s3.CreateAssetKey("webp")
+		media.View = s3.CreateAssetKey(".webp")
 	}
 
 	_, err = s3.PutObject(
@@ -213,7 +213,7 @@ func populatePreview(
 	}
 
 	if media.Preview == "" || media.Preview == media.View {
-		media.Preview = s3.CreateAssetKey("webp")
+		media.Preview = s3.CreateAssetKey(".webp")
 	}
 
 	_, err = s3.PutObject(
@@ -273,7 +273,7 @@ func populateThumbnail(
 	}
 
 	if media.Thumbnail == "" || media.Thumbnail == media.Original {
-		media.Thumbnail = s3.CreateAssetKey("webp")
+		media.Thumbnail = s3.CreateAssetKey(".webp")
 	}
 
 	_, err = s3.PutObject(

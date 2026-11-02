@@ -8,7 +8,7 @@
 		_id: ObjectId;
 		name: string;
 		createdAt: Date;
-		modifiedAt: Date;
+		updatedAt: Date;
 	}
 
 	interface Collection {
@@ -48,7 +48,7 @@
 					<tr>
 						<th>Collection</th>
 						<td
-							><a class="flex link gap-1" href="/collections/{collection._id.toHexString()}">
+							><a class="flex link gap-1" href="/{collection._id.toHexString()}">
 								{collection.name}
 								<Icon path={mdiLink} />
 							</a></td
@@ -60,7 +60,7 @@
 					</tr>
 					<tr>
 						<th>Modified At</th>
-						<td>{album.modifiedAt.toLocaleString()}</td>
+						<td>{album.updatedAt.toLocaleString()}</td>
 					</tr>
 				</tbody>
 			</table>

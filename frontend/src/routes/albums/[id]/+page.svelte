@@ -56,7 +56,7 @@
 		}
 
 		isLoading = true;
-		const resp = await fetch(`/api/albums/${album._id}/${currentPage.page + 1}`);
+		const resp = await fetch(`/api/albums/${album._id}/${(currentPage.page ?? 0) + 1}`);
 		currentPage = await resp.json();
 		log.debug(currentPage);
 
@@ -73,7 +73,7 @@
 
 		const obj = await resp.json();
 
-		toast.add(`rendition job of ${obj.count} media have been added.`, 'info');
+		toast.add(`Media processing started for ${obj.count} media.`, 'info');
 		return true;
 	}
 
@@ -84,7 +84,7 @@
 
 		const obj = await resp.json();
 
-		toast.add(`rendition job of a media has been added.`, 'info');
+		toast.add('Media processing started.', 'info');
 		return true;
 	}
 
@@ -95,7 +95,7 @@
 
 		const obj = await resp.json();
 
-		toast.add(`embedding job of ${obj.count} media have been added.`, 'info');
+		toast.add(`Search metadata generation started for ${obj.count} media.`, 'info');
 		return true;
 	}
 
@@ -106,7 +106,7 @@
 
 		const obj = await resp.json();
 
-		toast.add(`embedding job of a media has been added.`, 'info');
+		toast.add('Search metadata generation started.', 'info');
 		return true;
 	}
 
@@ -117,7 +117,7 @@
 
 		const obj = await resp.json();
 
-		toast.add(`album cover job have been added.`, 'info');
+		toast.add('Album cover generation started.', 'info');
 
 		return true;
 	}
@@ -128,7 +128,7 @@
 		});
 
 		const obj = await resp.json();
-		toast.add(`collection cover job of the collection have been added.`, 'info');
+		toast.add('Collection cover generation started.', 'info');
 
 		return true;
 	}
@@ -187,7 +187,7 @@
 <div class="relative flex h-screen w-screen flex-col">
 	<NavBar
 		user={data.user}
-		up={{ description: 'Albums', icon: mdiBookshelf, url: `/collections/${album.collectionId}` }}
+		up={{ description: 'Albums', icon: mdiBookshelf, url: `/${album.collectionId}` }}
 		collectionId={album.collectionId}
 		{menu}
 	/>
@@ -228,19 +228,22 @@
 		</button>
 	</div>
 
-	<MediaViewer
-		media={current}
-		bind:show={showViewer}
-		{next}
-		{previous}
-		hasNext={index != mediaItems.length - 1}
-		hasPrevious={index != 0}
-		menu={viewMenu}
-	/>
+	{#if current}
+		<MediaViewer
+			media={current}
+			bind:show={showViewer}
+			{next}
+			{previous}
+			hasNext={index != mediaItems.length - 1}
+			hasPrevious={index != 0}
+			menu={viewMenu}
+		/>
+	{/if}
 </div>
 
 <MediaInfoDialog bind:this={mediaInfoDlg} />
-<AlbumInfoDialog album={album} collection={data.collection} bind:this={albumInfoDlg} />
+{log.debug('album info', album)}
+<AlbumInfoDialog {album} collection={data.collection} bind:this={albumInfoDlg} />
 <Toast bind:this={toast} />
 {#snippet viewMenu()}
 	<li>

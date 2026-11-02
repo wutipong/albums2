@@ -20,9 +20,9 @@ export const POST: RequestHandler = async ({ request, params }) => {
 	}
 
 	const extension = mime.extension(mime.lookup(name) || '');
-	const id = randomUUID().toString().replace(/-/g, "");
-	const tier1 = id.substring(0, 2)
-	const tier2 = id.substring(2, 4)
+	const id = randomUUID().toString().replace(/-/g, '');
+	const tier1 = id.substring(0, 2);
+	const tier2 = id.substring(2, 4);
 
 	const key = `${tier1}/${tier2}/${id}.${extension}`;
 

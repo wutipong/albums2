@@ -31,10 +31,9 @@
   // Handle your custom Go packages sequentially AFTER runtimes are ready
   "postCreateCommand": "git config --global --add safe.directory /workspaces & go install google.golang.org/protobuf/cmd/protoc-gen-go@latest & go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest & go install github.com/minio/mc@latest & go install github.com/cshum/vipsgen/cmd/vipsgen@latest",
   "postStartCommand": "caddy start --config .devcontainer/Caddyfile",
-  // "mounts": [
-  //   "source=./mc,target=/home/vscode/.mc,type=bind,consistency=cached",
-  //   "source=./bin,target=/home/vscode/bin,type=bind,consistency=cached"
-  // ],
+  "mounts": [
+    "type=volume,source=${localWorkspaceFolderBasename}-tmp-vol,target=/tmp"
+  ],
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   // This can be used to network with other containers or with the host.
   "forwardPorts": [

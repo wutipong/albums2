@@ -16,7 +16,7 @@ export const POST: RequestHandler = async ({ params }) => {
 		);
 	}
 
-	const count = await redis.LPUSH('tasks', tasks);
+	const count = await redis.RPUSH('tasks', tasks);
 
 	return Response.json({
 		success: true,

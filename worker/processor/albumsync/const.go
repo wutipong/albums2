@@ -1,4 +1,4 @@
-package collectionsync
+package albumsync
 
 const (
 	THUMBNAIL_QUALITY = 55

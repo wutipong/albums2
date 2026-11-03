@@ -15,6 +15,11 @@ type TaskRequest struct {
 	Payload json.RawMessage `json:"payload"`
 }
 
+type PostTaskRequest struct {
+	Type    string `json:"type"`
+	Payload any    `json:"payload"`
+}
+
 type TaskProcessor interface {
 	GetType() string
 	Process(context.Context, TaskRequest) error

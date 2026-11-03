@@ -1,4 +1,4 @@
-package collectionsync
+package albumsync
 
 import (
 	"bytes"

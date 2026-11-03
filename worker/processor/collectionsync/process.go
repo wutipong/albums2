@@ -231,38 +231,51 @@ func populateAlbums(
 }
 
 func populateAlbumsMedia(ctx context.Context, collection types.Collection) error {
-	cursor, err := db.MongoDB().Collection("albums").
-		Find(ctx, bson.D{{Key: "collectionId", Value: collection.ID}})
+	pageSize := int64(100)
+	skip := int64(0)
 
-	if err != nil {
-		return fmt.Errorf("unable to get albums: %w", err)
-	}
+	for {
+		opts := options.Find().SetLimit(pageSize).SetSkip(skip)
+		cursor, err := db.MongoDB().Collection("albums").
+			Find(
+				ctx,
+				bson.D{{Key: "collectionId", Value: collection.ID}},
+				opts,
+			)
 
-	defer cursor.Close(ctx)
-
-	for cursor.Next(ctx) {
-		album := types.Album{}
-		err := cursor.Decode(&album)
 		if err != nil {
-			zlog.Error().Err(err).Msg("unable to decode album")
-			continue
+			return fmt.Errorf("unable to get albums: %w", err)
 		}
 
-		zlog.Info().
-			Str("name", album.Name).
-			Str("collectionId", collection.ID.Hex()).
-			Msg("processing album media")
+		var albums []types.Album
+		if err := cursor.All(ctx, &albums); err != nil {
+			cursor.Close(ctx)
+			return fmt.Errorf("unable to parse albums: %w", err)
+		}
+		cursor.Close(ctx)
 
-		err = populateAlbumMedia(ctx, collection, album)
-		if err != nil {
-			zlog.Error().
+		if len(albums) == 0 {
+			break
+		}
+
+		for _, album := range albums {
+			zlog.Info().
 				Str("name", album.Name).
 				Str("collectionId", collection.ID.Hex()).
-				Err(err).
-				Msg("failed to populate media for album.")
-			continue
+				Msg("processing album media")
+
+			err = populateAlbumMedia(ctx, collection, album)
+			if err != nil {
+				zlog.Error().
+					Str("name", album.Name).
+					Str("collectionId", collection.ID.Hex()).
+					Err(err).
+					Msg("failed to populate media for album.")
+				continue
+			}
 		}
 	}
+
 	return nil
 }
 

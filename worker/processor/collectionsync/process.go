@@ -336,20 +336,34 @@ func populateDirectoryMedia(
 			name = name[1:] // remove leading colon
 		}
 
+		data, err := s3.GetObject(ctx, obj.Key, minio.GetObjectOptions{})
+
 		media := types.Media{
-			Name:          name,
-			CollectionID:  collection.ID,
-			AlbumID:       album.ID,
-			Original:      obj.Key,
+			Name:         name,
+			CollectionID: collection.ID,
+			AlbumID:      album.ID,
+			// Original:      obj.Key,
 			Path:          obj.Key,
 			CreatedAt:     time.Now(),
 			UpdatedAt:     time.Now(),
 			Type:          mt[:strings.Index(mt, "/")],
 			ProcessStatus: "pending",
 		}
+
+		errProc := processMediaAsset(ctx, &media, data)
+
 		_, err = db.MongoDB().Collection("media").InsertOne(ctx, media)
 		if err != nil {
 			zlog.Error().Err(err).Msg("unable to insert media")
+			continue
+		}
+
+		if errProc != nil {
+			zlog.Error().Err(errProc).
+				Str("name", media.Name).
+				Str("album", album.Name).
+				Str("collection", collection.Name).
+				Msg("failed processing media asset.")
 			continue
 		}
 	}
@@ -430,32 +444,33 @@ func processArchiveInDirectory(
 		}
 		defer file.Close()
 
-		assetKey := s3.CreateAssetKey(filepath.Ext(f.Name()))
-
-		s3.PutObject(ctx, assetKey, file, f.Size(), minio.PutObjectOptions{
-			ContentType: mt,
-		})
-
 		name := path[len(album.ObjectKey):] // remove album prefix
 		if name[0] == ':' {
 			name = name[1:] // remove leading colon
 		}
 
 		media := types.Media{
-			Name:          name,
-			CollectionID:  collection.ID,
-			AlbumID:       album.ID,
-			Original:      assetKey,
+			Name:         name,
+			CollectionID: collection.ID,
+			AlbumID:      album.ID,
+			// Original:      assetKey,
 			Path:          path,
 			CreatedAt:     time.Now(),
 			UpdatedAt:     time.Now(),
 			Type:          mt[:strings.Index(mt, "/")],
 			ProcessStatus: "pending",
 		}
+
+		errProc := processMediaAsset(ctx, &media, file)
+
 		_, err = db.MongoDB().Collection("media").InsertOne(ctx, media)
 		if err != nil {
-			zlog.Error().Err(err).Msg("unable to insert media")
+			zlog.Error().Err(err).Msg("unable to insert media.")
 			return nil
+		}
+
+		if errProc != nil {
+			return fmt.Errorf("failed to process media asset: %w", errProc)
 		}
 
 		return nil
@@ -568,31 +583,37 @@ func processArchiveInArchive(
 		}
 		defer file.Close()
 
-		assetKey := s3.CreateAssetKey(filepath.Ext(f.Name()))
-
-		s3.PutObject(ctx, assetKey, file, f.Size(), minio.PutObjectOptions{
-			ContentType: mt,
-		})
-
 		name := objPath[len(album.ObjectKey):] // remove album prefix
 		if name[0] == ':' {
 			name = name[1:] // remove leading colon
 		}
 
 		media := types.Media{
-			Name:          name,
-			CollectionID:  collection.ID,
-			AlbumID:       album.ID,
-			Original:      assetKey,
+			Name:         name,
+			CollectionID: collection.ID,
+			AlbumID:      album.ID,
+			// Original:      assetKey,
 			Path:          objPath,
 			CreatedAt:     time.Now(),
 			UpdatedAt:     time.Now(),
 			Type:          mt[:strings.Index(mt, "/")],
 			ProcessStatus: "pending",
 		}
+
+		errProc := processMediaAsset(ctx, &media, file)
+
 		_, err = db.MongoDB().Collection("media").InsertOne(ctx, media)
 		if err != nil {
 			zlog.Error().Err(err).Msg("unable to insert media")
+			return nil
+		}
+
+		if errProc != nil {
+			zlog.Error().Err(errProc).
+				Str("name", media.Name).
+				Str("album", album.Name).
+				Str("collection", collection.Name).
+				Msg("failed processing media asset.")
 			return nil
 		}
 
@@ -664,7 +685,8 @@ func populateArchiveMedia(
 		}
 
 		if count > 0 {
-			zlog.Debug().Str("name", decodedName).Msg("media already exists, skipping")
+			zlog.Debug().Str("name", decodedName).
+				Msg("media already exists, skipping")
 			return nil
 		}
 
@@ -676,31 +698,36 @@ func populateArchiveMedia(
 		}
 		defer file.Close()
 
-		assetKey := s3.CreateAssetKey(filepath.Ext(f.Name()))
-
-		s3.PutObject(ctx, assetKey, file, f.Size(), minio.PutObjectOptions{
-			ContentType: mt,
-		})
-
 		name := path[len(album.ObjectKey):] // remove album prefix
 		if name[0] == ':' {
 			name = name[1:] // remove leading colon
 		}
 
 		media := types.Media{
-			Name:          name,
-			CollectionID:  collection.ID,
-			AlbumID:       album.ID,
-			Original:      assetKey,
+			Name:         name,
+			CollectionID: collection.ID,
+			AlbumID:      album.ID,
+			// Original:      assetKey,
 			Path:          path,
 			CreatedAt:     time.Now(),
 			UpdatedAt:     time.Now(),
 			Type:          mt[:strings.Index(mt, "/")],
 			ProcessStatus: "pending",
 		}
+
+		errProc := processMediaAsset(ctx, &media, file)
 		_, err = db.MongoDB().Collection("media").InsertOne(ctx, media)
 		if err != nil {
 			zlog.Error().Err(err).Msg("unable to insert media")
+			return nil
+		}
+
+		if errProc != nil {
+			zlog.Error().Err(errProc).
+				Str("name", media.Name).
+				Str("album", album.Name).
+				Str("collection", collection.Name).
+				Msg("failed processing media asset.")
 			return nil
 		}
 
@@ -731,4 +758,18 @@ var mediaExtensions = []string{
 
 func IsMediaFile(path string) bool {
 	return slices.Contains(mediaExtensions, strings.ToLower(filepath.Ext(path)))
+}
+
+func processMediaAsset(ctx context.Context,
+	media *types.Media,
+	reader io.ReadCloser,
+) error {
+	switch media.Type {
+	case "image":
+		return ProcessImageMedia(ctx, media, reader)
+	case "video":
+		return ProcessVideoMedia(ctx, media, reader)
+	default:
+		return fmt.Errorf("unable to process media: invalid media type")
+	}
 }

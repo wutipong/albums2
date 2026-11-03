@@ -47,7 +47,7 @@ func ProcessVideoMedia(ctx context.Context, media *types.Media) error {
 	}()
 
 	originalFile, err := os.CreateTemp("",
-		fmt.Sprintf("*.%s", filepath.Base(media.Original)),
+		fmt.Sprintf("album_archive_*%s", filepath.Ext(media.Name)),
 	)
 
 	if err != nil {

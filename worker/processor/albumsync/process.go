@@ -16,6 +16,7 @@ import (
 	"github.com/minio/minio-go/v7"
 	zlog "github.com/rs/zerolog/log"
 	"github.com/wutipong/albums2/worker/processor"
+	"github.com/wutipong/albums2/worker/processor/mediaembedding"
 	"github.com/wutipong/albums2/worker/types"
 	"github.com/wutipong/albums2/worker/util/charset"
 	"github.com/wutipong/albums2/worker/util/db"
@@ -94,9 +95,102 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 		return fmt.Errorf("failed to populate album media: %w", err)
 	}
 
+	err = postMediaEmbedding(ctx, album)
+	if err != nil {
+		return fmt.Errorf("failed to post media embedding populate request: %w", err)
+	}
+
+	err = postMediaAlbumCover(ctx, album)
+	if err != nil {
+		return fmt.Errorf("failed to post media album cover populate request: %w", err)
+	}
+
 	zlog.Info().
 		Str("name", album.Name).
 		Msg("album sync completed")
+
+	return nil
+}
+
+func postMediaEmbedding(ctx context.Context, album types.Album) error {
+	pageSize := int64(100)
+	skip := int64(0)
+
+	for {
+		opts := options.Find().SetLimit(pageSize).SetSkip(skip)
+		cursor, err := db.MongoDB().Collection("media").
+			Find(
+				ctx,
+				bson.D{{Key: "albumId", Value: album.ID}},
+				opts,
+			)
+
+		if err != nil {
+			return fmt.Errorf("unable to get media: %w", err)
+		}
+
+		var medias []types.Media
+		if err := cursor.All(ctx, &medias); err != nil {
+			cursor.Close(ctx)
+			return fmt.Errorf("unable to parse albums: %w", err)
+		}
+		cursor.Close(ctx)
+
+		if len(medias) == 0 {
+			break
+		}
+
+		skip = skip + int64(len(medias))
+
+		zlog.Info().
+			Str("album", album.Name).
+			Msg("posting media embedding generate command")
+
+		tasks := make([]string, 0)
+
+		for _, m := range medias {
+			task := processor.PostTaskRequest{
+				Type: "album.sync",
+				Payload: mediaembedding.Payload{
+					ID: m.ID.Hex(),
+				},
+			}
+
+			taskStr, err := json.Marshal(task)
+			if err != nil {
+				continue
+			}
+			tasks = append(tasks, string(taskStr))
+		}
+		db.Redis().RPush(ctx, "tasks", tasks)
+	}
+
+	return nil
+}
+
+func postMediaAlbumCover(ctx context.Context, album types.Album) error {
+	r := db.MongoDB().Collection("media").FindOne(ctx, bson.D{{Key: "albumId", Value: album.ID}})
+	if r.Err() != nil {
+		return fmt.Errorf("failed to retrieve media data: %w", r.Err())
+	}
+
+	m := types.Media{}
+	err := r.Decode(&m)
+	if err != nil {
+		return fmt.Errorf("failed to decode media data")
+	}
+
+	task := processor.PostTaskRequest{
+		Type: "media.album_cover",
+		Payload: mediaembedding.Payload{
+			ID: m.ID.Hex(),
+		},
+	}
+	taskStr, err := json.Marshal(task)
+	if err != nil {
+		return fmt.Errorf("failed to create request: %w", err)
+	}
+	db.Redis().RPush(ctx, "tasks", taskStr)
 
 	return nil
 }

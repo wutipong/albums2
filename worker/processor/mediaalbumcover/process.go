@@ -1,4 +1,4 @@
-package albumcover
+package mediaalbumcover
 
 import (
 	"bytes"

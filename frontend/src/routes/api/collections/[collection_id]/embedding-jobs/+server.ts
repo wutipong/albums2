@@ -8,7 +8,7 @@ export const POST: RequestHandler = async ({ params }) => {
 	for (const m of media) {
 		tasks.push(
 			JSON.stringify({
-				type: 'embedding',
+				type: 'media.embedding',
 				payload: {
 					id: m._id
 				}

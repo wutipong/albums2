@@ -1,4 +1,4 @@
-package collectioncover
+package mediacollectioncover
 
 import (
 	"bytes"

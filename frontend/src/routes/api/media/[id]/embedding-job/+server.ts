@@ -5,7 +5,7 @@ export const POST: RequestHandler = async ({ params }) => {
 	const count = await redis.LPUSH(
 		'tasks',
 		JSON.stringify({
-			type: 'embedding',
+			type: 'media.embedding',
 			payload: {
 				id: params.id
 			}

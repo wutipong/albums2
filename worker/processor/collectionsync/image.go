@@ -27,7 +27,9 @@ func ProcessImageMedia(ctx context.Context,
 	media *types.Media,
 	reader io.ReadCloser,
 ) error {
-	zlog.Info().Str("id", media.ID.String()).Msg("processing image media")
+	zlog.Info().
+		Str("name", media.Name).
+		Msg("processing image media")
 
 	err := ctx.Err()
 	if err != nil {
@@ -98,7 +100,9 @@ func populateView(
 	media *types.Media,
 	original *vips.Image,
 ) (view *vips.Image, err error) {
-	zlog.Info().Str("id", media.ID.String()).Msg("populating view media for media")
+	zlog.Info().
+		Str("name", media.Name).
+		Msg("populating view media for media")
 
 	err = ctx.Err()
 	if err != nil {
@@ -162,7 +166,9 @@ func populatePreview(
 	media *types.Media,
 	view *vips.Image,
 ) error {
-	zlog.Info().Str("id", media.ID.String()).Msg("populating preview media for media")
+	zlog.Info().
+		Str("name", media.Name).
+		Msg("populating preview media for media")
 
 	err := ctx.Err()
 	if err != nil {
@@ -221,7 +227,9 @@ func populateThumbnail(
 	media *types.Media,
 	source *vips.Source,
 ) error {
-	zlog.Info().Str("id", media.ID.String()).Msg("populating thumbnail media for media")
+	zlog.Info().
+		Str("name", media.Name).
+		Msg("populating thumbnail media for media")
 
 	err := ctx.Err()
 	if err != nil {

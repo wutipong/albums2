@@ -25,7 +25,9 @@ func ProcessVideoMedia(ctx context.Context,
 	media *types.Media,
 	reader io.ReadCloser,
 ) error {
-	zlog.Info().Str("id", media.ID.Hex()).Msg("process video asset")
+	zlog.Info().
+		Str("name", media.Name).
+		Msg("process video asset")
 
 	err := ctx.Err()
 	if err != nil {
@@ -84,7 +86,10 @@ func processVideoView(
 	ctx context.Context, media *types.Media,
 	originalFile *os.File,
 ) error {
-	zlog.Info().Str("id", media.ID.Hex()).Msg("process video asset view media")
+	zlog.Info().
+		Str("name", media.Name).
+		Msg("process video asset view media")
+
 	err := ctx.Err()
 	if err != nil {
 		return fmt.Errorf("context cancelled: %w", err)
@@ -163,7 +168,9 @@ func processVideoThumbnail(
 	originalFile *os.File,
 	info video.Probe,
 ) error {
-	zlog.Info().Str("id", media.ID.Hex()).Msg("process video asset thumbnail")
+	zlog.Info().
+		Str("name", media.Name).
+		Msg("process video asset thumbnail")
 	err := ctx.Err()
 	if err != nil {
 		return fmt.Errorf("context cancelled: %w", err)
@@ -239,7 +246,10 @@ func processVideoPreview(
 	ctx context.Context, media *types.Media,
 	originalFile *os.File, info video.Probe,
 ) error {
-	zlog.Info().Str("id", media.ID.Hex()).Msg("process video preview")
+	zlog.Info().
+		Str("name", media.Name).
+		Msg("process video preview")
+
 	err := ctx.Err()
 	if err != nil {
 		return fmt.Errorf("context cancelled: %w", err)

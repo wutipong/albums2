@@ -85,7 +85,7 @@ func ProcessImageMedia(ctx context.Context, media *types.Media) error {
 
 	view, err := populateView(ctx, media, original)
 	if err != nil {
-		return fmt.Errorf("unable to populate view image: %e", err)
+		return fmt.Errorf("unable to populate view image: %w", err)
 	}
 
 	if view == nil {
@@ -96,12 +96,12 @@ func ProcessImageMedia(ctx context.Context, media *types.Media) error {
 
 	err = populatePreview(ctx, media, view)
 	if err != nil {
-		return fmt.Errorf("unable to populate preview image: %e", err)
+		return fmt.Errorf("unable to populate preview image: %w", err)
 	}
 
 	err = populateThumbnail(ctx, media, source)
 	if err != nil {
-		return fmt.Errorf("unable to populate thumbnail: %e", err)
+		return fmt.Errorf("unable to populate thumbnail: %w", err)
 	}
 
 	return nil

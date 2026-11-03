@@ -16,7 +16,6 @@ import (
 	"github.com/minio/minio-go/v7"
 	zlog "github.com/rs/zerolog/log"
 	"github.com/wutipong/albums2/worker/processor"
-	"github.com/wutipong/albums2/worker/processor/media"
 	"github.com/wutipong/albums2/worker/types"
 	"github.com/wutipong/albums2/worker/util/charset"
 	"github.com/wutipong/albums2/worker/util/db"
@@ -88,65 +87,10 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 		return fmt.Errorf("unable to populate albums media: %w", err)
 	}
 
-	err = processMedia(ctx, collection)
-	if err != nil {
-		return fmt.Errorf("unable to process media: %w", err)
-	}
-
 	zlog.Info().
 		Str("name", collection.Name).
 		Msg("collection sync completed")
 
-	return nil
-}
-
-type mediaProcessRequest struct {
-	Type    string        `json:"type"`
-	Payload media.Payload `json:"payload"`
-}
-
-func processMedia(ctx context.Context, collection types.Collection) error {
-	cursor, err := db.MongoDB().Collection("media").
-		Find(ctx, bson.M{
-			"processStatus": "pending",
-			"collectionId":  collection.ID,
-		})
-
-	if err != nil {
-		return fmt.Errorf("unable to get media: %w", err)
-	}
-
-	request := []string{}
-	// Process the media items
-	for cursor.Next(ctx) {
-		m := types.Media{}
-		err := cursor.Decode(&m)
-		if err != nil {
-			zlog.Error().Err(err).Msg("unable to decode media information")
-			continue
-		}
-
-		zlog.Info().
-			Str("name", m.Name).
-			Str("albumId", m.AlbumID.Hex()).
-			Str("collectionId", collection.ID.Hex()).
-			Msg("queue processing media job")
-
-		r, err := json.Marshal(mediaProcessRequest{
-			Type: "media.process",
-			Payload: media.Payload{
-				ID: m.ID.Hex(),
-			},
-		})
-		if err != nil {
-			zlog.Error().Err(err).Msg("unable to marshal media process request")
-			continue
-		}
-		// Process each media item
-		request = append(request, string(r))
-	}
-
-	db.Redis().LPush(ctx, "tasks", request)
 	return nil
 }
 
@@ -258,6 +202,8 @@ func populateAlbumsMedia(ctx context.Context, collection types.Collection) error
 			break
 		}
 
+		skip = skip + int64(len(albums))
+
 		for _, album := range albums {
 			zlog.Info().
 				Str("name", album.Name).
@@ -339,10 +285,10 @@ func populateDirectoryMedia(
 		data, err := s3.GetObject(ctx, obj.Key, minio.GetObjectOptions{})
 
 		media := types.Media{
-			Name:         name,
-			CollectionID: collection.ID,
-			AlbumID:      album.ID,
-			// Original:      obj.Key,
+			Name:          name,
+			CollectionID:  collection.ID,
+			AlbumID:       album.ID,
+			Original:      obj.Key,
 			Path:          obj.Key,
 			CreatedAt:     time.Now(),
 			UpdatedAt:     time.Now(),
@@ -351,6 +297,11 @@ func populateDirectoryMedia(
 		}
 
 		errProc := processMediaAsset(ctx, &media, data)
+		if errProc != nil {
+			media.ProcessStatus = "failed"
+		} else {
+			media.ProcessStatus = "processed"
+		}
 
 		_, err = db.MongoDB().Collection("media").InsertOne(ctx, media)
 		if err != nil {
@@ -462,6 +413,11 @@ func processArchiveInDirectory(
 		}
 
 		errProc := processMediaAsset(ctx, &media, file)
+		if errProc != nil {
+			media.ProcessStatus = "failed"
+		} else {
+			media.ProcessStatus = "processed"
+		}
 
 		_, err = db.MongoDB().Collection("media").InsertOne(ctx, media)
 		if err != nil {
@@ -601,6 +557,11 @@ func processArchiveInArchive(
 		}
 
 		errProc := processMediaAsset(ctx, &media, file)
+		if errProc != nil {
+			media.ProcessStatus = "failed"
+		} else {
+			media.ProcessStatus = "processed"
+		}
 
 		_, err = db.MongoDB().Collection("media").InsertOne(ctx, media)
 		if err != nil {
@@ -716,6 +677,12 @@ func populateArchiveMedia(
 		}
 
 		errProc := processMediaAsset(ctx, &media, file)
+		if errProc != nil {
+			media.ProcessStatus = "failed"
+		} else {
+			media.ProcessStatus = "processed"
+		}
+
 		_, err = db.MongoDB().Collection("media").InsertOne(ctx, media)
 		if err != nil {
 			zlog.Error().Err(err).Msg("unable to insert media")

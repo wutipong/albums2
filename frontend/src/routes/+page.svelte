@@ -1,14 +1,22 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
+	import { enhance, type SubmitFunction } from '$app/forms';
 	import Icon from '#lib/components/Icon.svelte';
 	import CollectionThumbnail from '#lib/components/CollectionThumbnail.svelte';
 	import { mdiAlertCircle, mdiSquareOff } from '@mdi/js';
 	import NavBar from '#lib/components/NavBar.svelte';
 	import log from '#lib/log.js';
+	import ConfirmationDialog from '#lib/components/ConfirmationDialog.svelte';
 
 	let { data, form } = $props();
+	let confirmationDialog: ConfirmationDialog;
 
 	$inspect(data);
+
+	const confirmCollectionCreation: SubmitFunction = async ({ cancel }) => {
+		if (!(await confirmationDialog.show('Create this collection?'))) {
+			cancel();
+		}
+	};
 </script>
 
 <svelte:head>
@@ -49,7 +57,7 @@
 			</div>
 		{/if}
 
-		<form method="POST" action="?/create" use:enhance>
+		<form method="POST" action="?/create" use:enhance={confirmCollectionCreation}>
 			<fieldset class="fieldset">
 				<legend class="fieldset-legend">collection</legend>
 				<input
@@ -75,3 +83,5 @@
 		</form>
 	</div>
 {/if}
+
+<ConfirmationDialog bind:this={confirmationDialog} />

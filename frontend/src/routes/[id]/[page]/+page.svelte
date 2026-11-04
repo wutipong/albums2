@@ -4,6 +4,7 @@
 	import Icon from '#lib/components/Icon.svelte';
 	import NavBar from '#lib/components/NavBar.svelte';
 	import Toast from '#lib/components/Toast.svelte';
+	import ConfirmationDialog from '#lib/components/ConfirmationDialog.svelte';
 	import log from '#lib/log.js';
 	import Pagination from './Pagination.svelte';
 	import {
@@ -23,6 +24,10 @@
 	$inspect(data);
 
 	async function createSyncJobs() {
+		if (!(await confirmationDialog.show('Synchronize this collection?'))) {
+			return;
+		}
+
 		log.debug('request sync jobs.');
 		const resp = await fetch(`/api/collections/${data.collection._id}/sync-jobs`, {
 			method: 'POST'
@@ -35,6 +40,12 @@
 	}
 
 	async function createEmbeddingJobs() {
+		if (
+			!(await confirmationDialog.show('Generate search metadata for all media in this collection?'))
+		) {
+			return;
+		}
+
 		log.debug('request renditions.');
 		const resp = await fetch(`/api/collections/${data.collection._id}/embedding-jobs`, {
 			method: 'POST'
@@ -48,6 +59,7 @@
 
 	let collectionInfoDlg: CollectionInfoDialog;
 	let toast: Toast;
+	let confirmationDialog: ConfirmationDialog;
 </script>
 
 <svelte:head>
@@ -106,5 +118,6 @@
 
 <CollectionInfoDialog bind:this={collectionInfoDlg} />
 <Toast bind:this={toast} />
+<ConfirmationDialog bind:this={confirmationDialog} />
 
 <Pagination currentPage={albums.page} totalPage={albums.totalPages} />

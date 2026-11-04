@@ -13,9 +13,7 @@
 		mdiLoading,
 		mdiFeatureSearchOutline,
 		mdiBookOpenVariant,
-
 		mdiSyncCircle
-
 	} from '@mdi/js';
 	import log from '#lib/log.js';
 	import { untrack } from 'svelte';
@@ -24,6 +22,7 @@
 	import AlbumInfoDialog from '#lib/components/AlbumInfoDialog.svelte';
 	import NavBar from '#lib/components/NavBar.svelte';
 	import Toast from '#lib/components/Toast.svelte';
+	import ConfirmationDialog from '#lib/components/ConfirmationDialog.svelte';
 
 	const { data } = $props();
 
@@ -69,6 +68,10 @@
 	}
 
 	async function createEmbeddingJobs() {
+		if (!(await confirmationDialog.show('Generate search metadata for all media in this album?'))) {
+			return;
+		}
+
 		const resp = await fetch(`/api/albums/${album._id}/embedding-jobs`, {
 			method: 'POST'
 		});
@@ -80,6 +83,10 @@
 	}
 
 	async function createEmbeddingJob() {
+		if (!(await confirmationDialog.show('Generate search metadata for this media?'))) {
+			return;
+		}
+
 		const resp = await fetch(`/api/media/${current._id}/embedding-job`, {
 			method: 'POST'
 		});
@@ -91,6 +98,10 @@
 	}
 
 	async function createAlbumCover() {
+		if (!(await confirmationDialog.show('Set this media as the album cover?'))) {
+			return;
+		}
+
 		const resp = await fetch(`/api/media/${current._id}/albumcover`, {
 			method: 'POST'
 		});
@@ -103,6 +114,10 @@
 	}
 
 	async function createCollectionCover() {
+		if (!(await confirmationDialog.show('Set this media as the collection cover?'))) {
+			return;
+		}
+
 		const resp = await fetch(`/api/media/${current._id}/collectioncover`, {
 			method: 'POST'
 		});
@@ -113,7 +128,11 @@
 		return true;
 	}
 
-	async function createSynchronizeJob(){
+	async function createSynchronizeJob() {
+		if (!(await confirmationDialog.show('Synchronize this album?'))) {
+			return;
+		}
+
 		const resp = await fetch(`/api/albums/${album._id}/synchronize-job`, {
 			method: 'POST'
 		});
@@ -144,6 +163,7 @@
 	let mediaInfoDlg: MediaInfoDialog;
 	let albumInfoDlg: AlbumInfoDialog;
 	let toast: Toast;
+	let confirmationDialog: ConfirmationDialog;
 </script>
 
 <svelte:head>
@@ -236,6 +256,7 @@
 {log.debug('album info', album)}
 <AlbumInfoDialog {album} collection={data.collection} bind:this={albumInfoDlg} />
 <Toast bind:this={toast} />
+<ConfirmationDialog bind:this={confirmationDialog} />
 {#snippet viewMenu()}
 	<li>
 		<button

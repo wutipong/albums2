@@ -71,9 +71,15 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 		Str("prefix", collection.Prefix).
 		Msg("collection details")
 
-	err = populateAlbums(ctx, collection)
+	syncAt := time.Now()
+	err = populateAlbums(ctx, collection, syncAt)
 	if err != nil {
 		return fmt.Errorf("unable to populate albums: %w", err)
+	}
+
+	err = purgeAlbums(ctx, collection, syncAt)
+	if err != nil {
+		return fmt.Errorf("failed to purge missing albums: %w", err)
 	}
 
 	err = postAlbumsSync(ctx, collection)
@@ -85,23 +91,92 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 	return nil
 }
 
+func purgeAlbums(
+	ctx context.Context,
+	collection types.Collection,
+	syncAt time.Time,
+) error {
+	albumsCol := db.MongoDB().Collection("albums")
+	pageSize := int64(100)
+	skip := int64(0)
+
+	for {
+		opts := options.Find().SetLimit(pageSize).SetSkip(skip)
+		cursor, err := albumsCol.
+			Find(
+				ctx,
+				bson.D{
+					{Key: "collectionId", Value: collection.ID},
+					{Key: "lastSyncAt", Value: bson.M{"$ne": syncAt}},
+				},
+				opts,
+			)
+
+		if err != nil {
+			return fmt.Errorf("unable to get albums: %w", err)
+		}
+
+		var albums []types.Album
+		if err := cursor.All(ctx, &albums); err != nil {
+			cursor.Close(ctx)
+			return fmt.Errorf("unable to parse albums: %w", err)
+		}
+		cursor.Close(ctx)
+
+		if len(albums) == 0 {
+			break
+		}
+
+		skip = skip + int64(len(albums))
+
+		zlog.Info().
+			Str("collectionName", collection.Name).
+			Msg("deleting missing album media")
+
+		for _, album := range albums {
+			r, err := db.MongoDB().Collection("media").
+				DeleteMany(ctx, bson.D{
+					{Key: "albumId", Value: album.ID},
+				})
+			if err != nil {
+				zlog.Error().Err(err).
+					Str("album", album.Name).
+					Msg("unable to delete album media")
+				continue
+			}
+
+			zlog.Info().
+				Str("album", album.Name).
+				Int64("count", r.DeletedCount).
+				Bool("acknowledged", r.Acknowledged).
+				Msg("album media deleted.")
+		}
+	}
+
+	r, err := db.MongoDB().
+		Collection("albums").
+		DeleteMany(ctx, bson.D{
+			{Key: "collectionId", Value: collection.ID},
+			{Key: "lastSyncAt", Value: bson.M{"$ne": syncAt}},
+		})
+	if err != nil {
+		return fmt.Errorf("failed to delete albums: %w", err)
+	}
+
+	zlog.Info().
+		Int64("count", r.DeletedCount).
+		Bool("acknownledged", r.Acknowledged).
+		Msg("albums have been deleted")
+
+	return nil
+}
+
 func populateAlbums(
 	ctx context.Context,
 	collection types.Collection,
+	syncAt time.Time,
 ) error {
 	albumsCol := db.MongoDB().Collection("albums")
-
-	_, err := albumsCol.UpdateMany(ctx,
-		bson.M{"collectionId": collection.ID},
-		bson.M{
-			"$set": bson.M{
-				"existed": false,
-			},
-		})
-
-	if err != nil {
-		return fmt.Errorf("unable to reset existed flags: %w", err)
-	}
 
 	s3Client := s3.Client()
 	bucket := s3.Bucket()
@@ -136,8 +211,8 @@ func populateAlbums(
 				"createdAt":    time.Now(),
 			},
 			"$set": bson.M{
-				"existed":   true,
-				"updatedAt": time.Now(),
+				"updatedAt":  time.Now(),
+				"lastSyncAt": syncAt,
 			},
 		}
 

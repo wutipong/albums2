@@ -22,7 +22,7 @@ export interface Album {
 	collectionId?: ObjectId;
 	objectKey: string;
 	cover?: string;
-	existed?: boolean;
+	lastSyncAt? : Date
 	createdAt?: Date;
 	updatedAt?: Date;
 	deletedAt?: Date;
@@ -71,7 +71,7 @@ export const AlbumSchema = new mongoose.Schema<Album>(
 		name: String,
 		collectionId: ObjectId,
 		cover: String,
-		existed: Boolean,
+		lastSyncAt: Date,
 		createdAt: { type: Date, default: Date.now },
 		updatedAt: { type: Date, default: Date.now },
 		deletedAt: Date

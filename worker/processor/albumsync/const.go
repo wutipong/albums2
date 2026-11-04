@@ -1,0 +1,11 @@
+package albumsync
+
+const (
+	THUMBNAIL_QUALITY = 55
+	THUMBNAIL_HEIGHT  = 600
+
+	VIEW_WIDTH   = 2500
+	VIEW_QUALITY = 85
+
+	WEBP_EFFORT = 4
+)

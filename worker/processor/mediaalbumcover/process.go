@@ -1,4 +1,4 @@
-package albumcover
+package mediaalbumcover
 
 import (
 	"bytes"
@@ -33,7 +33,7 @@ type Processor struct {
 }
 
 func (p *Processor) GetType() string {
-	return "albumcover"
+	return "media.album_cover"
 }
 
 type Payload struct {
@@ -196,7 +196,7 @@ func (p *Processor) ProcessVideo(
 	}
 
 	originalFile, err := os.CreateTemp("",
-		fmt.Sprintf("*.%s", filepath.Base(media.Original)),
+		fmt.Sprintf("*.%s", filepath.Base(media.View)),
 	)
 
 	if err != nil {

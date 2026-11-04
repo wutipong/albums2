@@ -12,7 +12,8 @@
 		mdiDownload,
 		mdiLoading,
 		mdiFeatureSearchOutline,
-		mdiBookOpenVariant
+		mdiBookOpenVariant,
+		mdiSyncCircle
 	} from '@mdi/js';
 	import log from '#lib/log.js';
 	import { untrack } from 'svelte';
@@ -21,6 +22,7 @@
 	import AlbumInfoDialog from '#lib/components/AlbumInfoDialog.svelte';
 	import NavBar from '#lib/components/NavBar.svelte';
 	import Toast from '#lib/components/Toast.svelte';
+	import ConfirmationDialog from '#lib/components/ConfirmationDialog.svelte';
 
 	const { data } = $props();
 
@@ -65,30 +67,11 @@
 		isLoading = false;
 	}
 
-	async function createRenditionJobs() {
-		log.debug('request renditions.');
-		const resp = await fetch(`/api/albums/${album._id}/rendition-jobs`, {
-			method: 'POST'
-		});
-
-		const obj = await resp.json();
-
-		toast.add(`Media processing started for ${obj.count} media.`, 'info');
-		return true;
-	}
-
-	async function createRenditionJob() {
-		const resp = await fetch(`/api/media/${current._id}/rendition-job`, {
-			method: 'POST'
-		});
-
-		const obj = await resp.json();
-
-		toast.add('Media processing started.', 'info');
-		return true;
-	}
-
 	async function createEmbeddingJobs() {
+		if (!(await confirmationDialog.show('Generate search metadata for all media in this album?'))) {
+			return;
+		}
+
 		const resp = await fetch(`/api/albums/${album._id}/embedding-jobs`, {
 			method: 'POST'
 		});
@@ -100,6 +83,10 @@
 	}
 
 	async function createEmbeddingJob() {
+		if (!(await confirmationDialog.show('Generate search metadata for this media?'))) {
+			return;
+		}
+
 		const resp = await fetch(`/api/media/${current._id}/embedding-job`, {
 			method: 'POST'
 		});
@@ -111,6 +98,10 @@
 	}
 
 	async function createAlbumCover() {
+		if (!(await confirmationDialog.show('Set this media as the album cover?'))) {
+			return;
+		}
+
 		const resp = await fetch(`/api/media/${current._id}/albumcover`, {
 			method: 'POST'
 		});
@@ -123,12 +114,31 @@
 	}
 
 	async function createCollectionCover() {
+		if (!(await confirmationDialog.show('Set this media as the collection cover?'))) {
+			return;
+		}
+
 		const resp = await fetch(`/api/media/${current._id}/collectioncover`, {
 			method: 'POST'
 		});
 
 		const obj = await resp.json();
 		toast.add('Collection cover generation started.', 'info');
+
+		return true;
+	}
+
+	async function createSynchronizeJob() {
+		if (!(await confirmationDialog.show('Synchronize this album?'))) {
+			return;
+		}
+
+		const resp = await fetch(`/api/albums/${album._id}/synchronize-job`, {
+			method: 'POST'
+		});
+
+		const obj = await resp.json();
+		toast.add('Album synchronization started.', 'info');
 
 		return true;
 	}
@@ -153,6 +163,7 @@
 	let mediaInfoDlg: MediaInfoDialog;
 	let albumInfoDlg: AlbumInfoDialog;
 	let toast: Toast;
+	let confirmationDialog: ConfirmationDialog;
 </script>
 
 <svelte:head>
@@ -170,9 +181,9 @@
 		<li></li>
 		<li class="menu-item">Administration actions</li>
 		<li>
-			<button onclick={createRenditionJobs}>
-				<Icon path={mdiBlender} />
-				Process media
+			<button onclick={createSynchronizeJob}>
+				<Icon path={mdiSyncCircle} />
+				Synchonize
 			</button>
 		</li>
 		<li>
@@ -245,6 +256,7 @@
 {log.debug('album info', album)}
 <AlbumInfoDialog {album} collection={data.collection} bind:this={albumInfoDlg} />
 <Toast bind:this={toast} />
+<ConfirmationDialog bind:this={confirmationDialog} />
 {#snippet viewMenu()}
 	<li>
 		<button
@@ -293,15 +305,6 @@
 			</button>
 		</li>
 
-		<li>
-			<button
-				onclick={() => {
-					createRenditionJob();
-				}}
-			>
-				<Icon path={mdiBlender} /> Re-process this asset.
-			</button>
-		</li>
 		<li>
 			<button onclick={createEmbeddingJob}>
 				<Icon path={mdiFeatureSearchOutline} /> Generate search metadata

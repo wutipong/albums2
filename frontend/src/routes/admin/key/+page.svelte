@@ -5,6 +5,7 @@
 	import { onMount } from 'svelte';
 	import type { ApiKey } from '@better-auth/api-key/types';
 	import Toast from '#lib/components/Toast.svelte';
+	import ConfirmationDialog from '#lib/components/ConfirmationDialog.svelte';
 
 	let apiKeys: Omit<ApiKey, 'key'>[] = $state([]);
 	let apiKeyModal: HTMLDialogElement;
@@ -13,6 +14,7 @@
 	let { data } = $props();
 
 	let toast: Toast;
+	let confirmationDialog: ConfirmationDialog;
 
 	onMount(async () => {
 		const keys = await authClient.apiKey.list();
@@ -22,6 +24,10 @@
 	});
 
 	async function addNewApiKey() {
+		if (!(await confirmationDialog.show('Create a new API key?'))) {
+			return;
+		}
+
 		const { data, error } = await authClient.apiKey.create({});
 		if (error) {
 			toast.add(`fail to create new key: ${error.statusText}`, 'error');
@@ -40,6 +46,10 @@
 	}
 
 	async function deleteApiKey(id: string) {
+		if (!(await confirmationDialog.show('Delete this API key?'))) {
+			return;
+		}
+
 		const { error } = await authClient.apiKey.delete({ keyId: id });
 		if (error) {
 			toast.add(`fail to delete key: ${error.statusText}`, 'error');
@@ -116,3 +126,4 @@
 </dialog>
 
 <Toast bind:this={toast}></Toast>
+<ConfirmationDialog bind:this={confirmationDialog} />

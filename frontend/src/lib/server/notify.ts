@@ -11,7 +11,7 @@ export async function notifyProcessMedia(id: string) {
 			}
 		};
 
-		redis.LPUSH('tasks', JSON.stringify(taskRequest));
+		redis.RPUSH('tasks', JSON.stringify(taskRequest));
 	} catch (e) {
 		log.error(e, 'send command fails');
 	}

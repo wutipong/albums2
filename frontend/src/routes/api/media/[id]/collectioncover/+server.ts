@@ -5,10 +5,10 @@ import log from '#lib/log.js';
 export const POST: RequestHandler = async ({ request, params }) => {
 	log.debug(request.url);
 
-	const count = await redis.LPUSH(
+	const count = await redis.RPUSH(
 		'tasks',
 		JSON.stringify({
-			type: 'collectioncover',
+			type: 'media.collection_cover',
 			payload: {
 				id: params.id
 			}

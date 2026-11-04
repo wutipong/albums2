@@ -1,9 +1,10 @@
-package media
+package albumsync
 
 import (
 	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"mime"
 	"path/filepath"
 
@@ -22,8 +23,13 @@ func calculateThumbnailSize(w, h int32) (width, height int32) {
 	return
 }
 
-func ProcessImageMedia(ctx context.Context, media *types.Media) error {
-	zlog.Info().Str("id", media.ID.String()).Msg("processing image media")
+func ProcessImageMedia(ctx context.Context,
+	media *types.Media,
+	reader io.ReadCloser,
+) error {
+	zlog.Info().
+		Str("name", media.Name).
+		Msg("processing image media")
 
 	err := ctx.Err()
 	if err != nil {
@@ -31,26 +37,8 @@ func ProcessImageMedia(ctx context.Context, media *types.Media) error {
 		return fmt.Errorf("context cancelled: %w", err)
 	}
 
-	zlog.Info().Str("id", media.Original).Msg("getting object from S3.")
-	object, err := s3.GetObject(
-		ctx,
-		media.Original,
-		minio.GetObjectOptions{},
-	)
-
-	if err != nil {
-		return fmt.Errorf("unable to get object from s3: %w", err)
-	}
-
-	defer func() {
-		err = object.Close()
-		if err != nil {
-			zlog.Error().Err(err).Msg("error closing S3 object")
-		}
-	}()
-
-	source := vips.NewSource(object)
-	defer source.Close()
+	buffer := new(bytes.Buffer)
+	io.Copy(buffer, reader)
 
 	zlog.Info().Msg("read original image file.")
 
@@ -59,49 +47,45 @@ func ProcessImageMedia(ctx context.Context, media *types.Media) error {
 		params.N = -1
 	}
 
-	original, err := vips.NewImageFromSource(source, params)
+	original, err := vips.NewImageFromBuffer(buffer.Bytes(), params)
 	if err != nil {
 		return fmt.Errorf("unable to read original image: %w", err)
 	}
 	defer original.Close()
 
-	originalExt := filepath.Ext(media.Original)
-	mt := mime.TypeByExtension(originalExt)
-	if mt == "image/jpeg" {
-		media.Preview = media.Original
-		media.Thumbnail = media.Original
-		tw, th := calculateThumbnailSize(int32(original.Width()), int32(original.PageHeight()))
-		media.ThumbnailWidth = tw
-		media.ThumbnailHeight = th
+	if media.Original != "" {
+		originalExt := filepath.Ext(media.Original)
+		mt := mime.TypeByExtension(originalExt)
+		if mt == "image/jpeg" {
+			media.Preview = media.Original
+			media.Thumbnail = media.Original
+			tw, th := calculateThumbnailSize(int32(original.Width()), int32(original.PageHeight()))
+			media.ThumbnailWidth = tw
+			media.ThumbnailHeight = th
 
-		media.View = media.Original
-		media.ViewWidth = int32(original.Width())
-		media.ViewHeight = int32(original.PageHeight())
+			media.View = media.Original
+			media.ViewWidth = int32(original.Width())
+			media.ViewHeight = int32(original.PageHeight())
 
-		media.ImageFrames = 1
+			media.ImageFrames = 1
 
-		return nil
+			return nil
+		}
 	}
 
-	view, err := populateView(ctx, media, original)
+	err = populateView(ctx, media, original)
 	if err != nil {
-		return fmt.Errorf("unable to populate view image: %e", err)
+		return fmt.Errorf("unable to populate view image: %w", err)
 	}
 
-	if view == nil {
-		view = original
-	} else {
-		defer view.Close()
-	}
-
-	err = populatePreview(ctx, media, view)
+	err = populatePreview(ctx, media, original)
 	if err != nil {
-		return fmt.Errorf("unable to populate preview image: %e", err)
+		return fmt.Errorf("unable to populate preview image: %w", err)
 	}
 
-	err = populateThumbnail(ctx, media, source)
+	err = populateThumbnail(ctx, media, buffer.Bytes())
 	if err != nil {
-		return fmt.Errorf("unable to populate thumbnail: %e", err)
+		return fmt.Errorf("unable to populate thumbnail: %w", err)
 	}
 
 	return nil
@@ -111,18 +95,18 @@ func populateView(
 	ctx context.Context,
 	media *types.Media,
 	original *vips.Image,
-) (view *vips.Image, err error) {
-	zlog.Info().Str("id", media.ID.String()).Msg("populating view media for media")
+) error {
+	zlog.Info().
+		Str("name", media.Name).
+		Msg("populating view media for media")
 
-	err = ctx.Err()
+	err := ctx.Err()
 	if err != nil {
-		err = fmt.Errorf("context cancelled: %w", err)
-		return
+		return fmt.Errorf("context cancelled: %w", err)
 	}
 
 	if original == nil {
-		err = fmt.Errorf("invalid image")
-		return
+		return fmt.Errorf("invalid image")
 	}
 
 	media.ViewWidth = int32(original.Width())
@@ -131,22 +115,40 @@ func populateView(
 		media.ViewHeight = int32(original.PageHeight())
 	}
 
-	if mime.TypeByExtension(filepath.Ext(media.Original)) == "image/webp" {
-		// image is already webp so just reuse the original.
-		media.View = media.Original
-		return
+	if media.Original != "" {
+		if mime.TypeByExtension(filepath.Ext(media.Original)) == "image/webp" {
+			// image is already webp so just reuse the original.
+			media.View = media.Original
+			return nil
+		}
 	}
 
-	view, err = original.Copy(nil)
+	view, err := original.Copy(nil)
 	if err != nil {
-		err = fmt.Errorf("unable to copy original image: %w", err)
-		return
+		return fmt.Errorf("unable to copy original image: %w", err)
 	}
 
-	buf, err := view.WebpsaveBuffer(nil)
+	defer view.Close()
+
+	view.ThumbnailImage(VIEW_WIDTH,
+		&vips.ThumbnailImageOptions{
+			Size: vips.SizeDown,
+		})
+
+	media.ViewWidth = int32(original.Width())
+	media.ViewHeight = int32(original.Height())
+	if original.Pages() > 1 {
+		media.ViewHeight = int32(original.PageHeight())
+	}
+
+	buf, err := view.WebpsaveBuffer(
+		&vips.WebpsaveBufferOptions{
+			Q:      VIEW_QUALITY,
+			Effort: WEBP_EFFORT,
+		})
+
 	if err != nil {
-		err = fmt.Errorf("unable to save to webp image: %w", err)
-		return
+		return fmt.Errorf("unable to save to webp image: %w", err)
 	}
 
 	if media.View == "" || media.View == media.Original {
@@ -164,34 +166,35 @@ func populateView(
 	)
 
 	if err != nil {
-		err = fmt.Errorf("unable to put object to S3: %w", err)
-		return
+		return fmt.Errorf("unable to put object to S3: %w", err)
 	}
 
-	return
+	return nil
 }
 
 func populatePreview(
 	ctx context.Context,
 	media *types.Media,
-	view *vips.Image,
+	original *vips.Image,
 ) error {
-	zlog.Info().Str("id", media.ID.String()).Msg("populating preview media for media")
+	zlog.Info().
+		Str("name", media.Name).
+		Msg("populating preview media for media")
 
 	err := ctx.Err()
 	if err != nil {
 		return fmt.Errorf("context cancelled: %w", err)
 	}
 
-	media.ImageFrames = int32(view.Pages())
+	media.ImageFrames = int32(original.Pages())
 
-	preview, err := view.Copy(nil)
+	preview, err := original.Copy(nil)
 	if err != nil {
 		return fmt.Errorf("unable to create copy image: %w", err)
 	}
 	defer preview.Close()
 
-	err = view.ThumbnailImage(1_000_000, &vips.ThumbnailImageOptions{
+	err = original.ThumbnailImage(1_000_000, &vips.ThumbnailImageOptions{
 		Height: THUMBNAIL_HEIGHT,
 		Crop:   vips.InterestingNone,
 	})
@@ -202,6 +205,8 @@ func populatePreview(
 
 	params := vips.DefaultWebpsaveBufferOptions()
 	params.Q = THUMBNAIL_QUALITY
+	params.Effort = WEBP_EFFORT
+	params.Keep = vips.KeepNone
 	params.PageHeight = preview.PageHeight()
 
 	buf, err := preview.WebpsaveBuffer(params)
@@ -233,16 +238,18 @@ func populatePreview(
 func populateThumbnail(
 	ctx context.Context,
 	media *types.Media,
-	source *vips.Source,
+	buffer []byte,
 ) error {
-	zlog.Info().Str("id", media.ID.String()).Msg("populating thumbnail media for media")
+	zlog.Info().
+		Str("name", media.Name).
+		Msg("populating thumbnail media for media")
 
 	err := ctx.Err()
 	if err != nil {
 		return fmt.Errorf("context cancelled: %w", err)
 	}
 
-	thumbnail, err := vips.NewImageFromSource(source, &vips.LoadOptions{})
+	thumbnail, err := vips.NewImageFromBuffer(buffer, &vips.LoadOptions{})
 
 	if err != nil {
 		return fmt.Errorf("unable to read image from source: %w", err)
@@ -263,6 +270,8 @@ func populateThumbnail(
 
 	params := vips.DefaultWebpsaveBufferOptions()
 	params.Q = THUMBNAIL_QUALITY
+	params.Effort = WEBP_EFFORT
+	params.Keep = vips.KeepNone
 
 	buf, err := thumbnail.WebpsaveBuffer(params)
 	if err != nil {

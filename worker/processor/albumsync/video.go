@@ -1,4 +1,4 @@
-package media
+package albumsync
 
 import (
 	"context"
@@ -21,8 +21,13 @@ import (
 const VIDEO_WIDTH = 1280
 const VIDEO_HEIGHT = 720
 
-func ProcessVideoMedia(ctx context.Context, media *types.Media) error {
-	zlog.Info().Str("id", media.ID.Hex()).Msg("process video asset")
+func ProcessVideoMedia(ctx context.Context,
+	media *types.Media,
+	reader io.ReadCloser,
+) error {
+	zlog.Info().
+		Str("name", media.Name).
+		Msg("process video asset")
 
 	err := ctx.Err()
 	if err != nil {
@@ -30,38 +35,26 @@ func ProcessVideoMedia(ctx context.Context, media *types.Media) error {
 		return fmt.Errorf("context cancelled: %w", err)
 	}
 
-	s3Obj, err := s3.GetObject(
-		ctx,
-		media.Original,
-		minio.GetObjectOptions{},
-	)
+	originalFile, ok := reader.(*os.File)
+	if !ok {
+		originalFile, err = os.CreateTemp("",
+			fmt.Sprintf("album_archive_*%s", filepath.Ext(media.Name)),
+		)
 
-	if err != nil {
-		return fmt.Errorf("unable to get object from s3: %w", err)
-	}
-	defer func() {
-		err = s3Obj.Close()
 		if err != nil {
-			zlog.Error().Err(err).Msg("error closing S3 object")
+			return fmt.Errorf("unable to create temp file for original file: %w", err)
 		}
-	}()
 
-	originalFile, err := os.CreateTemp("",
-		fmt.Sprintf("*.%s", filepath.Base(media.Original)),
-	)
+		defer func() {
+			err = os.Remove(originalFile.Name())
+			if err != nil {
+				zlog.Error().Err(err).Msg("error removing temporary source file: %w")
+			}
+		}()
 
-	if err != nil {
-		return fmt.Errorf("unable to create temp file for original file: %w", err)
+		_, err = io.Copy(originalFile, reader)
 	}
 
-	defer func() {
-		err = os.Remove(originalFile.Name())
-		if err != nil {
-			zlog.Error().Err(err).Msg("error removing temporary source file: %w")
-		}
-	}()
-
-	_, err = io.Copy(originalFile, s3Obj)
 	if err != nil {
 		return fmt.Errorf("unable to copy data from S3 to temporary file: %w", err)
 	}
@@ -93,7 +86,10 @@ func processVideoView(
 	ctx context.Context, media *types.Media,
 	originalFile *os.File,
 ) error {
-	zlog.Info().Str("id", media.ID.Hex()).Msg("process video asset view media")
+	zlog.Info().
+		Str("name", media.Name).
+		Msg("process video asset view media")
+
 	err := ctx.Err()
 	if err != nil {
 		return fmt.Errorf("context cancelled: %w", err)
@@ -167,9 +163,14 @@ func processVideoView(
 }
 
 func processVideoThumbnail(
-	ctx context.Context, media *types.Media, originalFile *os.File, info video.Probe,
+	ctx context.Context,
+	media *types.Media,
+	originalFile *os.File,
+	info video.Probe,
 ) error {
-	zlog.Info().Str("id", media.ID.Hex()).Msg("process video asset thumbnail")
+	zlog.Info().
+		Str("name", media.Name).
+		Msg("process video asset thumbnail")
 	err := ctx.Err()
 	if err != nil {
 		return fmt.Errorf("context cancelled: %w", err)
@@ -245,7 +246,10 @@ func processVideoPreview(
 	ctx context.Context, media *types.Media,
 	originalFile *os.File, info video.Probe,
 ) error {
-	zlog.Info().Str("id", media.ID.Hex()).Msg("process video preview")
+	zlog.Info().
+		Str("name", media.Name).
+		Msg("process video preview")
+
 	err := ctx.Err()
 	if err != nil {
 		return fmt.Errorf("context cancelled: %w", err)

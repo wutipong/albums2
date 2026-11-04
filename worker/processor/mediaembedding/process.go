@@ -1,4 +1,4 @@
-package embedding
+package mediaembedding
 
 import (
 	"context"
@@ -24,7 +24,7 @@ type Processor struct {
 }
 
 func (p *Processor) GetType() string {
-	return "embedding"
+	return "media.embedding"
 }
 
 func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) error {
@@ -122,19 +122,6 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 	if err != nil {
 		return fmt.Errorf("unable to update media information: %w", err)
 	}
-
-	/// TODO: remove object after processed.
-	/*
-		if media.Original != media.View &&
-			media.Original != media.Preview &&
-			media.Original != media.Thumbnail {
-
-			err = s3.RemoveObject(ctx,
-				media.Original,
-				minio.RemoveObjectOptions{},
-			)
-		}
-	*/
 
 	zlog.Info().Str("id", objID.String()).Msg("process media embedding complete")
 

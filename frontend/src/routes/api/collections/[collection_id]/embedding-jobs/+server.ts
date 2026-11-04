@@ -8,7 +8,7 @@ export const POST: RequestHandler = async ({ params }) => {
 	for (const m of media) {
 		tasks.push(
 			JSON.stringify({
-				type: 'embedding',
+				type: 'media.embedding',
 				payload: {
 					id: m._id
 				}
@@ -16,7 +16,7 @@ export const POST: RequestHandler = async ({ params }) => {
 		);
 	}
 
-	const count = await redis.LPUSH('tasks', tasks);
+	const count = await redis.RPUSH('tasks', tasks);
 
 	return Response.json({
 		success: true,

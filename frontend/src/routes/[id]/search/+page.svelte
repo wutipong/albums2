@@ -15,6 +15,7 @@
 	import MediaInfoDialog from '#lib/components/MediaInfoDialog.svelte';
 	import NavBar from '#lib/components/NavBar.svelte';
 	import Toast from '#lib/components/Toast.svelte';
+	import ConfirmationDialog from '#lib/components/ConfirmationDialog.svelte';
 
 	const { data } = $props();
 	$inspect(data);
@@ -52,6 +53,10 @@
 	}
 
 	async function createCollectionCover() {
+		if (!(await confirmationDialog.show('Set this media as the collection cover?'))) {
+			return;
+		}
+
 		const resp = await fetch(`/api/media/${current._id}/collectioncover`, {
 			method: 'POST'
 		});
@@ -96,6 +101,7 @@
 	}
 	let mediaInfoDlg: MediaInfoDialog;
 	let toast: Toast;
+	let confirmationDialog: ConfirmationDialog;
 </script>
 
 <svelte:head>
@@ -159,6 +165,7 @@
 
 <MediaInfoDialog bind:this={mediaInfoDlg} />
 <Toast bind:this={toast} />
+<ConfirmationDialog bind:this={confirmationDialog} />
 
 {#snippet viewMenu()}
 	<li>

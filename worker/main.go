@@ -17,11 +17,11 @@ import (
 	"github.com/rs/zerolog"
 	zlog "github.com/rs/zerolog/log"
 	"github.com/wutipong/albums2/worker/processor"
-	"github.com/wutipong/albums2/worker/processor/albumcover"
-	"github.com/wutipong/albums2/worker/processor/collectioncover"
+	"github.com/wutipong/albums2/worker/processor/albumsync"
 	"github.com/wutipong/albums2/worker/processor/collectionsync"
-	"github.com/wutipong/albums2/worker/processor/embedding"
-	"github.com/wutipong/albums2/worker/processor/media"
+	"github.com/wutipong/albums2/worker/processor/mediaalbumcover"
+	"github.com/wutipong/albums2/worker/processor/mediacollectioncover"
+	"github.com/wutipong/albums2/worker/processor/mediaembedding"
 	"github.com/wutipong/albums2/worker/util"
 	"github.com/wutipong/albums2/worker/util/db"
 	"github.com/wutipong/albums2/worker/util/s3"
@@ -153,19 +153,9 @@ func main() {
 
 	db.Init(client, cs.Database, redisClient)
 
-	err = processor.RegisterProcessor(&media.Processor{})
+	err = processor.RegisterProcessor(&albumsync.Processor{})
 	if err != nil {
-		zlog.Error().Err(err).Msg("failed to register media processor")
-		os.Exit(-1)
-	}
-	err = processor.RegisterProcessor(&albumcover.Processor{})
-	if err != nil {
-		zlog.Error().Err(err).Msg("failed to register album cover processor")
-		os.Exit(-1)
-	}
-	err = processor.RegisterProcessor(&collectioncover.Processor{})
-	if err != nil {
-		zlog.Error().Err(err).Msg("failed to register collection cover processor")
+		zlog.Error().Err(err).Msg("failed to register album sync processor")
 		os.Exit(-1)
 	}
 
@@ -174,7 +164,20 @@ func main() {
 		zlog.Error().Err(err).Msg("failed to register collection sync processor")
 		os.Exit(-1)
 	}
-	err = processor.RegisterProcessor(&embedding.Processor{})
+
+	err = processor.RegisterProcessor(&mediaalbumcover.Processor{})
+	if err != nil {
+		zlog.Error().Err(err).Msg("failed to register album cover processor")
+		os.Exit(-1)
+	}
+
+	err = processor.RegisterProcessor(&mediacollectioncover.Processor{})
+	if err != nil {
+		zlog.Error().Err(err).Msg("failed to register collection cover processor")
+		os.Exit(-1)
+	}
+
+	err = processor.RegisterProcessor(&mediaembedding.Processor{})
 	if err != nil {
 		zlog.Error().Err(err).Msg("failed to register embedding processor")
 		os.Exit(-1)
@@ -266,10 +269,10 @@ func DrainExistings(ctx context.Context, redisClient *redis.Client, processingLi
 				err = Process(ctx, redisClient, processingList, str)
 				if err != nil {
 					zlog.Error().Err(err).Msg("Task process error")
-					redisClient.LPush(ctx, "errors", str)
+					redisClient.RPush(ctx, "errors", str)
 					continue
 				}
-				redisClient.LPush(ctx, "done", str)
+				redisClient.RPush(ctx, "done", str)
 			}
 		}
 	}

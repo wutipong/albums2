@@ -72,7 +72,7 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 	collection := types.Collection{}
 	r = db.MongoDB().
 		Collection("collections").
-		FindOne(ctx, bson.D{{Key: "_id", Value: albumId}})
+		FindOne(ctx, bson.D{{Key: "_id", Value: album.CollectionID}})
 
 	if r.Err() != nil {
 		return fmt.Errorf("unable to get collection information: %w", r.Err())

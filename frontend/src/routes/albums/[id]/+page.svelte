@@ -12,7 +12,10 @@
 		mdiDownload,
 		mdiLoading,
 		mdiFeatureSearchOutline,
-		mdiBookOpenVariant
+		mdiBookOpenVariant,
+
+		mdiSyncCircle
+
 	} from '@mdi/js';
 	import log from '#lib/log.js';
 	import { untrack } from 'svelte';
@@ -65,29 +68,6 @@
 		isLoading = false;
 	}
 
-	async function createRenditionJobs() {
-		log.debug('request renditions.');
-		const resp = await fetch(`/api/albums/${album._id}/rendition-jobs`, {
-			method: 'POST'
-		});
-
-		const obj = await resp.json();
-
-		toast.add(`Media processing started for ${obj.count} media.`, 'info');
-		return true;
-	}
-
-	async function createRenditionJob() {
-		const resp = await fetch(`/api/media/${current._id}/rendition-job`, {
-			method: 'POST'
-		});
-
-		const obj = await resp.json();
-
-		toast.add('Media processing started.', 'info');
-		return true;
-	}
-
 	async function createEmbeddingJobs() {
 		const resp = await fetch(`/api/albums/${album._id}/embedding-jobs`, {
 			method: 'POST'
@@ -133,6 +113,17 @@
 		return true;
 	}
 
+	async function createSynchronizeJob(){
+		const resp = await fetch(`/api/albums/${album._id}/synchronize-job`, {
+			method: 'POST'
+		});
+
+		const obj = await resp.json();
+		toast.add('Album synchronization started.', 'info');
+
+		return true;
+	}
+
 	// Reusable Svelte 5 action
 	function observeVisibility(node: Element, options = { threshold: 0.1 }) {
 		const observer = new IntersectionObserver(([entry]) => {
@@ -170,9 +161,9 @@
 		<li></li>
 		<li class="menu-item">Administration actions</li>
 		<li>
-			<button onclick={createRenditionJobs}>
-				<Icon path={mdiBlender} />
-				Process media
+			<button onclick={createSynchronizeJob}>
+				<Icon path={mdiSyncCircle} />
+				Synchonize
 			</button>
 		</li>
 		<li>
@@ -293,15 +284,6 @@
 			</button>
 		</li>
 
-		<li>
-			<button
-				onclick={() => {
-					createRenditionJob();
-				}}
-			>
-				<Icon path={mdiBlender} /> Re-process this asset.
-			</button>
-		</li>
 		<li>
 			<button onclick={createEmbeddingJob}>
 				<Icon path={mdiFeatureSearchOutline} /> Generate search metadata

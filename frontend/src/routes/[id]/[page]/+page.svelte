@@ -34,18 +34,6 @@
 		return true;
 	}
 
-	async function createRenditionJobs() {
-		log.debug('request renditions.');
-		const resp = await fetch(`/api/collections/${data.collection._id}/rendition-jobs`, {
-			method: 'POST'
-		});
-
-		const obj = await resp.json();
-
-		toast.add('Media processing started.', 'info');
-		return true;
-	}
-
 	async function createEmbeddingJobs() {
 		log.debug('request renditions.');
 		const resp = await fetch(`/api/collections/${data.collection._id}/embedding-jobs`, {
@@ -77,12 +65,7 @@
 		<li class="menu-item">Administration actions</li>
 		<li>
 			<button onclick={createSyncJobs}>
-				<Icon path={mdiSync} /> Synchronize current collection
-			</button>
-		</li>
-		<li>
-			<button onclick={createRenditionJobs}>
-				<Icon path={mdiBlender} /> Process media
+				<Icon path={mdiSync} /> Synchronize
 			</button>
 		</li>
 		<li>

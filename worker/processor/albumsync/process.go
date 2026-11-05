@@ -150,7 +150,7 @@ func postMediaEmbedding(ctx context.Context, album types.Album) error {
 
 		for _, m := range medias {
 			task := processor.PostTaskRequest{
-				Type: "album.sync",
+				Type: "media.embedding",
 				Payload: mediaembedding.Payload{
 					ID: m.ID.Hex(),
 				},
@@ -162,7 +162,7 @@ func postMediaEmbedding(ctx context.Context, album types.Album) error {
 			}
 			tasks = append(tasks, string(taskStr))
 		}
-		db.Redis().RPush(ctx, "tasks", tasks)
+		db.Redis().LPush(ctx, "tasks", tasks)
 	}
 
 	return nil
@@ -190,7 +190,7 @@ func postMediaAlbumCover(ctx context.Context, album types.Album) error {
 	if err != nil {
 		return fmt.Errorf("failed to create request: %w", err)
 	}
-	db.Redis().RPush(ctx, "tasks", taskStr)
+	db.Redis().LPush(ctx, "tasks", taskStr)
 
 	return nil
 }

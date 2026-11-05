@@ -22,7 +22,7 @@ export interface Album {
 	collectionId?: ObjectId;
 	objectKey: string;
 	cover?: string;
-	lastSyncAt? : Date
+	lastSyncAt?: Date;
 	createdAt?: Date;
 	updatedAt?: Date;
 	deletedAt?: Date;

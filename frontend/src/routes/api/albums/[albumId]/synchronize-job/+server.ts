@@ -5,12 +5,15 @@ import log from '#lib/log.js';
 export const POST: RequestHandler = async ({ params }) => {
 	log.debug(params, 'album synchronize');
 
-	const count = await redis.RPUSH('tasks', JSON.stringify({
-		type: 'album.sync',
-		payload: {
-			id: params.albumId
-		}
-	}));
+	const count = await redis.RPUSH(
+		'tasks',
+		JSON.stringify({
+			type: 'album.sync',
+			payload: {
+				id: params.albumId
+			}
+		})
+	);
 
 	return Response.json({
 		success: true,

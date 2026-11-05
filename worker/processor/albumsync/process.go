@@ -234,7 +234,7 @@ func populateDirectoryMedia(
 
 		opts := options.Count().SetLimit(1)
 		count, err := db.MongoDB().Collection("media").
-			CountDocuments(ctx, bson.D{{Key: "objectKey", Value: obj.Key}}, opts)
+			CountDocuments(ctx, bson.D{{Key: "path", Value: obj.Key}}, opts)
 
 		if err != nil {
 			zlog.Error().Err(err).Msg("unable to count media")

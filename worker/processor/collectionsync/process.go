@@ -134,6 +134,12 @@ func purgeAlbums(
 			Msg("deleting missing album media")
 
 		for _, album := range albums {
+			err = deleteMediaCacheObjects(ctx, album)
+			if err != nil {
+				zlog.Error().Err(err).
+					Str("album", album.Name).
+					Msg("unable to delete media objects.")
+			}
 			r, err := db.MongoDB().Collection("media").
 				DeleteMany(ctx, bson.D{
 					{Key: "albumId", Value: album.ID},
@@ -168,6 +174,69 @@ func purgeAlbums(
 		Bool("acknownledged", r.Acknowledged).
 		Msg("albums have been deleted")
 
+	return nil
+}
+
+func deleteMediaCacheObjects(
+	ctx context.Context,
+	album types.Album,
+) error {
+	pageSize := int64(100)
+	skip := int64(0)
+	objectsCh := make(chan minio.ObjectInfo)
+
+	go func() {
+		defer close(objectsCh)
+		for {
+			opts := options.Find().SetLimit(pageSize).SetSkip(skip)
+			cursor, err := db.MongoDB().Collection("media").
+				Find(
+					ctx,
+					bson.D{
+						{Key: "albumId", Value: album.ID},
+					},
+					opts,
+				)
+
+			if err != nil {
+				zlog.Error().Err(err).Msg("unable to get media")
+				return
+			}
+
+			var medias []types.Media
+			if err := cursor.All(ctx, &medias); err != nil {
+				cursor.Close(ctx)
+				zlog.Error().Err(err).Msg("unable to parse media")
+
+				return
+			}
+			cursor.Close(ctx)
+
+			if len(medias) == 0 {
+				break
+			}
+
+			skip = skip + int64(len(medias))
+
+			zlog.Info().
+				Str("album", album.Name).
+				Msg("deleting missing album media")
+
+			for _, m := range medias {
+				if strings.HasPrefix(m.View, "_cache") {
+					objectsCh <- minio.ObjectInfo{Key: m.View}
+				}
+
+				if strings.HasPrefix(m.Preview, "_cache") {
+					objectsCh <- minio.ObjectInfo{Key: m.Preview}
+				}
+
+				if strings.HasPrefix(m.Thumbnail, "_cache") {
+					objectsCh <- minio.ObjectInfo{Key: m.Thumbnail}
+				}
+			}
+		}
+	}()
 	return nil
 }
 

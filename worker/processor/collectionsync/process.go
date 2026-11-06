@@ -181,65 +181,23 @@ func deleteMediaCacheObjects(
 	ctx context.Context,
 	album types.Album,
 ) error {
-	pageSize := int64(100)
-	skip := int64(0)
-	objectsCh := make(chan minio.ObjectInfo)
+	opts := minio.ListObjectsOptions{
+		Prefix:    s3.CreateAssetKeyPrefix(album.CollectionID.Hex(), album.ID.Hex()),
+		Recursive: true, // Crucial to catch nested items
+	}
 
-	go func() {
-		defer close(objectsCh)
-		for {
-			opts := options.Find().SetLimit(pageSize).SetSkip(skip)
-			cursor, err := db.MongoDB().Collection("media").
-				Find(
-					ctx,
-					bson.D{
-						{Key: "albumId", Value: album.ID},
-					},
-					opts,
-				)
+	objectsCh := s3.Client().ListObjects(ctx, s3.Bucket(), opts)
+	errorCh := s3.Client().RemoveObjects(ctx, s3.Bucket(), objectsCh, minio.RemoveObjectsOptions{})
+	hasErrors := false
+	for e := range errorCh {
+		zlog.Error().Err(e.Err).Str("key", e.ObjectName).Msg("failed to delete object")
+		hasErrors = true
+	}
 
-			if err != nil {
-				zlog.Error().Err(err).Msg("unable to get media")
-				return
-			}
+	if !hasErrors {
+		zlog.Info().Str("album", album.Name).Msg("Successfully deleted all media cache object")
+	}
 
-			var medias []types.Media
-			if err := cursor.All(ctx, &medias); err != nil {
-				cursor.Close(ctx)
-				zlog.Error().Err(err).Msg("unable to parse media")
-
-				return
-			}
-			cursor.Close(ctx)
-
-			if len(medias) == 0 {
-				break
-			}
-
-			skip = skip + int64(len(medias))
-
-			zlog.Info().
-				Str("album", album.Name).
-				Msg("deleting missing album media")
-
-			for _, m := range medias {
-				if strings.HasPrefix(m.View, "_cache") {
-					zlog.Debug().Str("key", m.View).Msg("object to be delete.")
-					objectsCh <- minio.ObjectInfo{Key: m.View}
-				}
-
-				if strings.HasPrefix(m.Preview, "_cache") {
-					zlog.Debug().Str("key", m.Preview).Msg("object to be delete.")
-					objectsCh <- minio.ObjectInfo{Key: m.Preview}
-				}
-
-				if strings.HasPrefix(m.Thumbnail, "_cache") {
-					zlog.Debug().Str("key", m.Thumbnail).Msg("object to be delete.")
-					objectsCh <- minio.ObjectInfo{Key: m.Thumbnail}
-				}
-			}
-		}
-	}()
 	return nil
 }
 

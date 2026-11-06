@@ -11,6 +11,7 @@ import (
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	zlog "github.com/rs/zerolog/log"
+	"github.com/wutipong/albums2/worker/types"
 )
 
 var (
@@ -84,14 +85,16 @@ func GetMinioEndpoint(input string) (endpoint string, secure bool, err error) {
 	return
 }
 
-func CreateAssetKey(extension string) string {
+func CreateAssetKey(media types.Media, extension string) string {
 	u := uuid.NewV4()
 
 	keyStr := strings.ReplaceAll(u.String(), "-", "")
-	tier1 := keyStr[0:2]
-	tier2 := keyStr[2:4]
 
-	return fmt.Sprintf("_cache/%s/%s/%s%s", tier1, tier2, keyStr, extension)
+	return fmt.Sprintf("_cache/%s/%s/%s%s",
+		media.CollectionID,
+		media.CollectionID,
+		keyStr,
+		extension)
 }
 
 func PutObject(

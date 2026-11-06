@@ -96,7 +96,7 @@ func processVideoView(
 	}
 
 	if media.View == "" || media.View == media.Original {
-		media.View = s3.CreateAssetKey(".mp4")
+		media.View = s3.CreateAssetKey(*media, ".mp4")
 	}
 	outputFile, err := os.CreateTemp("", "*view.mp4")
 	if err != nil {
@@ -222,7 +222,7 @@ func processVideoThumbnail(
 	media.ThumbnailWidth = int32((THUMBNAIL_HEIGHT * image.Width()) / image.Height())
 
 	if media.Thumbnail == "" || media.Thumbnail == media.Original {
-		media.Thumbnail = s3.CreateAssetKey(".webp")
+		media.Thumbnail = s3.CreateAssetKey(*media, ".webp")
 	}
 
 	_, err = s3.PutObject(
@@ -285,7 +285,7 @@ func processVideoPreview(
 	}
 
 	if media.Preview == "" || media.Preview == media.Original {
-		media.Preview = s3.CreateAssetKey(".webp")
+		media.Preview = s3.CreateAssetKey(*media, ".webp")
 	}
 	_, err = s3.PutObject(
 		ctx,

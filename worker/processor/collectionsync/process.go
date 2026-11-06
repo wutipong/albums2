@@ -224,14 +224,17 @@ func deleteMediaCacheObjects(
 
 			for _, m := range medias {
 				if strings.HasPrefix(m.View, "_cache") {
+					zlog.Debug().Str("key", m.View).Msg("object to be delete.")
 					objectsCh <- minio.ObjectInfo{Key: m.View}
 				}
 
 				if strings.HasPrefix(m.Preview, "_cache") {
+					zlog.Debug().Str("key", m.Preview).Msg("object to be delete.")
 					objectsCh <- minio.ObjectInfo{Key: m.Preview}
 				}
 
 				if strings.HasPrefix(m.Thumbnail, "_cache") {
+					zlog.Debug().Str("key", m.Thumbnail).Msg("object to be delete.")
 					objectsCh <- minio.ObjectInfo{Key: m.Thumbnail}
 				}
 			}

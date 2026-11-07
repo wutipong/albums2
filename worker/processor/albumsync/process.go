@@ -131,10 +131,16 @@ func postMediaEmbedding(ctx context.Context, album types.Album) error {
 
 		var medias []types.Media
 		if err := cursor.All(ctx, &medias); err != nil {
-			cursor.Close(ctx)
+			e := cursor.Close(ctx)
+			if e != nil {
+				zlog.Error().Err(e).Msg("error closing database cursor")
+			}
 			return fmt.Errorf("unable to parse albums: %w", err)
 		}
-		cursor.Close(ctx)
+		err = cursor.Close(ctx)
+		if err != nil {
+			zlog.Error().Err(err).Msg("error closing database cursor")
+		}
 
 		if len(medias) == 0 {
 			break
@@ -254,6 +260,10 @@ func populateDirectoryMedia(
 
 		data, err := s3.GetObject(ctx, obj.Key, minio.GetObjectOptions{})
 
+		if err != nil {
+			return fmt.Errorf("unable to get media object")
+		}
+
 		media := types.Media{
 			Name:          name,
 			CollectionID:  collection.ID,
@@ -302,7 +312,12 @@ func processArchiveInDirectory(
 	if err != nil {
 		return fmt.Errorf("unable to get object from S3: %w", err)
 	}
-	defer o.Close()
+	defer func() {
+		err = o.Close()
+		if err != nil {
+			zlog.Error().Err(err).Msg("error closing S3 object.")
+		}
+	}()
 
 	format, _, err := archives.Identify(ctx, obj.Key, o)
 	if err != nil {
@@ -316,7 +331,7 @@ func processArchiveInDirectory(
 
 	zlog.Info().Str("format", format.MediaType()).Msg("found archive")
 
-	ex.Extract(ctx, o, func(ctx context.Context, f archives.FileInfo) error {
+	err = ex.Extract(ctx, o, func(ctx context.Context, f archives.FileInfo) error {
 		zlog.Info().Str("name", f.Name()).Int64("size", f.Size()).Msg("found file in archive")
 
 		decodedName := charset.Decode(f.NameInArchive)
@@ -363,7 +378,12 @@ func processArchiveInDirectory(
 			zlog.Error().Err(err).Msg("unable to open file in archive")
 			return nil
 		}
-		defer file.Close()
+		defer func() {
+			err = file.Close()
+			if err != nil {
+				zlog.Error().Err(err).Msg("error closing archive file info.")
+			}
+		}()
 
 		name := path[len(album.ObjectKey):] // remove album prefix
 		if name[0] == ':' {
@@ -402,6 +422,10 @@ func processArchiveInDirectory(
 		return nil
 	})
 
+	if err != nil {
+		return fmt.Errorf("failed processing archive: %w", err)
+	}
+
 	return nil
 
 }
@@ -427,14 +451,25 @@ func processArchiveInArchive(
 		zlog.Error().Err(err).Msg("unable to open file in archive")
 		return fmt.Errorf("unable to open file in archive: %w", err)
 	}
-	defer reader.Close()
+	defer func() {
+		err = reader.Close()
+		if err != nil {
+			zlog.Error().Err(err).Msg("error closing archive file reader.")
+		}
+	}()
 
 	file, err := os.CreateTemp("", fmt.Sprintf("album_archive_*%s", filepath.Ext(decodedName)))
 	if err != nil {
 		zlog.Error().Err(err).Msg("unable to create temporary file")
 		return fmt.Errorf("unable to create temporary file: %w", err)
 	}
-	defer file.Close()
+
+	defer func() {
+		err = file.Close()
+		if err != nil {
+			zlog.Error().Err(err).Msg("error closing archive file info.")
+		}
+	}()
 
 	zlog.Info().Str("name", file.Name()).Str("source", decodedName).Msg("Creating a temp file")
 
@@ -507,7 +542,12 @@ func processArchiveInArchive(
 			zlog.Error().Err(err).Msg("unable to open file in archive")
 			return nil
 		}
-		defer file.Close()
+		defer func() {
+			err = file.Close()
+			if err != nil {
+				zlog.Error().Err(err).Msg("error closing archiv file info.")
+			}
+		}()
 
 		name := objPath[len(album.ObjectKey):] // remove album prefix
 		if name[0] == ':' {
@@ -573,7 +613,12 @@ func populateArchiveMedia(
 	if err != nil {
 		return fmt.Errorf("unable to get object from S3: %w", err)
 	}
-	defer obj.Close()
+	defer func() {
+		err = obj.Close()
+		if err != nil {
+			zlog.Error().Err(err).Msg("error closing S3 object.")
+		}
+	}()
 
 	format, _, err := archives.Identify(ctx, album.ObjectKey, obj)
 	if err != nil {
@@ -587,7 +632,7 @@ func populateArchiveMedia(
 
 	zlog.Info().Str("format", format.MediaType()).Msg("found archive")
 
-	ex.Extract(ctx, obj, func(ctx context.Context, f archives.FileInfo) error {
+	err = ex.Extract(ctx, obj, func(ctx context.Context, f archives.FileInfo) error {
 		decodedName := charset.Decode(f.NameInArchive)
 
 		zlog.Info().Str("name", decodedName).Int64("size", f.Size()).Msg("found file in archive")
@@ -627,7 +672,12 @@ func populateArchiveMedia(
 			zlog.Error().Err(err).Msg("unable to open file in archive")
 			return nil
 		}
-		defer file.Close()
+		defer func() {
+			err = file.Close()
+			if err != nil {
+				zlog.Error().Err(err).Msg("error closing archive file.")
+			}
+		}()
 
 		name := path[len(album.ObjectKey):] // remove album prefix
 		if name[0] == ':' {
@@ -670,6 +720,10 @@ func populateArchiveMedia(
 
 		return nil
 	})
+
+	if err != nil {
+		return fmt.Errorf("failed to populate archive media: %w", err)
+	}
 
 	return nil
 }

@@ -38,7 +38,10 @@ func ProcessImageMedia(ctx context.Context,
 	}
 
 	buffer := new(bytes.Buffer)
-	io.Copy(buffer, reader)
+	_, err = io.Copy(buffer, reader)
+	if err != nil {
+		return fmt.Errorf("failed to copy image data to buffer: %w", err)
+	}
 
 	zlog.Info().Msg("read original image file.")
 
@@ -130,10 +133,14 @@ func populateView(
 
 	defer view.Close()
 
-	view.ThumbnailImage(VIEW_WIDTH,
+	err = view.ThumbnailImage(VIEW_WIDTH,
 		&vips.ThumbnailImageOptions{
 			Size: vips.SizeDown,
 		})
+
+	if err != nil {
+		return fmt.Errorf("unable to resize image: %w", err)
+	}
 
 	media.ViewWidth = int32(original.Width())
 	media.ViewHeight = int32(original.Height())

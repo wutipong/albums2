@@ -84,6 +84,10 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 
 	err = postAlbumsSync(ctx, collection)
 
+	if err != nil {
+		zlog.Error().Err(err).Msg("failed to post album sync jobs")
+	}
+
 	zlog.Info().
 		Str("name", collection.Name).
 		Msg("collection sync completed")
@@ -118,10 +122,16 @@ func purgeAlbums(
 
 		var albums []types.Album
 		if err := cursor.All(ctx, &albums); err != nil {
-			cursor.Close(ctx)
+			e := cursor.Close(ctx)
+			if e != nil {
+				zlog.Error().Err(err).Msg("error closing database cursor")
+			}
 			return fmt.Errorf("unable to parse albums: %w", err)
 		}
-		cursor.Close(ctx)
+		err = cursor.Close(ctx)
+		if err != nil {
+			zlog.Error().Err(err).Msg("error closing database cursor")
+		}
 
 		if len(albums) == 0 {
 			break
@@ -290,10 +300,16 @@ func postAlbumsSync(ctx context.Context, collection types.Collection) error {
 
 		var albums []types.Album
 		if err := cursor.All(ctx, &albums); err != nil {
-			cursor.Close(ctx)
+			e := cursor.Close(ctx)
+			if e != nil {
+				zlog.Error().Err(err).Msg("error closing database cursor")
+			}
 			return fmt.Errorf("unable to parse albums: %w", err)
 		}
-		cursor.Close(ctx)
+		err = cursor.Close(ctx)
+		if err != nil {
+			zlog.Error().Err(err).Msg("error closing database cursor")
+		}
 
 		if len(albums) == 0 {
 			break

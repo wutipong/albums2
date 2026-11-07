@@ -136,7 +136,7 @@ func (p *Processor) ProcessImage(
 		return fmt.Errorf("unable to get source object: %w", err)
 	}
 
-	source := vips.NewSource(object)
+	source := vips.NewSource(io.NopCloser(object))
 	defer source.Close()
 
 	zlog.Info().Msg("read original image file.")

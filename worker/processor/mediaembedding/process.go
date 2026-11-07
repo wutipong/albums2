@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 
 	"github.com/minio/minio-go/v7"
 	zlog "github.com/rs/zerolog/log"
@@ -84,7 +85,7 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 		}
 	}()
 
-	src := vips.NewSource(object)
+	src := vips.NewSource(io.NopCloser(object))
 	defer src.Close()
 
 	img, err := vips.NewImageFromSource(src, vips.DefaultLoadOptions())

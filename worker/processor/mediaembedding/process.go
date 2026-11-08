@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"slices"
 
 	"github.com/minio/minio-go/v7"
 	zlog "github.com/rs/zerolog/log"
@@ -18,7 +19,8 @@ import (
 )
 
 type Payload struct {
-	ID string `json:"id"`
+	ID    string `json:"id"`
+	Force bool   `json:"force"`
 }
 
 type Processor struct {
@@ -29,7 +31,10 @@ func (p *Processor) GetType() string {
 }
 
 func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) error {
-	payload := Payload{}
+	payload := Payload{
+		ID:    "",
+		Force: false,
+	}
 	err := json.Unmarshal(req.Payload, &payload)
 	if err != nil {
 		return fmt.Errorf("unable to unmarshal the payload: %w", err)
@@ -41,7 +46,7 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 		return fmt.Errorf("invalid media id: %w", err)
 	}
 
-	zlog.Info().Str("id", objID.String()).Msg("populating embedding")
+	zlog.Info().Str("id", objID.Hex()).Msg("populating embedding")
 
 	result := db.MongoDB().
 		Collection("media").
@@ -67,6 +72,27 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 
 	if media.ProcessStatus != "processed" {
 		return fmt.Errorf("unable to populate embedding for unprocessed media")
+	}
+
+	if payload.Force {
+		zlog.Warn().
+			Str("media", media.Name).
+			Str("id", media.ID.Hex()).
+			Msg("embedding is forced to be populated")
+	}
+
+	if slices.ContainsFunc(
+		media.Embedding,
+		func(v float32) bool {
+			return v != 0
+		},
+	) == true || payload.Force {
+		zlog.Warn().
+			Str("media", media.Name).
+			Str("id", media.ID.Hex()).
+			Msg("embedding is already populated")
+
+		return nil
 	}
 
 	spec, err := service.GetImageSpec(ctx)

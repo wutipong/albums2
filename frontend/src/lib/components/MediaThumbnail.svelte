@@ -12,7 +12,6 @@
 	let thumbnailWidth = $derived((TARGET_HEIGHT * media.thumbnail_width) / media.thumbnail_height);
 	let thumbnailHeight = TARGET_HEIGHT;
 	let assetType = $derived(media.type);
-	let imageFrames = $derived(media.image_frames);
 
 	let thumbnailLoading = $state(true);
 	let previewLoading = $state(true);
@@ -32,8 +31,8 @@
 	<div class="relative h-full w-full">
 		<div
 			class:hidden={preview}
-			class="box-border h-full w-full overflow-hidden rounded-xl border-1 border-base-content/20"
-			style={`width: ${thumbnailWidth}px; height: ${thumbnailHeight}px;`}
+			class="box-border h-[var(--thumbnail-height)] w-[var(--thumbnail-width)] max-md:h-[var(--thumbnail-height-half)] max-md:w-[var(--thumbnail-width-half)] overflow-hidden rounded-xl border-1 border-base-content/20"
+			style={`--thumbnail-width: ${thumbnailWidth}px; --thumbnail-height: ${thumbnailHeight}px; --thumbnail-width-half: ${thumbnailWidth / 2}px; --thumbnail-height-half: ${thumbnailHeight / 2}px;`}
 		>
 			{#if media.thumbnailUrl === undefined || media.thumbnailUrl === ''}
 				{@html notAvailableSvg}
@@ -52,8 +51,8 @@
 
 		<div
 			class:hidden={!preview}
-			class="box-border h-full w-full overflow-hidden rounded-xl border-1 border-base-content/20"
-			style={`width: ${thumbnailWidth}px; height: ${thumbnailHeight}px;`}
+			class="box-border h-[var(--thumbnail-height)] w-[var(--thumbnail-width)] max-md:h-[var(--thumbnail-height-half)] max-md:w-[var(--thumbnail-width-half)] overflow-hidden rounded-xl border-1 border-base-content/20"
+			style={`--thumbnail-width: ${thumbnailWidth}px; --thumbnail-height: ${thumbnailHeight}px; --thumbnail-width-half: ${thumbnailWidth / 2}px; --thumbnail-height-half: ${thumbnailHeight / 2}px;`}
 		>
 			{#if media.previewUrl === undefined || media.previewUrl == ''}
 				{@html notAvailableSvg}
@@ -78,7 +77,7 @@
 				<div class="badge badge-soft badge-info"><Icon path={mdiMovie} /> Video</div>
 			{/if}
 
-			{#if imageFrames > 1}
+			{#if assetType === 'image' && media.imageFrames > 1}
 				<div class="badge badge-soft badge-info"><Icon path={mdiFilmstrip} /> Animation</div>
 			{/if}
 

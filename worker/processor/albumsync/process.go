@@ -339,7 +339,7 @@ func processArchiveInDirectory(
 
 		if _, _, err := archives.Identify(ctx, f.Name(), nil); err == nil {
 			zlog.Debug().Str("name", f.Name()).Msg("found archive file in archive")
-			if err = processArchiveInArchive(ctx, path, f, collection, album); err != nil {
+			if err = processArchiveInArchive(ctx, obj.Key, f, collection, album); err != nil {
 				zlog.Error().
 					Err(err).
 					Str("name", decodedName).

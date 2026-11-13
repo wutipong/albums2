@@ -55,10 +55,15 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 
 	zlog.Info().Str("album", payload.ID).Msg("processing album sync")
 
+	albumId, err := bson.ObjectIDFromHex(payload.ID)
+	if err != nil {
+		return fmt.Errorf("unable to parse collection id: %w", err)
+	}
+
 	if payload.Quick {
 		zlog.Info().Str("album", payload.ID).Msg("quick sync requested")
 
-		count, err := db.MongoDB().Collection("media").CountDocuments(ctx, bson.D{{Key: "albumId", Value: payload.ID}})
+		count, err := db.MongoDB().Collection("media").CountDocuments(ctx, bson.D{{Key: "albumId", Value: albumId}})
 		if err != nil {
 			return fmt.Errorf("unable to count media documents: %w", err)
 		}
@@ -66,11 +71,6 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 			zlog.Info().Str("album", payload.ID).Int64("media_count", count).Msg("media found for quick sync, skipping")
 			return nil
 		}
-	}
-
-	albumId, err := bson.ObjectIDFromHex(payload.ID)
-	if err != nil {
-		return fmt.Errorf("unable to parse collection id: %w", err)
 	}
 
 	r := db.MongoDB().

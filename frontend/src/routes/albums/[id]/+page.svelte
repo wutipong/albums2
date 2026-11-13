@@ -205,7 +205,7 @@
 
 	<div class="flex h-12 w-full flex-row gap-1 bg-base-300 p-3">
 		<Icon path={mdiBookOpenVariant} />
-		<div>{album.name}</div>
+		<div class="min-w-0 flex-1 truncate">{album.name}</div>
 	</div>
 
 	<div class="mx-4 overflow-auto pt-8">

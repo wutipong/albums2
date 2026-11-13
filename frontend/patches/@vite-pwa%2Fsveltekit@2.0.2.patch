@@ -1,0 +1,34 @@
+diff --git a/dist/context-C3nyXC5F.mjs b/dist/context-C3nyXC5F.mjs
+index 20c53df9c009e2418e45e2d77580f122ba19a7dd..8667d19ff342c2368ef446904eb566a739946292 100644
+--- a/dist/context-C3nyXC5F.mjs
++++ b/dist/context-C3nyXC5F.mjs
+@@ -1,4 +1,4 @@
+-import { findPackageJSON } from "node:module";
++import { createRequire } from "node:module";
+ import { hash } from "node:crypto";
+ import { promises, readFileSync } from "node:fs";
+ import path from "node:path";
+@@ -11,9 +11,9 @@ import { getMajor } from "verkit";
+ const base = pathToFileURL(`${process.cwd()}/`).href;
+ function findPackageJSONSafe(specifier, basePath) {
+ 	try {
+-		return findPackageJSON(specifier, basePath);
++		return createRequire(basePath).resolve(`${specifier}/package.json`);
+ 	} catch (error) {
+-		if (error?.code === "ERR_MODULE_NOT_FOUND") return;
++		if (error?.code === "MODULE_NOT_FOUND" || error?.code === "ERR_MODULE_NOT_FOUND") return;
+ 		throw error;
+ 	}
+ }
+diff --git a/dist/index.mjs b/dist/index.mjs
+index 866efb18897cf8eebd1fdc7de0f665a01fda63c6..8ae0a369ca2f3b1b2dad909c08eead59860967c1 100644
+--- a/dist/index.mjs
++++ b/dist/index.mjs
+@@ -16,6 +16,7 @@ import { generateWebManifest } from "@unplugin-pwa/core/generate-web-manifest";
+ function SvelteKitAdapterWrapper(ctx, adapter) {
+ 	const { adapt, ...options } = adapter ?? {};
+ 	return Object.assign(options, { async adapt(builder) {
++		await (await ctx.pwaAssetsGenerator)?.generate();
+ 		await ctx.runBuild();
+ 		return await adapt?.(builder);
+ 	} });

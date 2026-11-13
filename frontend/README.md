@@ -20,13 +20,14 @@ bun x sv@0.17.1 create --template minimal --types ts --add prettier eslint tailw
 
 ## Developing
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+Install dependencies with Bun, then start a development server:
 
 ```sh
-npm run dev
+bun install
+bun run --bun dev
 
 # or start the server and open the app in a new browser tab
-npm run dev -- --open
+bun run --bun dev --open
 ```
 
 ## Building
@@ -34,16 +35,18 @@ npm run dev -- --open
 To create a production version of your app:
 
 ```sh
-npm run build
+bun run --bun build
 ```
 
-You can preview the production build with `npm run preview`.
+You can preview the production build with `bun run --bun preview`.
 
-This project uses the Node adapter for self-hosted deployments. Build and start the generated server with:
+The project uses the Bun adapter for self-hosted deployments. Start the generated server with:
 
 ```sh
-bun run build
 bun run start
 ```
 
 The production server listens on port `3000` by default. Set `HOST` and `PORT` to change its bind address.
+
+Bun applies the patches in `patches/` during installation. They work around missing
+`node:module` APIs in the PWA dependencies; review them when upgrading those packages.

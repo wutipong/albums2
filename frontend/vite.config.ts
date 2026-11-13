@@ -24,6 +24,9 @@ export default defineConfig({
 			{
 				pwaAssets: {
 					image: 'static/icon.svg'
+				},
+				generateSW: {
+					globStrict: false
 				}
 			}
 		),

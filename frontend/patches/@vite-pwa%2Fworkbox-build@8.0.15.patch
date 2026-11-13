@@ -1,0 +1,25 @@
+diff --git a/dist/detector-DhMhccq1.mjs b/dist/detector-DhMhccq1.mjs
+index bcd23ebd993b6a5e72def403896cb865710a6800..926e02d899b3038e8430d40f5becdf7b376a1b45 100644
+--- a/dist/detector-DhMhccq1.mjs
++++ b/dist/detector-DhMhccq1.mjs
+@@ -7,7 +7,7 @@
+ */
+ import { n as __exportAll } from "./rolldown-runtime-C1vCxjx1.mjs";
+ import { t as BundlerNames } from "./utils-CoKZCXdC.mjs";
+-import { findPackageJSON } from "node:module";
++import { createRequire } from "node:module";
+ import { readFileSync } from "node:fs";
+ import { getMajor, isGreaterThanOrEqual } from "verkit";
+ // src/build/builder/detector.ts
+@@ -16,9 +16,9 @@ const base = import.meta.url;
+ const VITE_PLUS_CORE_PKG_NAME = "@voidzero-dev/vite-plus-core";
+ function findPackageJSONSafe(specifier, basePath) {
+ 	try {
+-		return findPackageJSON(specifier, basePath);
++		return createRequire(basePath).resolve(`${specifier}/package.json`);
+ 	} catch (error) {
+-		if (error?.code === "ERR_MODULE_NOT_FOUND") return;
++		if (error?.code === "MODULE_NOT_FOUND" || error?.code === "ERR_MODULE_NOT_FOUND") return;
+ 		throw error;
+ 	}
+ }

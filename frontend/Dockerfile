@@ -5,6 +5,7 @@ WORKDIR /app
 
 # Copy package files
 COPY package.json bun.lock ./
+COPY patches ./patches
 
 # Install dependencies
 RUN bun install --frozen-lockfile
@@ -12,10 +13,8 @@ RUN bun install --frozen-lockfile
 # Copy source code
 COPY . .
 
-RUN bunx svelte-kit sync
-
 # Build the application
-RUN bun run build
+RUN bun run --bun build
 
 # Production stage
 FROM oven/bun:alpine

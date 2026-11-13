@@ -327,7 +327,8 @@ func postAlbumsSync(ctx context.Context, collection types.Collection) error {
 			task := processor.PostTaskRequest{
 				Type: "album.sync",
 				Payload: albumsync.Payload{
-					ID: album.ID.Hex(),
+					ID:    album.ID.Hex(),
+					Quick: true,
 				},
 			}
 

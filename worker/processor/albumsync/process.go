@@ -39,17 +39,34 @@ func (p *Processor) GetType() string {
 }
 
 type Payload struct {
-	ID string `json:"id"`
+	ID    string `json:"id"`
+	Quick bool   `json:"quick"`
 }
 
 func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) error {
-	payload := Payload{}
+	payload := Payload{
+		ID:    "",
+		Quick: false,
+	}
 	err := json.Unmarshal(req.Payload, &payload)
 	if err != nil {
 		return fmt.Errorf("unable to unmarshal the payload: %w", err)
 	}
 
 	zlog.Info().Str("album", payload.ID).Msg("processing album sync")
+
+	if payload.Quick {
+		zlog.Info().Str("album", payload.ID).Msg("quick sync requested")
+
+		count, err := db.MongoDB().Collection("media").CountDocuments(ctx, bson.D{{Key: "albumId", Value: payload.ID}})
+		if err != nil {
+			return fmt.Errorf("unable to count media documents: %w", err)
+		}
+		if count != 0 {
+			zlog.Info().Str("album", payload.ID).Int64("media_count", count).Msg("media found for quick sync, skipping")
+			return nil
+		}
+	}
 
 	albumId, err := bson.ObjectIDFromHex(payload.ID)
 	if err != nil {

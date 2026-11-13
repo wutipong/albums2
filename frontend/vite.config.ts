@@ -1,7 +1,7 @@
 import { mdsvex } from 'mdsvex';
 import tailwindcss from '@tailwindcss/vite';
 import adapter from '@sveltejs/adapter-bun';
-import { sveltekit } from '@sveltejs/kit/vite';
+import { withPwa } from '@vite-pwa/sveltekit';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
@@ -9,17 +9,24 @@ export default defineConfig({
 		external: ['mongodb', 'bson']
 	},
 	plugins: [
-		sveltekit({
-			compilerOptions: {
-				// Force runes mode for the project, except for libraries. Can be removed in svelte 6.
-				runes: ({ filename }) =>
-					filename.split(/[/\\]/).includes('node_modules') ? undefined : true
-			},
+		withPwa(
+			{
+				compilerOptions: {
+					// Force runes mode for the project, except for libraries. Can be removed in svelte 6.
+					runes: ({ filename }) =>
+						filename.split(/[/\\]/).includes('node_modules') ? undefined : true
+				},
 
-			adapter: adapter(),
-			preprocess: [mdsvex({ extensions: ['.svx', '.md'] })],
-			extensions: ['.svelte', '.svx', '.md']
-		}),
+				adapter: adapter(),
+				preprocess: [mdsvex({ extensions: ['.svx', '.md'] })],
+				extensions: ['.svelte', '.svx', '.md']
+			},
+			{
+				pwaAssets: {
+					image: 'static/icon.svg'
+				}
+			}
+		),
 		tailwindcss()
 	]
 });

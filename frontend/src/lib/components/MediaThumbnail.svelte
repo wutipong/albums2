@@ -31,7 +31,7 @@
 	<div class="relative h-full w-full">
 		<div
 			class:hidden={preview}
-			class="box-border h-[var(--thumbnail-height)] w-[var(--thumbnail-width)] max-md:h-[var(--thumbnail-height-half)] max-md:w-[var(--thumbnail-width-half)] overflow-hidden rounded-xl border-1 border-base-content/20"
+			class="box-border h-[var(--thumbnail-height)] w-[var(--thumbnail-width)] overflow-hidden rounded-xl border-1 border-base-content/20 max-md:h-[var(--thumbnail-height-half)] max-md:w-[var(--thumbnail-width-half)]"
 			style={`--thumbnail-width: ${thumbnailWidth}px; --thumbnail-height: ${thumbnailHeight}px; --thumbnail-width-half: ${thumbnailWidth / 2}px; --thumbnail-height-half: ${thumbnailHeight / 2}px;`}
 		>
 			{#if media.thumbnailUrl === undefined || media.thumbnailUrl === ''}
@@ -51,7 +51,7 @@
 
 		<div
 			class:hidden={!preview}
-			class="box-border h-[var(--thumbnail-height)] w-[var(--thumbnail-width)] max-md:h-[var(--thumbnail-height-half)] max-md:w-[var(--thumbnail-width-half)] overflow-hidden rounded-xl border-1 border-base-content/20"
+			class="box-border h-[var(--thumbnail-height)] w-[var(--thumbnail-width)] overflow-hidden rounded-xl border-1 border-base-content/20 max-md:h-[var(--thumbnail-height-half)] max-md:w-[var(--thumbnail-width-half)]"
 			style={`--thumbnail-width: ${thumbnailWidth}px; --thumbnail-height: ${thumbnailHeight}px; --thumbnail-width-half: ${thumbnailWidth / 2}px; --thumbnail-height-half: ${thumbnailHeight / 2}px;`}
 		>
 			{#if media.previewUrl === undefined || media.previewUrl == ''}

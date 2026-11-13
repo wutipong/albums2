@@ -1,4 +1,5 @@
 import type { auth } from '#lib/server/auth.js';
+import '@unplugin-pwa/core/pwa-assets';
 
 // See https://svelte.dev/docs/kit/types#app.d.ts
 // for information about these interfaces

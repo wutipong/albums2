@@ -30,6 +30,8 @@
 		"@types/mime-types": "^3.0.1",
 		"@types/mongodb": "^4.0.7",
 		"@types/node": "^26",
+		"@vite-pwa/assets-generator": "^2.0.0",
+		"@vite-pwa/sveltekit": "^2.0.2",
 		"auth": "^1.6.23",
 		"daisyui": "^5.7.50",
 		"eslint": "^10.4.1",

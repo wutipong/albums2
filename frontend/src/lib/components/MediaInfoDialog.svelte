@@ -12,7 +12,7 @@
 		_id: ObjectId;
 		name: string;
 		createdAt: Date;
-		modifiedAt: Date;
+		updatedAt: Date;
 		type: string;
 		videoDuration?: any;
 		imageFrames?: number;
@@ -25,7 +25,7 @@
 		_id: new ObjectId(),
 		name: '<placeholder>',
 		createdAt: new Date(),
-		modifiedAt: new Date(),
+		updatedAt: new Date(),
 		type: 'image',
 		imageFrames: 1,
 		original: '',
@@ -90,7 +90,7 @@
 					</tr>
 					<tr>
 						<th>Modified At</th>
-						<td>{media.modifiedAt.toLocaleString()}</td>
+						<td>{media.updatedAt.toLocaleString()}</td>
 					</tr>
 					<tr>
 						<th>Type</th>

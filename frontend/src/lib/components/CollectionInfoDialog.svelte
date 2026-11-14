@@ -8,14 +8,14 @@
 		_id: ObjectId;
 		name: string;
 		createdAt: Date;
-		modifiedAt: Date;
+		updatedAt: Date;
 	}
 
 	let collection: Collection = $state({
 		_id: new ObjectId(),
 		name: '<placeholder>',
 		createdAt: new Date(),
-		modifiedAt: new Date()
+		updatedAt: new Date()
 	});
 
 	export function show(c: Collection) {
@@ -52,7 +52,7 @@
 					</tr>
 					<tr>
 						<th>Modified At</th>
-						<td>{collection.modifiedAt.toLocaleString()}</td>
+						<td>{collection.updatedAt.toLocaleString()}</td>
 					</tr>
 				</tbody>
 			</table>

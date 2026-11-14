@@ -1,5 +1,5 @@
 <script lang="ts"></script>
 
 <svelte:head>
-	<title>Albums2: Albums administration</title>
+	<title>albums2: Albums administration</title>
 </svelte:head>

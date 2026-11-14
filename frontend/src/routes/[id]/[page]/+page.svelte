@@ -63,7 +63,7 @@
 </script>
 
 <svelte:head>
-	<title>Albums2: {data.collection.name}</title>
+	<title>albums2: {data.collection.name}</title>
 </svelte:head>
 
 {#snippet menu()}

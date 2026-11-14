@@ -20,7 +20,7 @@
 </script>
 
 <svelte:head>
-	<title>Albums2: Collections</title>
+	<title>albums2: Collections</title>
 </svelte:head>
 
 <NavBar user={data.user} />

@@ -105,7 +105,7 @@
 </script>
 
 <svelte:head>
-	<title>Albums2: Search - {data.search}</title>
+	<title>albums2: Search - {data.search}</title>
 </svelte:head>
 
 <div class="relative flex h-screen w-screen flex-col">

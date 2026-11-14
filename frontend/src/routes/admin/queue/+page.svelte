@@ -5,7 +5,7 @@
 </script>
 
 <svelte:head>
-	<title>Albums2: Processing queue</title>
+	<title>albums2: Processing queue</title>
 </svelte:head>
 
 <div class="w-full p-4 pt-8">

@@ -8,14 +8,14 @@
 </script>
 
 <svelte:head>
-	<title>Albums2: About</title>
+	<title>albums2: About</title>
 </svelte:head>
 
 <NavBar user={data.user} up={{ description: 'Collections', icon: mdiLibraryShelves, url: '/' }} />
 
 <div class="overflow-auto p-4 pt-8">
 	<article class="mx-auto prose w-full md:w-200">
-		<h1>About Albums2</h1>
+		<h1>About albums2</h1>
 		<p>Version {version}</p>
 		<p>
 			<a

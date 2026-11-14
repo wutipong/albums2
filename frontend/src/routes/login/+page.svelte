@@ -7,7 +7,7 @@
 </script>
 
 <svelte:head>
-	<title>Albums2: Login</title>
+	<title>albums2: Login</title>
 </svelte:head>
 
 <div class="relative h-screen w-screen items-center justify-center">

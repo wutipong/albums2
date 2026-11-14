@@ -1,6 +1,6 @@
-# Albums2
+# albums2
 
-Albums2 is an application for browsing collections of images and videos stored in
+albums2 is an application for browsing collections of images and videos stored in
 S3-compatible object storage. It combines a SvelteKit frontend, a Go processing worker,
 and a Python service that generates image and text embeddings for semantic search.
 

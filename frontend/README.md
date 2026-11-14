@@ -1,6 +1,6 @@
-# Albums2 frontend
+# albums2 frontend
 
-Albums2 is a SvelteKit application for browsing image and video collections and albums.
+albums2 is a SvelteKit application for browsing image and video collections and albums.
 It uses Bun, MongoDB, Redis, S3-compatible storage, imgproxy, and an OIDC identity provider.
 Text search uses embeddings from the repository's gRPC ML service and MongoDB Vector Search.
 

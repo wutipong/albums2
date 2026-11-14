@@ -167,7 +167,7 @@
 </script>
 
 <svelte:head>
-	<title>Albums2: {album.name}</title>
+	<title>albums2: {album.name}</title>
 </svelte:head>
 
 {#snippet menu()}

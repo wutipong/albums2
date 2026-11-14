@@ -2,7 +2,7 @@
 </script>
 
 <svelte:head>
-	<title>Albums2: Login callback</title>
+	<title>albums2: Login callback</title>
 </svelte:head>
 
 Hello

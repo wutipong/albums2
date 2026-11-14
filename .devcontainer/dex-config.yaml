@@ -30,6 +30,6 @@ staticPasswords:
 staticClients:
   - id: albums2
     secret: albums-secret
-    name: "Albums2"
+    name: "albums2"
     redirectURIs:
       - 'http://localhost:5173/api/auth/callback/dex'

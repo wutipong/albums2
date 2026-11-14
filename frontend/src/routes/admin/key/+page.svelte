@@ -64,7 +64,7 @@
 </script>
 
 <svelte:head>
-	<title>Albums2: API Keys</title>
+	<title>albums2: API Keys</title>
 </svelte:head>
 
 <div class="w-full p-4 pt-8">

@@ -37,7 +37,17 @@
 	let current = $derived(mediaItems[index]);
 	let showViewer = $state(false);
 
-	function next() {
+	function hasNextPage() {
+		return (currentPage.page ?? 0) <= currentPage.totalPages;
+	}
+
+	async function next() {
+		if (index == mediaItems.length - 1) {
+			if (!(await loadNextPage())) {
+				return;
+			}
+		}
+
 		if (index == mediaItems.length - 1) {
 			return;
 		}
@@ -52,9 +62,9 @@
 		index = index - 1;
 	}
 
-	async function loadNextPage() {
-		if (currentPage.page == currentPage.totalPages) {
-			return;
+	async function loadNextPage(): Promise<boolean> {
+		if (!hasNextPage()) {
+			return false;
 		}
 
 		isLoading = true;
@@ -65,6 +75,7 @@
 		mediaItems = [...mediaItems, ...currentPage.docs];
 
 		isLoading = false;
+		return true;
 	}
 
 	async function createEmbeddingJobs() {
@@ -245,7 +256,7 @@
 			bind:show={showViewer}
 			{next}
 			{previous}
-			hasNext={index != mediaItems.length - 1}
+			hasNext={index != mediaItems.length - 1 || hasNextPage()}
 			hasPrevious={index != 0}
 			menu={viewMenu}
 		/>

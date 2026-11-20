@@ -9,7 +9,11 @@
 	const TARGET_HEIGHT = 300;
 
 	let preview = $state(false);
-	let thumbnailWidth = $derived((TARGET_HEIGHT * media.thumbnail_width) / media.thumbnail_height);
+	let thumbnailWidth = $derived(
+		media.thumbnailWidth > 0 && media.thumbnailHeight > 0
+			? (TARGET_HEIGHT * media.thumbnailWidth) / media.thumbnailHeight
+			: TARGET_HEIGHT
+	);
 	let thumbnailHeight = TARGET_HEIGHT;
 	let assetType = $derived(media.type);
 
@@ -19,8 +23,7 @@
 
 <button
 	tabindex="0"
-	class={`block cursor-pointer overflow-hidden rounded-xl p-4 
-		hover:bg-base-content/20 hover:shadow-xl`}
+	class="block max-w-full cursor-pointer overflow-hidden rounded-xl p-4 hover:bg-base-content/20 hover:shadow-xl"
 	onmouseenter={() => (preview = true)}
 	onmouseleave={() => (preview = false)}
 	onclick={() => {
@@ -31,7 +34,7 @@
 	<div class="relative h-full w-full">
 		<div
 			class:hidden={preview}
-			class="box-border h-[var(--thumbnail-height)] w-[var(--thumbnail-width)] overflow-hidden rounded-xl border-1 border-base-content/20 max-md:h-[var(--thumbnail-height-half)] max-md:w-[var(--thumbnail-width-half)]"
+			class="box-border h-[var(--thumbnail-height)] w-[var(--thumbnail-width)] max-w-full overflow-hidden rounded-xl border-1 border-base-content/20 max-md:h-[var(--thumbnail-height-half)] max-md:w-[var(--thumbnail-width-half)]"
 			style={`--thumbnail-width: ${thumbnailWidth}px; --thumbnail-height: ${thumbnailHeight}px; --thumbnail-width-half: ${thumbnailWidth / 2}px; --thumbnail-height-half: ${thumbnailHeight / 2}px;`}
 		>
 			{#if media.thumbnailUrl === undefined || media.thumbnailUrl === ''}
@@ -42,7 +45,7 @@
 					height={media.thumbnailHeight}
 					src={media.thumbnailUrl}
 					alt={media._id}
-					class="h-full w-full"
+					class="h-full w-auto max-w-none"
 					onload={() => (thumbnailLoading = false)}
 				/>
 				<div class="h-full w-full skeleton bg-base-100" class:hidden={!thumbnailLoading}></div>
@@ -51,7 +54,7 @@
 
 		<div
 			class:hidden={!preview}
-			class="box-border h-[var(--thumbnail-height)] w-[var(--thumbnail-width)] overflow-hidden rounded-xl border-1 border-base-content/20 max-md:h-[var(--thumbnail-height-half)] max-md:w-[var(--thumbnail-width-half)]"
+			class="box-border h-[var(--thumbnail-height)] w-[var(--thumbnail-width)] max-w-full overflow-hidden rounded-xl border-1 border-base-content/20 max-md:h-[var(--thumbnail-height-half)] max-md:w-[var(--thumbnail-width-half)]"
 			style={`--thumbnail-width: ${thumbnailWidth}px; --thumbnail-height: ${thumbnailHeight}px; --thumbnail-width-half: ${thumbnailWidth / 2}px; --thumbnail-height-half: ${thumbnailHeight / 2}px;`}
 		>
 			{#if media.previewUrl === undefined || media.previewUrl == ''}
@@ -62,7 +65,7 @@
 					height={media.thumbnailHeight}
 					src={media.previewUrl}
 					alt={media._id}
-					class="h-full w-full"
+					class="h-full w-auto max-w-none"
 					onload={() => (previewLoading = false)}
 				/>
 				<div

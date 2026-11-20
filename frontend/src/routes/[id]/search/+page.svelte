@@ -27,11 +27,14 @@
 	let current = $derived(mediaItems[index]);
 	let showViewer = $state(false);
 	let isLoading = $state(false);
+	let searchVersion = 0;
 
 	$effect(() => {
 		data.search;
+		searchVersion += 1;
 		mediaItems = data.media.docs;
 		currentPage = data.media;
+		isLoading = false;
 		index = 0;
 		showViewer = false;
 		resultsContainer?.scrollTo({ top: 0, behavior: 'smooth' });
@@ -68,20 +71,40 @@
 	}
 
 	async function loadNextPage() {
-		if (currentPage.page == currentPage.totalPages) {
+		if (isLoading || currentPage.page >= currentPage.totalPages) {
 			return;
 		}
 
+		const version = searchVersion;
+		const query = new URLSearchParams({
+			search: data.search,
+			page: String(currentPage.page + 1)
+		});
 		isLoading = true;
-		const resp = await fetch(
-			`/api/${data.collectionId}/search?search=${data.search}&page=${currentPage.page + 1}`
-		);
-		currentPage = await resp.json();
-		log.debug(currentPage);
-
-		mediaItems = [...mediaItems, ...currentPage.docs];
-
-		isLoading = false;
+		try {
+			const resp = await fetch(
+				`/api/collections/${encodeURIComponent(data.collectionId)}/search?${query}`
+			);
+			if (!resp.ok) {
+				throw new Error(`Search request failed: ${resp.status}`);
+			}
+			const nextPage = await resp.json();
+			if (version !== searchVersion) {
+				return;
+			}
+			currentPage = nextPage;
+			log.debug(currentPage);
+			mediaItems = [...mediaItems, ...currentPage.docs];
+		} catch (err) {
+			if (version === searchVersion) {
+				log.error(err, 'Failed to load more search results');
+				toast.add('Failed to load more search results. Please try again.', 'error');
+			}
+		} finally {
+			if (version === searchVersion) {
+				isLoading = false;
+			}
+		}
 	}
 
 	function observeVisibility(node: Element, options = { threshold: 0.1 }) {
@@ -137,16 +160,19 @@
 					/>
 				{/each}
 			</div>
-			<button
-				class="btn w-full btn-neutral"
-				class:hidden={currentPage.page == currentPage.totalPages}
-				class:disabled={isLoading}
-				onclick={loadNextPage}
-				use:observeVisibility
-			>
-				<Icon path={mdiLoading} spin={isLoading}></Icon>
-				Load More
-			</button>
+			{#if currentPage.page < currentPage.totalPages}
+				{#key `${data.collectionId}:${data.search}:${currentPage.page}`}
+					<button
+						class="btn w-full btn-neutral"
+						disabled={isLoading}
+						onclick={loadNextPage}
+						use:observeVisibility
+					>
+						<Icon path={mdiLoading} spin={isLoading}></Icon>
+						Load More
+					</button>
+				{/key}
+			{/if}
 		{/if}
 	</div>
 

@@ -86,7 +86,7 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 		func(v float32) bool {
 			return v != 0
 		},
-	) == true || payload.Force {
+	) || payload.Force {
 		zlog.Warn().
 			Str("media", media.Name).
 			Str("id", media.ID.Hex()).

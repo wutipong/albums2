@@ -12,7 +12,6 @@ import { sveltekitCookies } from 'better-auth/svelte-kit';
 import { getRequestEvent } from '$app/server';
 import { mongodbAdapter } from 'better-auth/adapters/mongodb';
 import { admin, genericOAuth } from 'better-auth/plugins';
-import { apiKey } from '@better-auth/api-key';
 import { client } from '#lib/server/database.js';
 
 const db = client.db();
@@ -34,10 +33,6 @@ export const auth = betterAuth({
 	},
 	plugins: [
 		admin(),
-		apiKey({
-			rateLimit: { enabled: false },
-			enableSessionForAPIKeys: true
-		}),
 		genericOAuth({
 			config: [
 				{

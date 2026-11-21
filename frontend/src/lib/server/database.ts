@@ -160,3 +160,21 @@ export const Album =
 export const Media =
 	(mongoose.models.Media as mongoose.AggregatePaginateModel<any> | undefined) ??
 	mongoose.model<any, mongoose.AggregatePaginateModel<any>>('Media', MediaSchema);
+
+export const AlbumSettingsScema = new mongoose.Schema({
+	excludedCoverNames: { type: [String] }
+});
+
+export interface SettingsDocument {
+	album?: {
+		excludedCoverNames?: string[];
+	};
+}
+
+export const SettingsSchema = new mongoose.Schema<SettingsDocument>({
+	album: AlbumSettingsScema
+});
+
+export const Settings =
+	(mongoose.models.Settings as mongoose.Model<SettingsDocument> | undefined) ??
+	mongoose.model<SettingsDocument>('Settings', SettingsSchema);

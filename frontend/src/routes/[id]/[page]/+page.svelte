@@ -57,6 +57,24 @@
 		return true;
 	}
 
+	async function createAlbumCoverJobs() {
+		if (
+			!(await confirmationDialog.show('Generate covers for all albums in this collection?'))
+		) {
+			return;
+		}
+
+		log.debug('request album cover jobs.');
+		const resp = await fetch(`/api/collections/${data.collection._id}/albumcover`, {
+			method: 'POST'
+		});
+
+		const obj = await resp.json();
+
+		toast.add('Album cover generation started.', 'info');
+		return true;
+	}
+
 	let collectionInfoDlg: CollectionInfoDialog;
 	let toast: Toast;
 	let confirmationDialog: ConfirmationDialog;
@@ -84,6 +102,12 @@
 			<button onclick={createEmbeddingJobs}>
 				<Icon path={mdiFeatureSearchOutline} />
 				Generate media search metadata
+			</button>
+		</li>
+		<li>
+			<button onclick={createAlbumCoverJobs}>
+				<Icon path={mdiBlender} />
+				Generate album covers
 			</button>
 		</li>
 	{/if}

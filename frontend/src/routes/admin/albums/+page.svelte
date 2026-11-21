@@ -13,7 +13,7 @@
 	<title>albums2: Albums administration</title>
 </svelte:head>
 
-<div class="m-8 rounded border border-1 border-base-300 bg-base-100 p-4 shadow-xl">
+<div class="m-8 rounded border border-1 border-base-300 bg-base-200 p-4 shadow-xl">
 	<h2 class="p-4 text-2xl font-semibold">Cover Image Exclude List</h2>
 	<div>
 		The list controls the names of the cover images to exclude from the album covers populating

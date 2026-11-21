@@ -108,7 +108,23 @@
 		return true;
 	}
 
-	async function createAlbumCover() {
+	async function populateAlbumCover() {
+		if (!(await confirmationDialog.show('Generate the album cover?'))) {
+			return;
+		}
+
+		const resp = await fetch(`/api/albums/${album._id}/albumcover`, {
+			method: 'POST'
+		});
+
+		const obj = await resp.json();
+
+		toast.add('Album cover generation started.', 'info');
+
+		return true;
+	}
+
+	async function populateAlbumCoverByMedia() {
 		if (!(await confirmationDialog.show('Set this media as the album cover?'))) {
 			return;
 		}
@@ -201,6 +217,16 @@
 			<button onclick={createEmbeddingJobs}>
 				<Icon path={mdiFeatureSearchOutline} />
 				Generate media search metadata
+			</button>
+		</li>
+
+		<li>
+		<button
+				onclick={() => {
+					populateAlbumCover();
+				}}
+			>
+				<Icon path={mdiImageAlbum} /> Populate album cover
 			</button>
 		</li>
 	{/if}
@@ -300,7 +326,7 @@
 		<li>
 			<button
 				onclick={() => {
-					createAlbumCover();
+					populateAlbumCoverByMedia();
 				}}
 			>
 				<Icon path={mdiImageAlbum} /> Set as album cover

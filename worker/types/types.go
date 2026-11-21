@@ -15,12 +15,13 @@ type Collection struct {
 }
 
 type Album struct {
-	ID           bson.ObjectID `json:"_id" bson:"_id"`
-	CollectionID bson.ObjectID `json:"collectionId" bson:"collectionId"`
-	Name         string        `json:"name" bson:"name"`
-	Cover        string        `json:"cover" bson:"cover"`
-	ObjectKey    string        `json:"objectKey" bson:"objectKey"`
-	LastSyncAt   time.Time     `json:"lastSyncAt" bson:"lastSyncAt"`
+	ID             bson.ObjectID `json:"_id" bson:"_id"`
+	CollectionID   bson.ObjectID `json:"collectionId" bson:"collectionId"`
+	Name           string        `json:"name" bson:"name"`
+	Cover          string        `json:"cover" bson:"cover"`
+	CoverOverriden bool          `json:"coverOverriden" bson:"coverOverriden"`
+	ObjectKey      string        `json:"objectKey" bson:"objectKey"`
+	LastSyncAt     time.Time     `json:"lastSyncAt" bson:"lastSyncAt"`
 }
 
 type Media struct {

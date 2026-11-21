@@ -10,7 +10,8 @@ export const POST: RequestHandler = async ({ request, params }) => {
 		JSON.stringify({
 			type: 'media.album_cover',
 			payload: {
-				id: params.id
+				id: params.id,
+				override: true
 			}
 		})
 	);

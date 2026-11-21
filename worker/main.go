@@ -17,6 +17,7 @@ import (
 	"github.com/rs/zerolog"
 	zlog "github.com/rs/zerolog/log"
 	"github.com/wutipong/albums2/worker/processor"
+	"github.com/wutipong/albums2/worker/processor/albumcover"
 	"github.com/wutipong/albums2/worker/processor/albumsync"
 	"github.com/wutipong/albums2/worker/processor/collectionsync"
 	"github.com/wutipong/albums2/worker/processor/mediaalbumcover"
@@ -156,6 +157,12 @@ func main() {
 	err = processor.RegisterProcessor(&albumsync.Processor{})
 	if err != nil {
 		zlog.Error().Err(err).Msg("failed to register album sync processor")
+		os.Exit(-1)
+	}
+
+	err = processor.RegisterProcessor(&albumcover.Processor{})
+	if err != nil {
+		zlog.Error().Err(err).Msg("failed to register album cover processor")
 		os.Exit(-1)
 	}
 

@@ -37,7 +37,8 @@ func (p *Processor) GetType() string {
 }
 
 type Payload struct {
-	ID string `json:"id"`
+	ID       string `json:"id"`
+	Override bool   `json:"override"`
 }
 
 func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) error {
@@ -47,7 +48,7 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 		return fmt.Errorf("unable to unmarshal the payload: %w", err)
 	}
 
-	zlog.Debug().Str("media", payload.ID).Msg("Album Cover")
+	zlog.Debug().Str("media", payload.ID).Msg("Update Album Cover by Media")
 
 	mediaId, err := bson.ObjectIDFromHex(payload.ID)
 	if err != nil {
@@ -103,8 +104,9 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 		Collection("albums").
 		UpdateByID(ctx, album.ID, bson.M{
 			"$set": bson.M{
-				"cover":     album.Cover,
-				"updatedAt": time.Now(),
+				"cover":          album.Cover,
+				"coverOverriden": payload.Override,
+				"updatedAt":      time.Now(),
 			},
 		})
 

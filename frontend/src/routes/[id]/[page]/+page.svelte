@@ -8,7 +8,7 @@
 	import log from '#lib/log.js';
 	import Pagination from './Pagination.svelte';
 	import {
-		mdiBlender,
+		mdiImageAlbum,
 		mdiFeatureSearchOutline,
 		mdiInformationOutline,
 		mdiLibraryShelves,
@@ -106,8 +106,8 @@
 		</li>
 		<li>
 			<button onclick={createAlbumCoverJobs}>
-				<Icon path={mdiBlender} />
-				Generate album covers
+				<Icon path={mdiImageAlbum} />
+				Populate album covers
 			</button>
 		</li>
 	{/if}

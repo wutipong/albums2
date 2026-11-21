@@ -1,9 +1,9 @@
 <script lang="ts">
 	import Icon from '#lib/components/Icon.svelte';
-	import { mdiDelete, mdiPlus } from '@mdi/js';
+	import { mdiAlertCircle, mdiDelete, mdiPlus } from '@mdi/js';
 	import { enhance } from '$app/forms';
 
-	const { data } = $props();
+	const { data, form } = $props();
 	const excludedCoverNames = $derived(data.settings?.album?.excludedCoverNames ?? []);
 
 	var inputText = $state('');
@@ -19,6 +19,13 @@
 		The list controls the names of the cover images to exclude from the album covers populating
 		process. It does not affect the manual selection of cover images.
 	</div>
+
+	{#if form?.message}
+			<div role="alert" class="alert alert-error">
+				<Icon path={mdiAlertCircle} />
+				<span>{form.message}</span>
+			</div>
+		{/if}
 
 	<table class="table table-zebra">
 		<thead>

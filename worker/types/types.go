@@ -51,3 +51,11 @@ type User struct {
 	Email string `json:"email"`
 	Name  string `json:"name"`
 }
+
+type AlbumSettings struct {
+	ExcludedCoverNames []string `json:"excludedCoverNames" bson:"excludedCoverNames"`
+}
+
+type Settings struct {
+	Album AlbumSettings `json:"album" bson:"album"`
+}

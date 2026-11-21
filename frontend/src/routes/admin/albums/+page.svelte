@@ -1,9 +1,10 @@
 <script lang="ts">
 	import Icon from '#lib/components/Icon.svelte';
 	import { mdiDelete, mdiPlus } from '@mdi/js';
+	import { enhance } from '$app/forms';
 
 	const { data } = $props();
-	const banedNames = $derived(data.settings?.album?.banedNames ?? []);
+	const excludedCoverNames = $derived(data.settings?.album?.excludedCoverNames ?? []);
 
 	var inputText = $state('');
 </script>
@@ -27,7 +28,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			{#each banedNames as name}
+			{#each excludedCoverNames as name}
 				<tr>
 					<td>{name}</td>
 					<td>
@@ -54,7 +55,7 @@
 					/>
 				</th>
 				<th>
-					<form method="POST" action="?/add" class="flex flex-1 flex-row gap-2">
+					<form method="POST" action="?/add" use:enhance class="flex flex-1 flex-row gap-2">
 						<input type="hidden" name="name" value={inputText} />
 						<button type="submit" class="btn btn-primary btn-sm">
 							<Icon path={mdiPlus} />

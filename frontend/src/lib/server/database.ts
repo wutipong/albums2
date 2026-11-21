@@ -162,12 +162,12 @@ export const Media =
 	mongoose.model<any, mongoose.AggregatePaginateModel<any>>('Media', MediaSchema);
 
 export const AlbumSettingsScema = new mongoose.Schema({
-	banedNames: { type: [String]}
+	excludedCoverNames: { type: [String]}
 });
 
 export interface SettingsDocument {
 	album?: {
-		banedNames?: string[];
+		excludedCoverNames?: string[];
 	};
 }
 

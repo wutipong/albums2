@@ -7,7 +7,7 @@ export const load: PageServerLoad = async () => {
             {}, {
             $setOnInsert: { 
                 album: {
-                    banedNames: []
+                    excludedCoverNames: []
                 }
             }
         },
@@ -30,11 +30,18 @@ export const actions = {
                 { status: 400 });
         }
 
-        await Settings.findOneAndUpdate(
+        const r = await Settings.findOneAndUpdate(
             {},
-            { $addToSet: { 'album.banedNames': name.trim() } },
+            { $addToSet: { 'album.excludedCoverNames': name.trim() } },
             { upsert: true }
         );
+
+        if (r?.errors) {
+            return Response.json(
+                { error: 'Failed to add media name.' },
+                { status: 500 }
+            );
+        }
         
         return { success: true };
     },
@@ -48,10 +55,17 @@ export const actions = {
                 { status: 400 });
         }
 
-        await Settings.findOneAndUpdate(
+        const r = await Settings.findOneAndUpdate(
             {},
-            { $pull: { 'album.banedNames': name.trim() } }
+            { $pull: { 'album.excludedCoverNames': name.trim() } }
         );
+
+        if (r?.errors) {
+            return Response.json(
+                { error: 'Failed to remove media name.' },
+                { status: 500 }
+            );
+        }
 
         return { success: true };
     }

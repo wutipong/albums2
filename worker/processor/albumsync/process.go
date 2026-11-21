@@ -3,6 +3,7 @@ package albumsync
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"mime"
@@ -22,6 +23,7 @@ import (
 	"github.com/wutipong/albums2/worker/util/db"
 	"github.com/wutipong/albums2/worker/util/s3"
 	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
@@ -192,15 +194,38 @@ func postMediaEmbedding(ctx context.Context, album types.Album) error {
 }
 
 func postMediaAlbumCover(ctx context.Context, album types.Album) error {
-	r := db.MongoDB().Collection("media").FindOne(ctx, bson.D{{Key: "albumId", Value: album.ID}})
+	r := db.MongoDB().Collection("settings").FindOne(ctx, bson.D{})
 	if r.Err() != nil {
-		return fmt.Errorf("failed to retrieve media data: %w", r.Err())
+		return fmt.Errorf("failed to retrieve settings: %w", r.Err())
+	}
+
+	settings := types.Settings{}
+	err := r.Decode(&settings)
+	if err != nil {
+		return fmt.Errorf("failed to decode settings: %w", err)
+	}
+
+	r = db.MongoDB().Collection("media").FindOne(
+		ctx,
+		bson.D{
+			{Key: "albumId", Value: album.ID},
+			{Key: "name",
+				Value: bson.D{
+					{Key: "$nin", Value: settings.Album.ExcludedCoverNames},
+				},
+			},
+		})
+	if err := r.Err(); err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil
+		}
+		return fmt.Errorf("failed to retrieve media data: %w", err)
 	}
 
 	m := types.Media{}
-	err := r.Decode(&m)
+	err = r.Decode(&m)
 	if err != nil {
-		return fmt.Errorf("failed to decode media data")
+		return fmt.Errorf("failed to decode media data: %w", err)
 	}
 
 	task := processor.PostTaskRequest{

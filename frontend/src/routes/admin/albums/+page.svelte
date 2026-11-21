@@ -21,11 +21,11 @@
 	</div>
 
 	{#if form?.message}
-			<div role="alert" class="alert alert-error">
-				<Icon path={mdiAlertCircle} />
-				<span>{form.message}</span>
-			</div>
-		{/if}
+		<div role="alert" class="alert alert-error">
+			<Icon path={mdiAlertCircle} />
+			<span>{form.message}</span>
+		</div>
+	{/if}
 
 	<table class="table table-zebra">
 		<thead>

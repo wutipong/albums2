@@ -35,7 +35,7 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 		return fmt.Errorf("unable to unmarshal the payload: %w", err)
 	}
 
-	zlog.Info().Str("album", payload.ID).Msg("processing album sync")
+	zlog.Info().Str("album", payload.ID).Msg("processing album cover populating")
 
 	albumID, err := bson.ObjectIDFromHex(payload.ID)
 	if err != nil {

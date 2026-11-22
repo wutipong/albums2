@@ -14,7 +14,7 @@ import {
 
 import log from '#lib/log.js';
 import redis from '#lib/server/redis.js';
-import { Media } from '#lib/server/database.js';
+import { Media, Settings } from '#lib/server/database.js';
 
 export const init: ServerInit = async () => {
 	await mongoose.connect(DB_CONNECTION);
@@ -23,6 +23,21 @@ export const init: ServerInit = async () => {
 	if (!redis.isReady) {
 		await redis.connect();
 	}
+
+	await Settings.findOneAndUpdate(
+		{},
+		{
+			$setOnInsert: {
+				album: {
+					excludedCoverNames: []
+				}
+			}
+		},
+		{
+			upsert: true,
+			returnDocument: 'after'
+		}
+	).lean();
 };
 
 const handleBetterAuth: Handle = async ({ event, resolve }) => {

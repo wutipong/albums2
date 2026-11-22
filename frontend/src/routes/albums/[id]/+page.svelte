@@ -5,11 +5,8 @@
 		mdiInformationOutline,
 		mdiImageOff,
 		mdiBookshelf,
-		mdiBlender,
 		mdiImageAlbum,
 		mdiFolderMultipleImage,
-		mdiClipboardOutline,
-		mdiDownload,
 		mdiLoading,
 		mdiFeatureSearchOutline,
 		mdiBookOpenVariant,
@@ -27,6 +24,7 @@
 	const { data } = $props();
 
 	let album = $derived(data.album);
+	let fromPage = $derived(data.fromPage ? Number(data.fromPage) : 'undefined');
 
 	$inspect(data);
 
@@ -235,7 +233,11 @@
 <div class="relative flex h-screen w-screen flex-col">
 	<NavBar
 		user={data.user}
-		up={{ description: 'Albums', icon: mdiBookshelf, url: `/${album.collectionId}` }}
+		up={{
+			description: 'Albums',
+			icon: mdiBookshelf,
+			url: `/${album.collectionId}/${fromPage}`
+		}}
 		collectionId={album.collectionId}
 		{menu}
 	/>
@@ -290,7 +292,6 @@
 </div>
 
 <MediaInfoDialog bind:this={mediaInfoDlg} />
-{log.debug('album info', album)}
 <AlbumInfoDialog {album} collection={data.collection} bind:this={albumInfoDlg} />
 <Toast bind:this={toast} />
 <ConfirmationDialog bind:this={confirmationDialog} />

@@ -132,7 +132,7 @@
 	{:else}
 		<div class="flex flex-wrap justify-evenly gap-2">
 			{#each albums.docs as album}
-				<AlbumThumbnail {album} />
+				<AlbumThumbnail {album} fromPage={albums.page} />
 			{/each}
 		</div>
 	{/if}

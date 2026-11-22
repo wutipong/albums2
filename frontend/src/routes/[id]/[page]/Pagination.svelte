@@ -2,9 +2,7 @@
 	import { resolve } from '$app/paths';
 	import Icon from '#lib/components/Icon.svelte';
 	import { mdiPageFirst, mdiPageLast, mdiDotsVertical } from '@mdi/js';
-	import { goto } from '$app/navigation';
 	import PaginationDialog from './PaginationDialog.svelte';
-	import type { RouteId } from '$app/types';
 	import { page } from '$app/state';
 
 	interface Props {
@@ -34,7 +32,7 @@
 	}
 </script>
 
-<div class="fixed inset-x-1/2 bottom-10 hidden md:flex">
+<div class="fixed inset-x-1/2 bottom-10">
 	<div class="join -translate-x-1/2 shadow-xl">
 		<a class="btn join-item" href={createLink(1)}>
 			<Icon path={mdiPageFirst} />

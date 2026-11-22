@@ -142,4 +142,9 @@
 <Toast bind:this={toast} />
 <ConfirmationDialog bind:this={confirmationDialog} />
 
-<Pagination currentPage={albums.page} totalPage={albums.totalPages} />
+<div class="hidden md:block">
+	<Pagination currentPage={albums.page} totalPage={albums.totalPages} />
+</div>
+<div class="block md:hidden">
+	<Pagination currentPage={albums.page} totalPage={albums.totalPages} pageToShow={3} />
+</div>

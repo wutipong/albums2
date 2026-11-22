@@ -12,7 +12,6 @@
 	import { enhance } from '$app/forms';
 	import { onMount } from 'svelte';
 	import { createHash } from '@better-auth/utils/hash';
-	import log from '#lib/log.ts';
 
 	interface UpDetails {
 		description: string;

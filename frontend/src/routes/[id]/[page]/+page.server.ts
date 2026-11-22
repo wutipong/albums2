@@ -24,7 +24,13 @@ export const load: PageServerLoad = async ({ params }) => {
 			cover_url = generateImageUrl({
 				endpoint: IMGPROXY_URL,
 				url: `s3://${S3_BUCKET}/${album.cover}`,
-				options: { resizing_type: 'fill', width: 400, height: 600, enlarge: 1 },
+				options: { 
+					resizing_type: 'fill', 
+					width: 400, 
+					height: 600,
+					enlarge: 1,
+					cachebuster: new Date(album.updatedAt).getTime().toString()
+				},
 				salt: IMGPROXY_SALT,
 				key: IMGPROXY_KEY
 			});

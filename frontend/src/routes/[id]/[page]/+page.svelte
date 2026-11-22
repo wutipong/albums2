@@ -58,9 +58,7 @@
 	}
 
 	async function createAlbumCoverJobs() {
-		if (
-			!(await confirmationDialog.show('Generate covers for all albums in this collection?'))
-		) {
+		if (!(await confirmationDialog.show('Generate covers for all albums in this collection?'))) {
 			return;
 		}
 

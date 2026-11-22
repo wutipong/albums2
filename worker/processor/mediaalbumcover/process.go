@@ -68,7 +68,7 @@ func (p *Processor) Process(ctx context.Context, req processor.TaskRequest) erro
 		return fmt.Errorf("unable to parse album information: %w", err)
 	}
 
-	zlog.Info().Interface("media", media).Msg("cover media")
+	zlog.Info().Str("id", media.AlbumID.Hex()).Msg("cover media")
 
 	album := types.Album{}
 	r = db.MongoDB().

@@ -221,7 +221,7 @@
 		</li>
 
 		<li>
-		<button
+			<button
 				onclick={() => {
 					populateAlbumCover();
 				}}

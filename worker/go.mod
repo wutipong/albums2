@@ -10,7 +10,7 @@ require (
 	github.com/rs/zerolog v1.35.1
 	github.com/saintfish/chardet v0.0.0-20230101081208-5e3ef4b5456d
 	github.com/u2takey/ffmpeg-go v0.5.0
-	go.mongodb.org/mongo-driver/v2 v2.10.0
+	go.mongodb.org/mongo-driver/v2 v2.10.1
 	golang.org/x/text v0.43.0
 	google.golang.org/grpc v1.85.0
 	google.golang.org/protobuf v1.36.12
